@@ -54,7 +54,9 @@ try {
   <div class="reader-progress-row">
     <span class="reader-progress-bookname">11AM · HIKAM</span>
     <span class="reader-progress-location">
-      <span id="readerCurrentNumber">Complete dossier</span>
+      <button id="readerCurrentNumber" type="button" class="reader-chapter-label-btn"
+              aria-controls="readerChapterPopover" aria-expanded="false"
+              aria-label="Show current chapter title">Complete dossier</button>
       <bdi id="readerCurrentTitle" dir="auto">Start reading</bdi>
       <span id="readerCurrentSection" class="reader-progress-section" hidden></span>
     </span>
@@ -82,6 +84,15 @@ try {
     <div id="readerBookRail" class="reader-progress-rail"></div>
   </div>
 </header>
+
+<!-- The chapter label in the fixed header reveals its complete Arabic/English
+     title on narrow screens, without increasing the header's height. -->
+<div id="readerChapterPopover" class="reader-chapter-popover" hidden role="region"
+     aria-label="Current chapter details">
+  <strong id="readerPopoverNumber">Complete dossier</strong>
+  <bdi id="readerPopoverTitle" dir="auto">Start reading</bdi>
+  <span id="readerPopoverSection" hidden></span>
+</div>
 
 <section id="resumeReaderPrompt" class="resume-reader-prompt" role="region"
          aria-labelledby="resumeReaderTitle" hidden>

@@ -337,6 +337,24 @@
     }
     return html.trim();
   }
+  function sectionHeadingParts(heading){
+    var marker=heading.querySelector('.secnum');
+    var prefix=marker?marker.textContent.trim():'';
+    var text=Array.from(heading.childNodes).filter(function(node){return node!==marker;})
+      .map(function(node){return node.textContent||'';}).join(' ').replace(/\s+/g,' ').trim();
+    return {marker:prefix,title:text,full:(prefix?prefix+' · ':'')+text};
+  }
+  function appendSectionHeading(target,heading,isRTL){
+    var parts=sectionHeadingParts(heading);
+    if(parts.marker){
+      var prefix=document.createElement('bdi');prefix.dir='ltr';prefix.textContent=parts.marker;
+      prefix.className='reader-section-marker';target.appendChild(prefix);
+      target.appendChild(document.createTextNode(' · '));
+    }
+    var label=document.createElement('bdi');label.dir=isRTL?'rtl':'auto';
+    if(isRTL)label.lang='ar';label.textContent=parts.title;target.appendChild(label);
+  }
+
   function collectStructure(){
     document.querySelectorAll('.part-divider[id^="t"]').forEach(function(divider){
       var match=divider.id.match(/^t(\d+)$/);
@@ -363,7 +381,7 @@
         // Stable deep-link targets without changing the authored fragments.
         if(!h2.id) h2.id=id;
         if(!h2.hasAttribute('tabindex')) h2.tabIndex=-1;
-        sections.push({id:h2.id,title:h2.textContent.trim().replace(/\s+/g,' ')});
+        sections.push({id:h2.id,title:sectionHeadingParts(h2).full});
       });
       chapters.push({id:sec.id, num:num, flat:index+1,
         title:title?title.textContent.trim():num,
@@ -441,7 +459,8 @@
             sectionList.id='toc-section-list-'+c.id;
             toggle.setAttribute('aria-controls',sectionList.id);
             c.sections.forEach(function(section){
-              var link=el('a','toc-section-link',section.title);
+              var link=el('a','toc-section-link');
+              appendSectionHeading(link,document.getElementById(section.id),c.isRTL);
               link.href='#'+section.id;
               link.dataset.searchText=folded(section.title);
               if(c.isRTL){link.setAttribute('lang','ar');link.setAttribute('dir','rtl');}
@@ -543,6 +562,28 @@
     var ring=document.getElementById('readerChapterRing');
     var ringPct=document.getElementById('readerChapterPercent');
     var number=document.getElementById('readerCurrentNumber');
+    var chapterPopover=document.getElementById('readerChapterPopover');
+    var popoverNumber=document.getElementById('readerPopoverNumber');
+    var popoverTitle=document.getElementById('readerPopoverTitle');
+    var popoverSection=document.getElementById('readerPopoverSection');
+    var lastPopoverChapter='';
+    function hideChapterPopover(){
+      if(chapterPopover)chapterPopover.hidden=true;
+      if(number)number.setAttribute('aria-expanded','false');
+    }
+    if(number && chapterPopover){
+      number.addEventListener('click',function(event){
+        event.stopPropagation();var willShow=chapterPopover.hidden;
+        chapterPopover.hidden=!willShow;number.setAttribute('aria-expanded',String(willShow));
+      });
+      document.addEventListener('pointerdown',function(ev){
+        if(!chapterPopover.hidden && !chapterPopover.contains(ev.target) && ev.target!==number)
+          hideChapterPopover();
+      });
+      document.addEventListener('keydown',function(ev){
+        if(ev.key==='Escape'&&!chapterPopover.hidden){hideChapterPopover();number.focus();}
+      });
+    }
     var title=document.getElementById('readerCurrentTitle');
     var sectionLabel=document.getElementById('readerCurrentSection');
     var prompt=document.getElementById('resumeReaderPrompt');
@@ -554,6 +595,12 @@
     var resumeToolbar=document.getElementById('readerResumeShortcut');
     var resumeTools=document.getElementById('tocToolsResume');
     var printing=false, allowSave=false, lastSavedAt=0, savedPosition=null;
+    var wantsResumePrompt=false;
+    var editionNotice=document.getElementById('editionUpdateNotice');
+    function syncResumeNotice(){
+      if(prompt)prompt.hidden=!wantsResumePrompt || !!(editionNotice && !editionNotice.hidden);
+    }
+    window.addEventListener('hikam:edition-notice',syncResumeNotice);
     var hasReadMovement=false, suspendUntil=0, pendingUserScroll=false;
 
     function cap(n){return Math.max(0,Math.min(1,n));}
@@ -654,7 +701,11 @@
         bookTrack.setAttribute('aria-valuetext',overall+'% through the complete book');
       }
       if(!best){
-        if(number)number.textContent='Complete dossier';
+        if(number){number.textContent='Complete dossier';number.setAttribute('aria-label','Show current chapter title');}
+        if(popoverNumber)popoverNumber.textContent='Complete dossier';
+        if(popoverTitle)popoverTitle.textContent='Start reading';
+        if(popoverSection)popoverSection.hidden=true;
+        if(lastPopoverChapter){hideChapterPopover();lastPopoverChapter='';}
         if(title){title.textContent='Start reading';title.removeAttribute('lang');title.dir='auto';}
         if(sectionLabel)sectionLabel.hidden=true;
         if(ring){ring.style.setProperty('--chapter-progress','0%');ring.setAttribute('aria-valuenow','0');ring.setAttribute('aria-valuetext','No chapter selected');}
@@ -673,7 +724,17 @@
         ring.setAttribute('aria-valuetext',chapterPercent+'% through Chapter '+ch.num);
       }
       if(ringPct)ringPct.textContent=chapterPercent+'%';
-      if(number)number.textContent='Chapter '+ch.num;
+      if(lastPopoverChapter!==ch.id){hideChapterPopover();lastPopoverChapter=ch.id;}
+      if(number){
+        number.textContent='Chapter '+ch.num;
+        number.setAttribute('aria-label','Show full title of Chapter '+ch.num);
+      }
+      if(popoverNumber)popoverNumber.textContent='Chapter '+ch.num;
+      if(popoverTitle){
+        popoverTitle.textContent=ch.title;
+        popoverTitle.dir=ch.isRTL?'rtl':'auto';
+        if(ch.isRTL)popoverTitle.lang='ar';else popoverTitle.removeAttribute('lang');
+      }
       if(title){
         title.textContent=ch.title;
         title.dir=ch.isRTL?'rtl':'auto';
@@ -685,10 +746,18 @@
       if(sectionLabel){
         sectionLabel.hidden=!section.node&&!section.revision;
         if(!sectionLabel.hidden){
-          sectionLabel.textContent=section.revision?'Revision & recall':section.node.textContent.trim().replace(/\s+/g,' ');
-          if(section.node && ch.isRTL){sectionLabel.lang='ar';sectionLabel.dir='rtl';}
+          sectionLabel.replaceChildren();
+          if(section.revision)sectionLabel.textContent='Revision & recall';
+          else appendSectionHeading(sectionLabel,section.node,ch.isRTL);
+          if(section.node && ch.isRTL){sectionLabel.lang='ar';sectionLabel.dir='auto';}
           else{sectionLabel.removeAttribute('lang');sectionLabel.dir='auto';}
         }
+      }
+      if(popoverSection){
+        popoverSection.replaceChildren();
+        popoverSection.hidden=!section.node&&!section.revision;
+        if(section.revision)popoverSection.textContent='Revision & recall';
+        else if(section.node)appendSectionHeading(popoverSection,section.node,ch.isRTL);
       }
       if(fromScroll && window.scrollY>100)hasReadMovement=true;
       saveLocation(makePosition(best,section,centre),false);
@@ -702,7 +771,7 @@
         });
       }
     }
-    function hidePrompt(){if(prompt)prompt.hidden=true;}
+    function hidePrompt(){wantsResumePrompt=false;syncResumeNotice();}
     function restorePosition(bookmark){
       var chapter=document.getElementById(bookmark.chapterId);
       if(!chapter)return;
@@ -743,7 +812,7 @@
         description.lang=savedChapter.isRTL?'ar':'en';
         description.dir=savedChapter.isRTL?'rtl':'ltr';
       }
-      prompt.hidden=false;
+      wantsResumePrompt=true;syncResumeNotice();
     }
     if(resume)resume.addEventListener('click',function(){if(savedPosition)restorePosition(savedPosition);});
     if(resumeToolbar)resumeToolbar.addEventListener('click',function(){if(savedPosition)restorePosition(savedPosition);});
@@ -796,7 +865,18 @@
     var trigger=document.getElementById('tocFab'), closeBtn=document.getElementById('tocSidebarClose');
     var backdrop=document.getElementById('tocBackdrop');
     if(!trigger||!sidebar) return;
-    var isOpen=false, restoreFocus=null;
+    var isOpen=false, restoreFocus=null, inertSnapshot=[];
+    function setBackgroundInert(open){
+      if(open){
+        inertSnapshot=Array.from(document.body.children)
+          .filter(function(node){return node!==sidebar && node!==backdrop;})
+          .map(function(node){return {node:node,wasInert:node.inert};});
+        inertSnapshot.forEach(function(item){item.node.inert=true;});
+      }else{
+        inertSnapshot.forEach(function(item){if(item.node.isConnected)item.node.inert=item.wasInert;});
+        inertSnapshot=[];
+      }
+    }
     function focusables(){
       return Array.from(sidebar.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'))
         .filter(function(n){return !n.closest('[hidden],[inert]') && n.getClientRects().length>0;});
@@ -811,6 +891,7 @@
       trigger.classList.add('is-hidden');trigger.setAttribute('tabindex','-1');
       trigger.setAttribute('aria-expanded','true');
       document.body.classList.add('toc-drawer-open');
+      setBackgroundInert(true);
       (closeBtn||sidebar).focus();
       document.addEventListener('keydown',onKeydown);
     }
@@ -823,6 +904,7 @@
       trigger.classList.remove('is-hidden');trigger.removeAttribute('tabindex');
       trigger.setAttribute('aria-expanded','false');
       document.body.classList.remove('toc-drawer-open');
+      setBackgroundInert(false);
       document.removeEventListener('keydown',onKeydown);
       if(returnFocus!==false && restoreFocus && restoreFocus.isConnected) restoreFocus.focus();
     }
@@ -839,6 +921,10 @@
         ev.preventDefault();first.focus();
       }
     }
+    // Close the modal before Chromium starts composing pages: the reading
+    // document must not remain inert while exporting, even if the print UI
+    // was activated from the drawer.
+    window.addEventListener('beforeprint',function(){if(isOpen)close(true);},true);
     trigger.addEventListener('click',open);
     if(closeBtn)closeBtn.addEventListener('click',function(){close(true);});
     if(backdrop)backdrop.addEventListener('click',function(){close(true);});
@@ -1012,13 +1098,64 @@
       }
     });
   }
+  // A horizontally scrolling table remains a semantic table (no role override).
+  // Only tables or pre-existing wrappers that actually overflow get keyboard
+  // focus and a screen-only visual cue. Resize/revision changes are rechecked.
+  function wireScrollableTables(){
+    var managed=new Map(),hintSerial=0,scheduled=false;
+    var tables=Array.from(document.querySelectorAll('section.chapter table'));
+    function candidates(){
+      // Some tables scroll internally even when their .tbl-wrap does not.
+      // Include both candidates, but only mark those with real overflow.
+      return Array.from(new Set([].concat(Array.from(managed.keys()),tables,
+        tables.map(function(table){return table.closest('.tbl-wrap');}).filter(Boolean))));
+    }
+    function update(){
+      scheduled=false;
+      candidates().forEach(function(node){
+        var scrollable=node.scrollWidth>node.clientWidth+3 && node.clientWidth>0 && node.getClientRects().length>0;
+        var record=managed.get(node);
+        if(scrollable && !record){
+          var table=node.matches('table')?node:node.querySelector('table');
+          var caption=table&&table.querySelector('caption');
+          var chapter=node.closest('section.chapter');
+          var name='Scrollable table'+(caption?' — '+caption.textContent.trim().slice(0,90):
+            chapter?' in Chapter '+chapter.id.replace(/^ch/,'').replace(/-/g,'.'):'');
+          var hint=document.createElement('p');
+          hint.className='reader-table-scroll-hint';hint.id='reader-table-scroll-hint-'+(++hintSerial);
+          hint.textContent='↔ Swipe horizontally or focus the table and use arrow keys to see more';
+          node.before(hint);
+          record={hint:hint,wasTabindex:node.getAttribute('tabindex'),
+            wasLabel:node.getAttribute('aria-label'),wasDescription:node.getAttribute('aria-describedby')};
+          managed.set(node,record);
+          node.setAttribute('tabindex','0');node.setAttribute('aria-label',name);
+          node.setAttribute('aria-describedby',[record.wasDescription,hint.id].filter(Boolean).join(' '));
+          node.classList.add('reader-table-scrollable');
+        }else if(!scrollable && record){
+          if(record.hint.isConnected)record.hint.remove();
+          [['tabindex',record.wasTabindex],['aria-label',record.wasLabel],
+            ['aria-describedby',record.wasDescription]].forEach(function(pair){
+            if(pair[1]===null)node.removeAttribute(pair[0]);else node.setAttribute(pair[0],pair[1]);
+          });
+          node.classList.remove('reader-table-scrollable');managed.delete(node);
+        }
+      });
+    }
+    function request(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}
+    window.addEventListener('resize',request);
+    window.addEventListener('hikam:revision-visibility',request);
+    window.addEventListener('afterprint',request);
+    if(document.fonts)document.fonts.ready.then(request).catch(function(){});
+    request();
+  }
+
   function init(){
     sidebar=document.getElementById('tocSidebar');
     if(sidebar){sidebar.inert=true;sidebar.setAttribute('aria-hidden','true');}
     collectStructure();injectFlatNumbers();
     var tree=document.getElementById('tocTree');
     if(tree)buildTree(tree);
-    wireExpandControls();wireSidebar();wireTabs();wireRevisionVisibility();wirePrint();wireScrollSpy();
+    wireExpandControls();wireSidebar();wireTabs();wireRevisionVisibility();wirePrint();wireScrollSpy();wireScrollableTables();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
   else init();

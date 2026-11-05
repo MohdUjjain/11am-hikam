@@ -18,11 +18,16 @@
   let lastUpdateCheck = 0;
   let registrationRef = null;
 
-  function showEditionNotice() {
-    if (updateNotice) updateNotice.hidden = false;
+  // Edition updates take priority over the resume suggestion. The reader
+  // controls its own deferred resume prompt via this UI-only notification.
+  function setEditionNotice(visible) {
+    if (!updateNotice) return;
+    updateNotice.hidden = !visible;
+    window.dispatchEvent(new CustomEvent('hikam:edition-notice',{detail:{visible}}));
   }
+  function showEditionNotice() { setEditionNotice(true); }
   if (reloadButton) reloadButton.addEventListener('click', () => location.reload());
-  if (dismissButton) dismissButton.addEventListener('click', () => { if (updateNotice) updateNotice.hidden = true; });
+  if (dismissButton) dismissButton.addEventListener('click', () => setEditionNotice(false));
 
   if (!('serviceWorker' in navigator) || !('caches' in window)) {
     say('Full offline installation is not supported by this browser.');

@@ -2205,3 +2205,44 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
 @media print {
   .reader-temporary-revision-note {display:none!important;}
 }
+
+
+/* PHASE 2 · mobile/interaction polish. Screen-only; printed pages retain
+   authored table geometry, section typography and A4 pagination rules. */
+@media screen {
+  .reader-chapter-label-btn {
+    flex:none;max-width:100%;padding:0;border:0;background:transparent;
+    color:#E4D4B3;font:700 11.5px var(--font-sans);
+    white-space:nowrap;cursor:pointer;text-align:start;
+  }
+  .reader-chapter-label-btn:focus-visible {
+    outline:2px solid var(--gold-pale);outline-offset:3px;border-radius:3px;
+  }
+  .reader-chapter-popover[hidden] {display:none!important;}
+  .reader-chapter-popover {
+    position:fixed;top:47px;left:clamp(8px,4vw,72px);z-index:235;
+    box-sizing:border-box;width:min(390px,calc(100dvw - 16px));
+    max-height:min(48dvh,230px);overflow:auto;overflow-wrap:anywhere;
+    display:grid;gap:4px;padding:12px 15px;
+    border:1px solid #D6B472;border-radius:9px;
+    box-shadow:0 12px 28px rgba(8,17,30,.3);
+    background:#17263E;color:#FCF7EA;font:400 12px/1.45 var(--font-sans);
+  }
+  .reader-chapter-popover strong {font:700 11px var(--font-sans);color:#F1D68F;}
+  .reader-chapter-popover bdi {unicode-bidi:isolate;overflow-wrap:anywhere;}
+  .reader-chapter-popover bdi[lang=ar] {font:400 17px/1.6 var(--font-arabic);}
+  .reader-chapter-popover > span {color:#E2D4B7;}
+  .reader-section-marker {direction:ltr;unicode-bidi:isolate;white-space:nowrap;}
+  .toc-section-link bdi[lang=ar] {font-family:var(--font-arabic);}
+  .reader-table-scrollable:focus-visible {outline:3px solid #A87C1F;outline-offset:2px;}
+  .reader-table-scroll-hint {
+    display:block;margin:10px 0 5px;padding:0 4px;
+    font:600 11px/1.4 var(--font-sans);color:#4C5A71;
+  }
+  @media(max-width:720px){
+    .reader-chapter-label-btn {font-size:10px;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+    .reader-chapter-label-btn::after {content:' ▾';color:var(--gold-pale);}
+    .reader-chapter-popover {left:8px;}
+  }
+}
+@media print { .reader-chapter-popover,.reader-table-scroll-hint {display:none!important;} }

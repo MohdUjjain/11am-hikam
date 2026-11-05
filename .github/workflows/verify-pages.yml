@@ -38,5 +38,7 @@ jobs:
         run: python src/tests/verify_revision_visibility.py
       - name: Verify complete search indexing and revision preference safety
         run: python src/tests/verify_search_integrity.py
+      - name: Verify mobile interaction and accessibility contract
+        run: python src/tests/verify_mobile_interaction.py
       - name: Test offline worker's cache lifecycle
         run: node src/tests/test_offline_cache.mjs
