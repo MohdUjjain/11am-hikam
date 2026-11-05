@@ -165,7 +165,7 @@ def main():
         valid_keys = [key for key in after_bad['keys'] if key.startswith('11am-hikam-reader-')]
         # A rejected addAll may leave an empty cache namespace behind.
         # The safety contract is retention of the old, usable edition.
-        assert names[0] in valid_keys, after_bad
+        assert '11am-hikam-reader-browser-v2-test' in valid_keys, after_bad
         ctx.set_offline(True)
         page.reload(wait_until='domcontentloaded', timeout=30000)
         assert state(page)['edition'] == 'v2' and state(page)['book'] == 34
