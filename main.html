@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Philosophy — The Complete Revision Dossier</title>
+<meta name="description" content="11AM Hikam — a bilingual Arabic and English academic philosophy dossier with 34 chapters, revision tools and offline reading.">
+<meta name="theme-color" content="#132239">
+<meta name="application-name" content="11AM Hikam">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="11AM Hikam">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="canonical" href="https://mohdujjain.github.io/11am-hikam/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="11AM Hikam">
+<meta property="og:title" content="11AM Hikam — Philosophy Dossiers">
+<meta property="og:description" content="A bilingual philosophy and religious studies study book, available offline after the first successful load.">
+<meta property="og:url" content="https://mohdujjain.github.io/11am-hikam/">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Source+Serif+4:ital,opsz,wght@1,8..60,400;1,8..60,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Amiri:ital,wght@0,400;0,700;1,400&family=Amiri+Quran&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="philosophy_notes.css">
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- SIDEBAR NAVIGATION (screen only -- see @media print rule)     -->
+<!-- Self-building: philosophy_notes.js reads the Topic dividers   -->
+<!-- and every chapter's own kicker text to populate #tocTree, so  -->
+<!-- nothing here needs updating when a new chapter/topic is added.-->
+<!-- ============================================================ -->
+<button type="button" id="tocFab" aria-label="Open contents" aria-expanded="false">&#9776;</button>
+<aside id="tocSidebar" class="toc-sidebar" tabindex="-1" aria-label="Table of contents panel">
+  <div class="toc-sidebar-head">
+    <h2>Contents</h2>
+    <button type="button" id="tocSidebarClose" aria-label="Close contents">&#10005;</button>
+  </div>
+  <div class="toc-print-panel">
+    <label for="tocPrintRange">Print a custom selection</label>
+    <input type="text" id="tocPrintRange" placeholder="e.g. 8-10,1,15" autocomplete="off">
+    <p class="hint">Use the <strong>#</strong> number shown next to each chapter below. Mix single chapters and ranges with commas.</p>
+    <div class="toc-print-actions">
+      <button type="button" id="tocPrintSelected" class="toc-print-btn primary">Print Selected</button>
+      <button type="button" id="tocPrintAll" class="toc-print-btn">Print All</button>
+    </div>
+    <p class="toc-print-error" id="tocPrintError"></p>
+    <p class="hint">Export via Chrome or Edge, with the print dialog's Margins left on "Default".</p>
+  </div>
+  <nav class="toc-tree" id="tocTree" aria-label="Table of contents"></nav>
+  <!-- PWA availability status lives only in the screen sidebar and does not affect the book/PDF. -->
+  <section class="offline-reader-panel" aria-label="Offline reading">
+    <strong>Offline reading</strong>
+    <p id="offlineStatus" role="status" aria-live="polite">Preparing the book for offline reading…</p>
+    <button type="button" id="keepOffline" class="offline-keep-btn">Keep on this device</button>
+  </section>
+
+</aside>
+
+<!-- ============================================================ -->
+<!-- COVER PAGE                                                    -->
+<!-- ============================================================ -->
+<div class="page cover">
+  <div class="cover-top">
+    <span>Academic Dossier — Revision Series</span>
+    <span>Vol. I &amp; II</span>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-seal">
+      <span class="s1">Est.</span>
+      <span class="s2">Φ</span>
+      <span class="s3">Philosophy</span>
+    </div>
+    <div class="cover-eyebrow">A Premium Revision Guide</div>
+    <h1 class="cover-title">Philosophy<br><em>The Complete Dossier</em></h1>
+    <p class="cover-sub">Twentieth-Century Thought &amp; the Foundations of Political Philosophy</p>
+  </div>
+
+  <div class="cover-parts">
+    <div class="cover-part-card">
+      <div class="pk">Topic 1 · Sub-topic 1.1</div>
+      <h3><span class="ar" lang="ar">المدخل</span></h3>
+      <div class="pk-en">Introduction to Philosophy</div>
+      <p>One sub-topic — 20th-Century Philosophy. Five dossiers from Husserl and Frege to Sartre, Foucault, Derrida, and the modern crisis of meaning.</p>
+    </div>
+    <div class="cover-part-card gold">
+      <div class="pk">Topic 2 · Sub-topics 2.1 – 2.2</div>
+      <h3><span class="ar" lang="ar">القضايا الفلسفية</span></h3>
+      <div class="pk-en">Philosophical Ideas</div>
+      <p><strong>2.1 <span class="ar" lang="ar">السياسة</span> · Politics</strong> — eight dossiers: justification, the common good, war, democracy, liberty, individualism, the evolution of political science, and Plato's utopia. <strong>2.2 <span class="ar" lang="ar">الميتافيزيقا</span> · Metaphysics</strong> — six dossiers: the nature of being, its traditional fourfold division, Islamic &amp; Christian metaphysics, and Aristotle's <em>Metaphysics</em>.</p>
+    </div>
+    <div class="cover-part-card">
+      <div class="pk">Topic 3 · Sub-topics 3.1 – 3.8</div>
+      <h3><span class="ar" lang="ar">الدراسة المذهبية</span></h3>
+      <div class="pk-en">Religious Study</div>
+      <p><strong>3.1 Philosophy &amp; Religion</strong> — five dossiers, complete: the human roots of belief, philosophy's toolbox against religion's diagnosis-and-cure, God from Feuerbach to Plantinga, and a critical study of the materialist theories of religion's origin. <strong>3.2 Arguments for God</strong> — eight dossiers, complete: innate disposition, the moral argument, fine-tuning, the argument from creation (kalam), an anatomy of New Atheism, two objection-and-rebuttal dossiers, and a closing premodern corrective on mythos, logos, and the "knack" of faith. <strong>3.4 Design &amp; Evolution</strong> — two of nine dossiers now ready: an Arabic critique of Darwinism in <em>جدلية الإلحاد والدين</em>, and an English introduction to the molecular “black box” and irreducible complexity. The New Atheism book-by-book reply and the remaining chapters on evolution, evil, prophecy, ethics and science–religion remain forthcoming.</p>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <span>Compiled &amp; Redesigned Study Edition</span>
+    <span>For Examination Revision Only</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE OF CONTENTS                                             -->
+<!-- Kept in the DOM for the printed/exported PDF (which still     -->
+<!-- opens with a real contents page) but hidden on screen -- see  -->
+<!-- "#toc{display:none}" under the screen media block. On-screen  -->
+<!-- navigation now lives in the sidebar (see the FAB + #tocSidebar-->
+<!-- right after <body>) instead of this page and the old .quicknav-->
+<!-- bar, which is removed.                                        -->
+<!-- ============================================================ -->
+<div class="page" id="toc">
+  <h2 class="sec" style="border-color:var(--ink);"><span class="secnum" style="background:var(--gold-pale); color:var(--gold-deep); border-color:var(--gold);">Contents</span> Table of Dossiers</h2>
+  <p class="toc-note">Every entry below, and every "↑ Contents" link throughout the book, is a live clickable link — both on screen and inside an exported PDF. This edition does not display page numbers next to each entry: that specific feature (resolving a link to the page number it points to) needs a dedicated PDF renderer that Chrome's own built-in "Print to PDF" doesn't include, so the column is intentionally left blank here rather than showing a number that may not match.</p>
+
+  <div class="toc-topic">
+    <a class="toc-topic-title" href="#t1"><span class="tt-num">Topic 1</span><span class="ar" lang="ar">المدخل</span><span class="tt-en">Introduction to Philosophy</span></a>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 1.1 — 20th-Century Philosophy (<span class="ar" lang="ar">فلسفة القرن العشرين</span>)</div>
+      <a class="toc-item" href="#ch1-1-1"><span class="tn">1.1.1</span><span class="tt">Towards an Assessment of Twentieth-Century Philosophy</span><span class="ts">Routledge</span></a>
+      <a class="toc-item" href="#ch1-1-2"><span class="tn">1.1.2</span><span class="tt">Twentieth-Century Moral Philosophy</span><span class="ts">Routledge</span></a>
+      <a class="toc-item" href="#ch1-1-3"><span class="tn">1.1.3</span><span class="tt">Philosophy of Science</span><span class="ts">Blackwell</span></a>
+      <a class="toc-item" href="#ch1-1-4"><span class="tn">1.1.4</span><span class="tt">Sartre, Foucault and Derrida</span><span class="ts">Blackwell</span></a>
+      <a class="toc-item" href="#ch1-1-5"><span class="tn">1.1.5</span><span class="tt">The Gap Between Knowledge and Wisdom</span><span class="ts">Continental Phil.</span></a>
+    </div>
+  </div>
+
+  <div class="toc-topic">
+    <a class="toc-topic-title" href="#t2"><span class="tt-num">Topic 2</span><span class="ar" lang="ar">القضايا الفلسفية</span><span class="tt-en">Philosophical Ideas</span></a>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 2.1 — Politics (<span class="ar" lang="ar">السياسة</span>)</div>
+      <a class="toc-item" href="#ch2-1-1"><span class="tn">2.1.1</span><span class="tt">Introduction to Political Philosophy</span><span class="ts">Cambridge</span></a>
+      <a class="toc-item" href="#ch2-1-2"><span class="tn">2.1.2</span><span class="tt">The Common Good</span><span class="ts">Cambridge</span></a>
+      <a class="toc-item" href="#ch2-1-3"><span class="tn">2.1.3</span><span class="tt">War</span><span class="ts">Cambridge</span></a>
+      <a class="toc-item" href="#ch2-1-4"><span class="tn">2.1.4</span><span class="tt">Introduction &amp; Who Should Rule?</span><span class="ts">Oxford</span></a>
+      <a class="toc-item" href="#ch2-1-5"><span class="tn">2.1.5</span><span class="tt">The Place of Liberty</span><span class="ts">Oxford</span></a>
+      <a class="toc-item" href="#ch2-1-6"><span class="tn">2.1.6</span><span class="tt">Individualism, Justice, Feminism</span><span class="ts">Oxford</span></a>
+      <a class="toc-item" href="#ch2-1-7"><span class="tn">2.1.7</span><span class="tt ar" lang="ar">تطور علم السياسة</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch2-1-8"><span class="tn">2.1.8</span><span class="tt ar" lang="ar">أفلاطون والمدينة الفاضلة</span><span class="ts">Brief</span></a>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 2.2 — Metaphysics (<span class="ar" lang="ar">الميتافيزيقا</span>)</div>
+      <a class="toc-item" href="#ch2-2-1"><span class="tn">2.2.1</span><span class="tt ar" lang="ar">ما الميتافيزيقا</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch2-2-2"><span class="tn">2.2.2</span><span class="tt ar" lang="ar">التقسيم التقليدي للميتافيزيقا</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch2-2-3"><span class="tn">2.2.3</span><span class="tt ar" lang="ar">الميتافيزيقا عند فلاسفة الإسلام والمسيحية</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch2-2-4"><span class="tn">2.2.4</span><span class="tt ar" lang="ar">أرسطوطاليس والميتافيزيقا</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch2-2-5"><span class="tn">2.2.5</span><span class="tt">The First Philosophy: Aristotle's Metaphysics (I)</span><span class="ts">Companion</span></a>
+      <a class="toc-item" href="#ch2-2-6"><span class="tn">2.2.6</span><span class="tt">Architecture of Reality: Aristotle's Metaphysics (II)</span><span class="ts">Companion</span></a>
+    </div>
+  </div>
+
+  <div class="toc-topic">
+    <a class="toc-topic-title" href="#t3"><span class="tt-num">Topic 3</span><span class="ar" lang="ar">الدراسة المذهبية</span><span class="tt-en">Religious Study</span></a>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.1 — Philosophy &amp; Religion</div>
+      <a class="toc-item" href="#ch3-1-1"><span class="tn">3.1.1</span><span class="tt">Philosophy and Religion: The Human Imperative</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-1-2"><span class="tn">3.1.2</span><span class="tt">The Architecture of Divine Inquiry</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-1-3"><span class="tn">3.1.3</span><span class="tt">The Evolution of the Divine</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-1-4"><span class="tn">3.1.4</span><span class="tt ar" lang="ar">نظرية حول نشوء الدين</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-1-5"><span class="tn">3.1.5</span><span class="tt ar" lang="ar">الاعتراضات الإجمالية على الأديان</span><span class="ts">Brief</span></a>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.2 — Arguments for God</div>
+      <a class="toc-item" href="#ch3-2-1"><span class="tn">3.2.1</span><span class="tt ar" lang="ar">تمهيد — برهان النزوع الفطري</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-2-2"><span class="tn">3.2.2</span><span class="tt ar" lang="ar">البرهان الأخلاقي</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-2-3"><span class="tn">3.2.3</span><span class="tt ar" lang="ar">برهان الضبط الدقيق</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-2-4"><span class="tn">3.2.4</span><span class="tt ar" lang="ar">الدلالة العقلية الأولى على وجود الله</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-2-5"><span class="tn">3.2.5</span><span class="tt ar" lang="ar">الإلحاد الجديد</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-2-6"><span class="tn">3.2.6</span><span class="tt ar" lang="ar">أفي الله شك؟</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-2-7"><span class="tn">3.2.7</span><span class="tt ar" lang="ar">شبهات حول أدلة وجود الله</span><span class="ts">Brief</span></a>
+      <a class="toc-item" href="#ch3-2-8"><span class="tn">3.2.8</span><span class="tt">Introduction (The Case for God)</span><span class="ts">Armstrong</span></a>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.3 — The New Atheism</div>
+      <div class="toc-forthcoming"><span class="tn">3.3.1</span><span class="tt">Index of Famous Atheists' Books</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.3.2</span><span class="tt ar" lang="ar">اختراق عقل: دلائل الإيمان في مواجهة شبهات الملحدين والمتشككين</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.3.3</span><span class="tt ar" lang="ar">جدلية الإلحاد والدين</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.3.4</span><span class="tt ar" lang="ar">فمن خلق الله؟</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.3.5</span><span class="tt ar" lang="ar">نهاية حلم وهم الإله</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.3.6</span><span class="tt">Introduction</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.3.7</span><span class="tt">Is Religion Evil?</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.3.8</span><span class="tt">The Monkey Machine</span></div>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.4 — Design &amp; Evolution</div>
+      <div class="toc-forthcoming"><span class="tn">3.4.1</span><span class="tt ar" lang="ar">الاقتباسات النورانية 1446هـ — المجلس الأول</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.4.2</span><span class="tt ar" lang="ar">برهان النظم في عالم الأحياء — هل يتحدى التطور وجود الله؟</span></div>
+      <a class="toc-item" href="#ch3-4-3"><span class="tn">3.4.3</span><span class="tt ar" lang="ar">نظرية داروين (جدلية الإلحاد والدين)</span><span class="ts">علي الحسيني</span></a>
+      <a class="toc-item" href="#ch3-4-4"><span class="tn">3.4.4</span><span class="tt">Introduction + Part One — A Black Box under the Microscope</span><span class="ts">Biochemistry</span></a>
+      <div class="toc-forthcoming"><span class="tn">3.4.5</span><span class="tt">Liliputian Biology</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.4.6</span><span class="tt">Questions about Design</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.4.7</span><span class="tt">Ten Years Later</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.4.8</span><span class="tt">The Nature and Scope of Evolution</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.4.9</span><span class="tt">The Origin of Life</span></div>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.5 — The Problem of Evil</div>
+      <div class="toc-forthcoming"><span class="tn">3.5.1</span><span class="tt ar" lang="ar">مشكلة الشر ووجود الله</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.5.2</span><span class="tt ar" lang="ar">اختراق عقل</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.5.3</span><span class="tt ar" lang="ar">شبهات وجود الشرور والنقص في العالم الدنيوي</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.5.4</span><span class="tt ar" lang="ar">إجابة ابن سينا عن مفارقة العناية الإلهية والشر</span></div>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.6 — Prophecy &amp; Polemics</div>
+      <div class="toc-forthcoming"><span class="tn">3.6.1</span><span class="tt ar" lang="ar">براهين النبوة</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.6.2</span><span class="tt ar" lang="ar">عالم دون أنبياء</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.6.3</span><span class="tt ar" lang="ar">إثارات حول الأديان عامة والإسلام خاصة</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.6.4</span><span class="tt ar" lang="ar">شبهات حول ضرورة ابتعاث الأنبياء</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.6.5</span><span class="tt ar" lang="ar">ظاهرة نقد الدين</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.6.6</span><span class="tt ar" lang="ar">أهمية الدين في المجتمع</span></div>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.7 — Religion &amp; Ethics</div>
+      <div class="toc-forthcoming"><span class="tn">3.7.1</span><span class="tt ar" lang="ar">الادعاء بأن الأديان تفسد الأخلاق الإنسانية</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.7.2</span><span class="tt ar" lang="ar">الدين والأخلاق</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.7.3</span><span class="tt ar" lang="ar">منشأ الأخلاق</span></div>
+    </div>
+    <div class="toc-part">
+      <div class="toc-part-title">Sub-topic 3.8 — Science &amp; Religion</div>
+      <div class="toc-forthcoming"><span class="tn">3.8.1</span><span class="tt ar" lang="ar">الاقتباسات النورانية 1447هـ</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.8.2</span><span class="tt ar" lang="ar">النظريات في نسبة العلم والدين</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.8.3</span><span class="tt ar" lang="ar">الخدمات المتبادلة بين العلم والدين</span></div>
+      <div class="toc-forthcoming"><span class="tn">3.8.4</span><span class="tt ar" lang="ar">الادعاء بأن الدين معارض للعلم التجريبي</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- INCLUDE:subtopic-1-1.html -->
+
+<!-- ============================================================ -->
+<!-- SUB-TOPIC 2.1 DIVIDER                                         -->
+<!-- ============================================================ -->
+<!-- ============================================================ -->
+<!-- TOPIC 2 OVERVIEW DIVIDER                                      -->
+<!-- ============================================================ -->
+<div class="page part-divider" id="t2">
+  <div class="pd-kicker">Topic 2</div>
+  <h1 class="ar" lang="ar">القضايا الفلسفية</h1>
+  <div class="pd-en-title">Philosophical Ideas</div>
+  <div class="pd-sub">Two sub-topics</div>
+  <p class="pd-lede">The second topic gathers the questions philosophy asks about how we should live together, and what — beneath appearances — actually exists. It divides into two sub-topics.</p>
+  <div class="pd-list">
+    <div class="pd-list-item"><span class="n">2.1</span><span class="t"><span class="ar" lang="ar">السياسة</span> · Politics<small>Eight dossiers, ready — justification, the common good, war, democracy, liberty, individualism, the evolution of political science, Plato's utopia</small></span></div>
+    <div class="pd-list-item"><span class="n">2.2</span><span class="t"><span class="ar" lang="ar">الميتافيزيقا</span> · Metaphysics<small>Six dossiers, ready — the nature of being, its traditional division, Islamic &amp; Christian metaphysics, Aristotle's Metaphysics</small></span></div>
+  </div>
+</div>
+
+
+<!-- INCLUDE:subtopic-2-1.html -->
+
+<!-- INCLUDE:subtopic-2-2.html -->
+
+<!-- ============================================================ -->
+<!-- TOPIC 3 OVERVIEW DIVIDER                                      -->
+<!-- ============================================================ -->
+<div class="page part-divider" id="t3">
+  <div class="pd-kicker">Topic 3</div>
+  <h1 class="ar" lang="ar">الدراسة المذهبية</h1>
+  <div class="pd-en-title">Religious Study</div>
+  <div class="pd-sub">Eight sub-topics</div>
+  <p class="pd-lede">The third topic asks whether belief in the divine can be reasoned about at all — and follows that question from first philosophical principles, through the classical arguments for and against God, into evolutionary biology, the problem of evil, prophecy, ethics, and the relationship between science and faith. It divides into eight sub-topics.</p>
+  <div class="pd-list">
+    <div class="pd-list-item"><span class="n">3.1</span><span class="t">Philosophy &amp; Religion<small>Five dossiers, ready — the human roots of belief, the toolbox-and-diagnosis architecture, God from Feuerbach to Plantinga, and a critical study of religion's-origin theories</small></span></div>
+    <div class="pd-list-item"><span class="n">3.2</span><span class="t">Arguments for God<small>Complete — eight dossiers, from innate disposition and fine-tuning through the classical kalam argument to a closing corrective on what "God" even means</small></span></div>
+    <div class="pd-list-item"><span class="n">3.3</span><span class="t">The New Atheism<small>Forthcoming — the major atheist critiques and their responses</small></span></div>
+    <div class="pd-list-item"><span class="n">3.4</span><span class="t">Design &amp; Evolution<small>Two of nine ready — Darwin’s theory (<span class="ar" lang="ar">جدلية الإلحاد والدين</span>) and the molecular black-box argument; seven forthcoming</small></span></div>
+    <div class="pd-list-item"><span class="n">3.5</span><span class="t">The Problem of Evil<small>Forthcoming — the classical objection and its philosophical answers</small></span></div>
+    <div class="pd-list-item"><span class="n">3.6</span><span class="t">Prophecy &amp; Polemics<small>Forthcoming — the case for prophecy and the critique of religion</small></span></div>
+    <div class="pd-list-item"><span class="n">3.7</span><span class="t">Religion &amp; Ethics<small>Forthcoming — whether morality needs a religious foundation</small></span></div>
+    <div class="pd-list-item"><span class="n">3.8</span><span class="t">Science &amp; Religion<small>Forthcoming — competing models of how the two relate</small></span></div>
+  </div>
+</div>
+
+<!-- INCLUDE:subtopic-3-1.html -->
+
+<!-- INCLUDE:subtopic-3-2.html -->
+
+<!-- ============================================================ -->
+<!-- TOPIC 3: 3.3 remains forthcoming. 3.4 is partially ready.  -->
+<!-- Add 3.3 above 3.4 when its dossiers become available; keep   -->
+<!-- the final printed book's numerical sub-topic order.         -->
+<!-- ============================================================ -->
+
+<!-- INCLUDE:subtopic-3-4.html -->
+
+<!-- COLOPHON / CLOSING                                            -->
+<!-- ============================================================ -->
+<div class="page colophon">
+  <div class="cseal">Φ</div>
+  <h3>End of Dossier</h3>
+  <p>Thirty-four dossiers across six started sub-topics, one continuous argument: philosophy spent the twentieth century tightening its tools of meaning, political philosophy has spent centuries asking who gets to wield power, metaphysics has spent millennia asking what is actually there beneath it all, and the philosophy of religion asks whether any of it can be reasoned about at the highest stakes. The new design-and-evolution chapters examine how those questions intersect with biology and the inference of purpose. Revise in cycles — banners first, then full text, then amber/purple/gold only — and this book will hold up under exam pressure.</p>
+  <p style="margin-top:28px; font-family:var(--font-sans); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint);">Compiled &amp; Redesigned Study Edition · For Examination Revision Only</p>
+</div>
+
+
+<script src="philosophy_notes.js"></script>
+
+
+<script src="offline-reader.js" defer></script>
+</body>
+</html>

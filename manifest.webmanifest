@@ -1,0 +1,31 @@
+{
+  "id": "/11am-hikam/",
+  "name": "11AM — Takhassus Hikam",
+  "short_name": "11AM Hikam",
+  "description": "Bilingual Arabic and English philosophy and religious studies dossier: 34 chapters with offline revision and navigation.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#132239",
+  "theme_color": "#132239",
+  "categories": [
+    "education",
+    "books"
+  ],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
