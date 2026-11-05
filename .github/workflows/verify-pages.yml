@@ -1,0 +1,30 @@
+name: Verify Hikam website publication
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Check generated site and installable assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out files
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify the published HTML and hashed service worker are current
+        run: python build.py --check
+      - name: Validate links, manifest, meta tags, and 34 dossiers
+        run: python scripts/verify_publication.py
+      - name: Test offline worker's cache lifecycle
+        run: node scripts/test_offline_cache.mjs

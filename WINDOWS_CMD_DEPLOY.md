@@ -1,58 +1,44 @@
-# Publish 11AM Hikam from Windows Command Prompt
+# Windows CMD — 11AM Hikam hosting enhancement
 
-This ZIP contains the full 34-dossier book and the GitHub Pages/PWA files. There is **no enclosing directory** inside the ZIP: extract its contents directly into your local `11am-hikam` repository folder, alongside the existing `README.md` and `.git` folder. Replace the README from the archive when asked. Never delete `.git`.
+This package is prepared for `https://github.com/MohdUjjain/11am-hikam` and does not push or commit automatically.
 
-## 1. One-time: clone the repository (skip if it already exists locally)
+## Apply the hosting-only patch to your existing clone
 
-Open **Command Prompt (CMD)**. Choose your own working folder; this example uses Documents:
-
-```bat
-cd /d "%USERPROFILE%\Documents"
-git clone https://github.com/MohdUjjain/11am-hikam.git
-cd 11am-hikam
-```
-
-If you already have a local clone, instead run `cd /d "C:\path\to\11am-hikam"` (substitute your real path) and skip the clone step.
-
-## 2. Extract the downloaded ZIP into the repository root
-
-If the ZIP is in Downloads under the exact filename linked in the chat:
+1. Download `11am_hikam_hosting_only_overlay_2026-11-05.zip`.
+2. Open **Command Prompt**, navigate to the folder that already contains the cloned repository, and extract the ZIP **into the root of that folder**.
 
 ```bat
-tar -xf "%USERPROFILE%\Downloads\11am_hikam_github_pages_offline_pwa_READY.zip" -C .
+cd /d "%USERPROFILE%\Documents\11am-hikam"
+tar -xf "%USERPROFILE%\Downloads\11am_hikam_hosting_only_overlay_2026-11-05.zip" -C .
 ```
 
-Alternative: right-click the ZIP in File Explorer, choose **Extract All**, then copy the **contents** (not a top-level enclosing folder) into `11am-hikam`, accepting replace/overwrite prompts. The root of `11am-hikam` must contain `index.html`, `service-worker.js`, `manifest.webmanifest`, the `icons` folder, and `build.py`.
+If your local repository is stored elsewhere, use its actual folder path instead.
 
-## 3. Verify and publish
+3. Verify and publish:
 
 ```bat
 py -3 build.py --check
-git status
+py -3 scripts\verify_publication.py
 git add -A
-git commit -m "Publish Hikam offline-capable study book"
-git push -u origin main
+git commit -m "Improve Hikam hosting, link previews and offline updates"
+git push origin main
 ```
 
-If `py` is unavailable but Python is installed, use `python build.py --check`. If you edit the modular source files later, run `py -3 build.py` **before** committing to regenerate `index.html`, `philosophy_study_notes.html`, and the versioned `service-worker.js`.
+Run `py -3 build.py` before `--check` **only if you later edit source files**. The distributed ZIP already contains current generated outputs.
 
-## 4. Turn on GitHub Pages (one time)
+If `py` is unavailable, use `python` instead. The new GitHub Actions workflow checks both commands after each push.
 
-Open `https://github.com/MohdUjjain/11am-hikam/settings/pages`.
+## Alternative: complete project ZIP
 
-Select **Build and deployment → Source: Deploy from a branch → Branch: main → Folder: /(root) → Save**.
+`11am_hikam_hosting_upgrade_full_2026-11-05.zip` has the entire 34-dossier source project, generated website, and all hosting files. Extract it into the same repository folder instead of the patch if you want a complete snapshot.
 
-Your reading URL is `https://mohdujjain.github.io/11am-hikam/` after GitHub Pages deploys it.
+## After publishing
 
-## 5. Install and verify offline reading
-
-Open the URL while connected to the internet. Open the book's Contents sidebar and confirm the offline status says **Entire book saved offline**. Chrome/Edge: use the browser's **Install app** option. iPhone/iPad: use **Share → Add to Home Screen**. In the sidebar, **Keep on this device** asks the browser to use persistent storage where supported; it is not guaranteed.
-
-To test: load the book online once, then disconnect Wi-Fi/mobile data and reopen its installed app. All 34 dossiers and the local interface should remain available. Font files from Google Fonts are not included in the offline bundle; offline fallback fonts may look different. Browsers/operating systems can still erase cached data (e.g., when site data is cleared).
-
-## Important
-
-- **Do not** upload the ZIP itself to GitHub: extract first and commit its files.
-- **Do not** delete the existing `.git` directory.
-- **Do not** create a nested directory `11am-hikam/11am-hikam-pwa/` in the repository; GitHub Pages must find `index.html` at the repo root.
-- Only GitHub's `main` branch and GitHub Pages settings control publication. The files in this package have **not** been pushed by ChatGPT.
+- Site: https://mohdujjain.github.io/11am-hikam/
+- Social card: https://mohdujjain.github.io/11am-hikam/og-image.jpg
+- Sitemap: https://mohdujjain.github.io/11am-hikam/sitemap.xml
+- CI: GitHub → Actions → Verify Hikam website publication
+- Offline test: first open the page online, let the full book save, then switch off network and reopen.
+- **Existing installs:** this first release may need one manual reload to load the new edition-notification code. Future updates notify automatically.
+- Font binaries are not shipped; on-device caching of Google Fonts improves offline fidelity after an online visit, but device storage is always browser-managed.
+- `source_materials/` remains public in your repository; its contents were not changed.

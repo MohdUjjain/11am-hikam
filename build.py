@@ -29,12 +29,20 @@ def outputs():
     css = (HERE / 'philosophy_notes.css').read_text(encoding='utf-8')
     js = (HERE / 'philosophy_notes.js').read_text(encoding='utf-8')
     offline = (HERE / 'offline-reader.js').read_text(encoding='utf-8')
-    index = html.replace('<link rel="stylesheet" href="philosophy_notes.css">', '<style>\n' + css + '\n</style>', 1)
-    index = index.replace('<script src="philosophy_notes.js"></script>', '<script>\n' + js + '\n</script>', 1)
-    index = index.replace('<script src="offline-reader.js" defer></script>', '<script>\n' + offline + '\n</script>', 1)
+    index = html
+    for old, new in (
+        ('<link rel="stylesheet" href="philosophy_notes.css">', '<style>\n' + css + '\n</style>'),
+        ('<script src="philosophy_notes.js"></script>', '<script>\n' + js + '\n</script>'),
+        ('<script src="offline-reader.js" defer></script>', '<script>\n' + offline + '\n</script>'),
+    ):
+        if old not in index:
+            raise ValueError(f'Missing expected inlining marker: {old}')
+        index = index.replace(old, new, 1)
     assets = [HERE / x for x in (
         'philosophy_notes.css', 'philosophy_notes.js', 'offline-reader.js',
-        'manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'
+        'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',
+        'og-image.jpg', '404.html', 'sitemap.xml',
+        'service-worker.template.js'
     )]
     digest = hashlib.sha256(index.encode('utf-8'))
     for asset in assets: digest.update(asset.read_bytes())

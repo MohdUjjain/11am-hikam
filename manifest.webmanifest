@@ -1,8 +1,8 @@
 {
   "id": "/11am-hikam/",
-  "name": "11AM — Takhassus Hikam",
+  "name": "11AM — Takhassus Hikam Dossier",
   "short_name": "11AM Hikam",
-  "description": "Bilingual Arabic and English philosophy and religious studies dossier: 34 chapters with offline revision and navigation.",
+  "description": "Installable bilingual Arabic and English philosophy and religious studies dossier, with offline reading and revision.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
