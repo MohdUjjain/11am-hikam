@@ -22,27 +22,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Diagnose byte-for-byte reader reproducibility
-        run: |
-          python - <<'PY'
-          import sys
-          from pathlib import Path
-          sys.path.insert(0, 'src')
-          import build
-          import hashlib
-          for path, expected in build.outputs().items():
-              actual = path.read_text(encoding='utf-8')
-              if expected == actual:
-                  print(str(path), 'MATCH')
-                  continue
-              i = next((i for i in range(min(len(expected), len(actual))) if expected[i] != actual[i]), None)
-              print(str(path), 'EXPECTED',len(expected),'ACTUAL',len(actual),'FIRST DIFF',i)
-              if i is not None:
-                  print('EXPECTED',repr(expected[max(0,i-100):i+150]))
-                  print('ACTUAL',repr(actual[max(0,i-100):i+150]))
-              print('EXP SHA',hashlib.sha256(expected.encode('utf-8')).hexdigest())
-              print('ACT SHA',hashlib.sha256(actual.encode('utf-8')).hexdigest())
-          PY
       - name: Verify the published HTML and hashed service worker are current
         run: python src/build.py --check
       - name: Validate links, manifest, meta tags, and 34 dossiers

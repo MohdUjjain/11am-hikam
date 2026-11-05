@@ -11238,7 +11238,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       if(!savedPosition){allowSave=true;return;}
       if(location.hash || window.scrollY>100){
         // A direct chapter link or browser-restored scroll position wins.
-        allowSave=true;hasReadMovement=true;return;
+        allowSave=true;hasReadMovement=false;suspendUntil=Date.now()+2000;return;
       }
       var savedChapter=chapters.find(function(ch){return ch.id===savedPosition.chapterId;});
       var isNearBeginning=savedPosition.chapterId===chapters[0].id && savedPosition.chapterRatio<.04;
@@ -11264,7 +11264,8 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     window.addEventListener('scroll',function(){request(true);},{passive:true});
     window.addEventListener('resize',function(){request(false);});
     window.addEventListener('hashchange',function(){
-      hidePrompt();allowSave=true;hasReadMovement=true;request(false);
+      hidePrompt();allowSave=true;hasReadMovement=false;
+      suspendUntil=Date.now()+2000;request(false);
     });
     window.addEventListener('pagehide',function(){
       if(printing||!hasReadMovement||!allowSave)return;
