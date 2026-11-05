@@ -61,8 +61,9 @@ jobs:
           python-version: '3.12'
       - name: Install reproducible Playwright and PDF inspection tools
         run: python -m pip install playwright==1.57.0 pypdf==5.9.0
-      - name: Install Chromium with its system dependencies
-        run: python -m playwright install --with-deps chromium
+      - name: Install pinned Chromium browser
+        # GitHub's Ubuntu 24.04 hosted image includes Chromium's runtime libs.
+        run: python -m playwright install chromium
       - name: Test full-book search, responsive layout, preferences, keyboard and PDF
         run: python src/tests/browser_quality.py
       - name: Test real offline installation, edition upgrades and failed updates
