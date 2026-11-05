@@ -23,8 +23,10 @@ jobs:
         with:
           python-version: '3.12'
       - name: Verify the published HTML and hashed service worker are current
-        run: python build.py --check
+        run: python src/build.py --check
       - name: Validate links, manifest, meta tags, and 34 dossiers
-        run: python scripts/verify_publication.py
+        run: python src/tests/verify_publication.py
+      - name: Validate book structure and chapter navigation
+        run: python src/tests/validate_structure.py
       - name: Test offline worker's cache lifecycle
-        run: node scripts/test_offline_cache.mjs
+        run: node src/tests/test_offline_cache.mjs

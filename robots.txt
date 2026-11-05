@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /11am-hikam/
+Sitemap: https://mohdujjain.github.io/11am-hikam/sitemap.xml

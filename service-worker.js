@@ -3,12 +3,12 @@
  * are not copied into the repository. Storage may still be cleared by a device.
  */
 const PREFIX = '11am-hikam-reader-';
-const CACHE_NAME = PREFIX + '8ad372a04765';
+const CACHE_NAME = PREFIX + 'd96aa3d5abbd';
 const FONT_CACHE_NAME = '11am-hikam-cdn-fonts-v1';
 const APP_SHELL = [
   './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
-  './og-image.jpg', './404.html', './sitemap.xml'
+  './og-image.jpg', './404.html', './sitemap.xml', './robots.txt'
 ];
 const SCOPE_URL = new URL(self.registration.scope);
 
