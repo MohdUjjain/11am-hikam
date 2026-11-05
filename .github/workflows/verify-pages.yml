@@ -44,3 +44,33 @@ jobs:
         run: python src/tests/verify_visual_polish.py
       - name: Test offline worker's cache lifecycle
         run: node src/tests/test_offline_cache.mjs
+
+
+  browser:
+    name: Playwright reading, print and PWA regressions
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out the exact revision being tested
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install reproducible Playwright and PDF inspection tools
+        run: python -m pip install playwright==1.57.0 pypdf==5.9.0
+      - name: Install Chromium with its system dependencies
+        run: python -m playwright install --with-deps chromium
+      - name: Test full-book search, responsive layout, preferences, keyboard and PDF
+        run: python src/tests/browser_quality.py
+      - name: Test real offline installation, edition upgrades and failed updates
+        run: python src/tests/browser_pwa_updates.py
+      - name: Upload screenshots and sampled print PDFs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hikam-browser-regressions-${{ github.run_id }}
+          path: test-artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
