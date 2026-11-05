@@ -49,7 +49,8 @@ jobs:
   browser:
     name: Playwright reading, print and PWA regressions
     needs: verify
-    runs-on: ubuntu-latest
+    # Pinned because Playwright 1.57 does not support Ubuntu 26.04.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - name: Check out the exact revision being tested

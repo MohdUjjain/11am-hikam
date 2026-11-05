@@ -3,6 +3,8 @@
 The **Verify Hikam website publication** workflow now has two independently
 reported jobs: the established deterministic source/publication checks, and
 **Playwright reading, print and PWA regressions** (dependent on the former).
+The browser job is pinned to `ubuntu-24.04`, because the Playwright release
+cannot install Chromium on the newer Ubuntu 26.04 runner.
 
 ## What the browser job checks
 

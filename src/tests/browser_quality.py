@@ -208,16 +208,20 @@ def preference_and_resume(browser, url):
     page.locator('.reader-temporary-revision-note button').click()
     assert page.locator('.end-block.reader-search-reveal').count() == 0
     assert not page.locator('.end-block').first.is_visible()
-    # Store a stable bookmark as a returning reader, and test the actual UI.
+    # Start a new visit at the cover. Reloading the scrolled search page
+    # can legitimately restore scrollY and suppress the resume prompt.
+    page.close()
+    page = load(ctx, url)
     page.evaluate("localStorage.setItem('11am-hikam-reading-place-v1', JSON.stringify({version:1,chapterId:'ch3-2-4',chapterRatio:0.46}))")
-    page.reload(wait_until='domcontentloaded')
-    page.wait_for_function('Boolean(window.__hikamReadingProgress)')
+    page.close()
+    page = load(ctx, url)
     page.locator('#resumeReaderPrompt').wait_for(state='visible', timeout=20000)
     page.locator('#resumeReaderContinue').click()
     page.wait_for_function("document.getElementById('readerCurrentNumber').textContent.includes('3.2.4')")
     assert page.evaluate('scrollY>100')
-    # An edition notification supersedes a pending Resume prompt.
-    page.reload(wait_until='domcontentloaded')
+    # Exercise a separate visit after continuing; avoid scroll restoration.
+    page.close()
+    page = load(ctx, url)
     page.locator('#resumeReaderPrompt').wait_for(state='visible', timeout=20000)
     page.evaluate("document.getElementById('editionUpdateNotice').hidden=false; window.dispatchEvent(new CustomEvent('hikam:edition-notice',{detail:{visible:true}}))")
     assert not page.locator('#resumeReaderPrompt').is_visible()
