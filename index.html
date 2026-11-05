@@ -2337,7 +2337,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
 
 <!-- The chapter label in the fixed header reveals its complete Arabic/English
      title on narrow screens, without increasing the header's height. -->
-<div id="readerChapterPopover" class="reader-chapter-popover" hidden
+<div id="readerChapterPopover" class="reader-chapter-popover" hidden role="region"
      aria-label="Current chapter details">
   <strong id="readerPopoverNumber">Complete dossier</strong>
   <bdi id="readerPopoverTitle" dir="auto">Start reading</bdi>
@@ -11701,7 +11701,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     // Close the modal before Chromium starts composing pages: the reading
     // document must not remain inert while exporting, even if the print UI
     // was activated from the drawer.
-    window.addEventListener('beforeprint',function(){if(isOpen)close(true);});
+    window.addEventListener('beforeprint',function(){if(isOpen)close(true);},true);
     trigger.addEventListener('click',open);
     if(closeBtn)closeBtn.addEventListener('click',function(){close(true);});
     if(backdrop)backdrop.addEventListener('click',function(){close(true);});
