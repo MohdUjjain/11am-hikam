@@ -96,6 +96,12 @@ def verify():
         assert path in worker, f'Not precached: {path}'
     for snippet in ('controllerchange','editionUpdateNotice','PREPARE_FONTS'):
         assert snippet in index, f'Missing runtime update/font code: {snippet}'
+    # Keep the GitHub Pages root publication-only: no duplicate source tree.
+    mapping_path = HERE / 'src/docs/history/LEGACY_PATH_MAP.json'
+    legacy_paths = json.loads(mapping_path.read_text(encoding='utf-8'))
+    stale_paths = [path for path in legacy_paths if (HERE / path).exists()]
+    assert not stale_paths, 'Obsolete files still at repository root: ' + ', '.join(stale_paths)
+
     print('Valid publication: 34 dossiers, correct HTML/meta/canonical, manifest/icons, offline update notice, 404, sitemap, social preview.')
 
 if __name__ == '__main__':
