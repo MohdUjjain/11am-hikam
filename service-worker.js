@@ -3,7 +3,7 @@
  * are not copied into the repository. Storage may still be cleared by a device.
  */
 const PREFIX = '11am-hikam-reader-';
-const CACHE_NAME = PREFIX + '3cbf336f8838';
+const CACHE_NAME = PREFIX + 'db0b5b8f3d5c';
 const FONT_CACHE_NAME = '11am-hikam-cdn-fonts-v1';
 const APP_SHELL = [
   './index.html', './manifest.webmanifest',

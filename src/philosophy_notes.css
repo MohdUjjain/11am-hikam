@@ -2152,3 +2152,25 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
   body {padding-top:0!important;}
   .reader-search-results,.toc-tabs,.toc-tab-panel {display:none!important;}
 }
+
+/* Optional on-screen revision blocks. Never changes print pagination or its
+   independently controlled Include revision pages checkbox. */
+@media screen {
+  html.reader-hide-revisions section.chapter > .end-block { display:none !important; }
+  .toc-tools-revision {
+    margin:0 5px 12px; padding:13px 14px;
+    border:1px solid rgba(247,241,227,.2); border-radius:9px;
+    background:rgba(255,255,255,.055);
+  }
+  .toc-tools-revision h3 {
+    font:700 13px var(--font-sans); color:var(--gold-pale); margin:0 0 10px;
+  }
+  .toc-revision-toggle {
+    display:flex; gap:10px; align-items:center; cursor:pointer;
+    font:600 12px/1.5 var(--font-sans); color:var(--parchment);
+  }
+  .toc-revision-toggle input { accent-color:var(--gold); width:17px; height:17px; flex:none; }
+  .toc-tools-revision p { margin:8px 0 0; font:400 11px/1.5 var(--font-sans); color:#DAD3C5; }
+  .toc-tools-revision .toc-revision-status { color:#F6DDA3; font-weight:600; }
+}
+@media print { .toc-tools-revision { display:none !important; } }

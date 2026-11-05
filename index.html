@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>11AM — Takhassus Hikam Dossier</title>
+<!-- Apply the saved on-screen revision preference before the book paints. -->
+<script>
+try {
+  if (localStorage.getItem('11am-hikam-show-revisions-v1') === 'false')
+    document.documentElement.classList.add('reader-hide-revisions');
+} catch (error) { /* Reading remains available when device storage is blocked. */ }
+</script>
 <meta name="description" content="11AM Hikam — a bilingual Arabic and English academic philosophy dossier with 34 chapters, revision tools and offline reading.">
 <meta name="theme-color" content="#132239">
 <meta name="application-name" content="11AM — Takhassus Hikam Dossier">
@@ -2193,6 +2200,28 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
   .reader-search-results,.toc-tabs,.toc-tab-panel {display:none!important;}
 }
 
+/* Optional on-screen revision blocks. Never changes print pagination or its
+   independently controlled Include revision pages checkbox. */
+@media screen {
+  html.reader-hide-revisions section.chapter > .end-block { display:none !important; }
+  .toc-tools-revision {
+    margin:0 5px 12px; padding:13px 14px;
+    border:1px solid rgba(247,241,227,.2); border-radius:9px;
+    background:rgba(255,255,255,.055);
+  }
+  .toc-tools-revision h3 {
+    font:700 13px var(--font-sans); color:var(--gold-pale); margin:0 0 10px;
+  }
+  .toc-revision-toggle {
+    display:flex; gap:10px; align-items:center; cursor:pointer;
+    font:600 12px/1.5 var(--font-sans); color:var(--parchment);
+  }
+  .toc-revision-toggle input { accent-color:var(--gold); width:17px; height:17px; flex:none; }
+  .toc-tools-revision p { margin:8px 0 0; font:400 11px/1.5 var(--font-sans); color:#DAD3C5; }
+  .toc-tools-revision .toc-revision-status { color:#F6DDA3; font-weight:600; }
+}
+@media print { .toc-tools-revision { display:none !important; } }
+
 </style>
 </head>
 <body>
@@ -2282,6 +2311,17 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       <h3>Reading position</h3>
       <button type="button" id="tocToolsResume" class="toc-resume-action" hidden>↶ Continue reading</button>
       <p>Your reading place stays on this device. You can continue from the header as well.</p>
+    </section>
+    <section class="toc-tools-revision" aria-labelledby="tocRevisionVisibilityHeading">
+      <h3 id="tocRevisionVisibilityHeading">Reading display</h3>
+      <label class="toc-revision-toggle" for="tocShowRevisionBlocks">
+        <input type="checkbox" id="tocShowRevisionBlocks" checked>
+        <span>Show chapter Revision Blocks</span>
+      </label>
+      <p>One switch for all chapters: Chapter Summary, One-Page Revision Sheet,
+         Key Definitions, Key Table, Memory Aids and Examination Questions.</p>
+      <p id="tocRevisionVisibilityStatus" class="toc-revision-status" role="status" aria-live="polite"></p>
+      <p>This choice is saved on this device. Printing has a separate revision-pages option below.</p>
     </section>
   <details class="toc-print-disclosure" id="tocPrintDisclosure">
     <summary>Print / Export PDF</summary>
@@ -11243,9 +11283,13 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
         else chapterLinks[activeId].setAttribute('aria-current','location');
       }
     }
+    function visibleRevisionEnd(chapter){
+      var block=chapter.querySelector('.end-block');
+      return block && block.getClientRects().length ? block : null;
+    }
     function locateSection(chapter,centre){
       var items=sectionsByChapter[chapter.id]||[],section=null,index=-1;
-      var end=chapter.querySelector('.end-block');
+      var end=visibleRevisionEnd(chapter);
       if(end && end.getBoundingClientRect().top<=centre)return {node:null,index:-1,revision:true};
       for(var k=0;k<items.length;k++){
         if(items[k].getBoundingClientRect().top<=centre){section=items[k];index=k;}
@@ -11261,7 +11305,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
         var nodes=sectionsByChapter[chapter.id]||[];
         var start=section.node.getBoundingClientRect().top;
         var next=nodes[section.index+1];
-        var endBlock=chapter.querySelector('.end-block');
+        var endBlock=visibleRevisionEnd(chapter);
         var finish=next?next.getBoundingClientRect().top:
           (endBlock?endBlock.getBoundingClientRect().top:rect.bottom);
         result.sectionId=section.node.id;
@@ -11359,7 +11403,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       if(sec && chapter.contains(sec) && Number.isFinite(bookmark.sectionRatio)){
         var nodes=sectionsByChapter[chapter.id]||[];
         var index=nodes.indexOf(sec),next=nodes[index+1];
-        var end=chapter.querySelector('.end-block');
+        var end=visibleRevisionEnd(chapter);
         var endTop=next?next.getBoundingClientRect().top+window.scrollY:
           (end?end.getBoundingClientRect().top+window.scrollY:top+chapter.getBoundingClientRect().height);
         var secTop=sec.getBoundingClientRect().top+window.scrollY;
@@ -11420,6 +11464,11 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       // Capture the last genuinely visible position even between throttles.
       var chapter=document.getElementById(activeId);
       if(chapter)saveLocation(makePosition(chapter,locateSection(chapter,window.innerHeight*.42),window.innerHeight*.42),true);
+    });
+    window.addEventListener('hikam:revision-visibility',function(){
+      // Layout changes must not save a spurious new bookmark.
+      suspendUntil=Date.now()+800;
+      request(false);
     });
     window.addEventListener('beforeprint',function(){printing=true;hidePrompt();});
     window.addEventListener('afterprint',function(){
@@ -11492,6 +11541,34 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       close(false); // the anchor changes location; don't steal focus back
       if(target){requestAnimationFrame(function(){target.focus({preventScroll:true});});}
     });
+  }
+
+  // This toggles only the ON-SCREEN reading view. The print composer
+  // independently decides which revision pages to include during printing.
+  function wireRevisionVisibility(){
+    var input=document.getElementById('tocShowRevisionBlocks');
+    var status=document.getElementById('tocRevisionVisibilityStatus');
+    var root=document.documentElement;
+    var key='11am-hikam-show-revisions-v1';
+    if(!input)return;
+    function apply(show,persist){
+      root.classList.toggle('reader-hide-revisions',!show);
+      input.checked=show;
+      if(status)status.textContent=show ? 'Revision Blocks are visible in every chapter.' :
+        'All 34 chapter Revision Blocks are hidden while reading.';
+      if(persist){
+        try{localStorage.setItem(key,String(show));}catch(error){/* In-memory setting still works. */}
+      }
+      window.dispatchEvent(new Event('hikam:revision-visibility'));
+    }
+    // The class may already be set by the early head script, preventing
+    // flicker when an installed offline reader starts at the saved setting.
+    apply(!root.classList.contains('reader-hide-revisions'),false);
+    input.addEventListener('change',function(){apply(input.checked,true);});
+    window.__hikamRevisions={
+      isVisible:function(){return !root.classList.contains('reader-hide-revisions');},
+      show:function(){apply(true,true);}
+    };
   }
 
   // Tabbed drawer: one focus-managed Index view, one Tools view.
@@ -11598,7 +11675,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     collectStructure();injectFlatNumbers();
     var tree=document.getElementById('tocTree');
     if(tree)buildTree(tree);
-    wireExpandControls();wireSidebar();wireTabs();wirePrint();wireScrollSpy();
+    wireExpandControls();wireSidebar();wireTabs();wireRevisionVisibility();wirePrint();wireScrollSpy();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
   else init();
@@ -11659,6 +11736,11 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     }
     function choose(entry){
       hide();
+      // A search result is an explicit request to see that passage. If it is
+      // inside a hidden Revision Block, reveal revisions first so navigation
+      // never lands on a display:none target.
+      if(entry.node.closest('.end-block') && window.__hikamRevisions &&
+         !window.__hikamRevisions.isVisible())window.__hikamRevisions.show();
       // A precise content location can be reached without inserting new ids
       // into the authored notes or turning search results into print links.
       entry.node.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});

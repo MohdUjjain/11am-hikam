@@ -26,3 +26,14 @@ and optional locally saved Resume Reading prompt are implemented in
 `wireScrollSpy()` in `src/philosophy_notes.js`. See
 [`docs/hosting/READING_POSITION.md`](docs/hosting/READING_POSITION.md).
 Do not add a second scroll tracker or save print-transformed positions.
+
+## On-screen revision visibility
+
+The Tools tab has **Show chapter Revision Blocks** (default: on). Turning it off
+hides every chapter's complete `.end-block` from the screen, with preference
+stored under `11am-hikam-show-revisions-v1` in device `localStorage`.
+The main book and every revision block remain in the HTML. The print dialog
+has an **independent** Include chapter revision pages option; hiding a block
+on screen never excludes it from a PDF unless that print option is unchecked.
+Search still indexes the entire book and reveals Revision Blocks when a
+reader deliberately selects a result inside a hidden block.

@@ -34,5 +34,7 @@ jobs:
         run: python src/tests/verify_reading_progress.py
       - name: Verify full-book search, tabs, and mobile layout contracts
         run: python src/tests/verify_reader_search_tabs.py
+      - name: Verify persistent on-screen revision visibility
+        run: python src/tests/verify_revision_visibility.py
       - name: Test offline worker's cache lifecycle
         run: node src/tests/test_offline_cache.mjs

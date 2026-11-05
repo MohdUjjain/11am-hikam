@@ -589,9 +589,13 @@
         else chapterLinks[activeId].setAttribute('aria-current','location');
       }
     }
+    function visibleRevisionEnd(chapter){
+      var block=chapter.querySelector('.end-block');
+      return block && block.getClientRects().length ? block : null;
+    }
     function locateSection(chapter,centre){
       var items=sectionsByChapter[chapter.id]||[],section=null,index=-1;
-      var end=chapter.querySelector('.end-block');
+      var end=visibleRevisionEnd(chapter);
       if(end && end.getBoundingClientRect().top<=centre)return {node:null,index:-1,revision:true};
       for(var k=0;k<items.length;k++){
         if(items[k].getBoundingClientRect().top<=centre){section=items[k];index=k;}
@@ -607,7 +611,7 @@
         var nodes=sectionsByChapter[chapter.id]||[];
         var start=section.node.getBoundingClientRect().top;
         var next=nodes[section.index+1];
-        var endBlock=chapter.querySelector('.end-block');
+        var endBlock=visibleRevisionEnd(chapter);
         var finish=next?next.getBoundingClientRect().top:
           (endBlock?endBlock.getBoundingClientRect().top:rect.bottom);
         result.sectionId=section.node.id;
@@ -705,7 +709,7 @@
       if(sec && chapter.contains(sec) && Number.isFinite(bookmark.sectionRatio)){
         var nodes=sectionsByChapter[chapter.id]||[];
         var index=nodes.indexOf(sec),next=nodes[index+1];
-        var end=chapter.querySelector('.end-block');
+        var end=visibleRevisionEnd(chapter);
         var endTop=next?next.getBoundingClientRect().top+window.scrollY:
           (end?end.getBoundingClientRect().top+window.scrollY:top+chapter.getBoundingClientRect().height);
         var secTop=sec.getBoundingClientRect().top+window.scrollY;
@@ -766,6 +770,11 @@
       // Capture the last genuinely visible position even between throttles.
       var chapter=document.getElementById(activeId);
       if(chapter)saveLocation(makePosition(chapter,locateSection(chapter,window.innerHeight*.42),window.innerHeight*.42),true);
+    });
+    window.addEventListener('hikam:revision-visibility',function(){
+      // Layout changes must not save a spurious new bookmark.
+      suspendUntil=Date.now()+800;
+      request(false);
     });
     window.addEventListener('beforeprint',function(){printing=true;hidePrompt();});
     window.addEventListener('afterprint',function(){
@@ -838,6 +847,34 @@
       close(false); // the anchor changes location; don't steal focus back
       if(target){requestAnimationFrame(function(){target.focus({preventScroll:true});});}
     });
+  }
+
+  // This toggles only the ON-SCREEN reading view. The print composer
+  // independently decides which revision pages to include during printing.
+  function wireRevisionVisibility(){
+    var input=document.getElementById('tocShowRevisionBlocks');
+    var status=document.getElementById('tocRevisionVisibilityStatus');
+    var root=document.documentElement;
+    var key='11am-hikam-show-revisions-v1';
+    if(!input)return;
+    function apply(show,persist){
+      root.classList.toggle('reader-hide-revisions',!show);
+      input.checked=show;
+      if(status)status.textContent=show ? 'Revision Blocks are visible in every chapter.' :
+        'All 34 chapter Revision Blocks are hidden while reading.';
+      if(persist){
+        try{localStorage.setItem(key,String(show));}catch(error){/* In-memory setting still works. */}
+      }
+      window.dispatchEvent(new Event('hikam:revision-visibility'));
+    }
+    // The class may already be set by the early head script, preventing
+    // flicker when an installed offline reader starts at the saved setting.
+    apply(!root.classList.contains('reader-hide-revisions'),false);
+    input.addEventListener('change',function(){apply(input.checked,true);});
+    window.__hikamRevisions={
+      isVisible:function(){return !root.classList.contains('reader-hide-revisions');},
+      show:function(){apply(true,true);}
+    };
   }
 
   // Tabbed drawer: one focus-managed Index view, one Tools view.
@@ -944,7 +981,7 @@
     collectStructure();injectFlatNumbers();
     var tree=document.getElementById('tocTree');
     if(tree)buildTree(tree);
-    wireExpandControls();wireSidebar();wireTabs();wirePrint();wireScrollSpy();
+    wireExpandControls();wireSidebar();wireTabs();wireRevisionVisibility();wirePrint();wireScrollSpy();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
   else init();
@@ -1005,6 +1042,11 @@
     }
     function choose(entry){
       hide();
+      // A search result is an explicit request to see that passage. If it is
+      // inside a hidden Revision Block, reveal revisions first so navigation
+      // never lands on a display:none target.
+      if(entry.node.closest('.end-block') && window.__hikamRevisions &&
+         !window.__hikamRevisions.isVisible())window.__hikamRevisions.show();
       // A precise content location can be reached without inserting new ids
       // into the authored notes or turning search results into print links.
       entry.node.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});

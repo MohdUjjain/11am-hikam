@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>11AM — Takhassus Hikam Dossier</title>
+<!-- Apply the saved on-screen revision preference before the book paints. -->
+<script>
+try {
+  if (localStorage.getItem('11am-hikam-show-revisions-v1') === 'false')
+    document.documentElement.classList.add('reader-hide-revisions');
+} catch (error) { /* Reading remains available when device storage is blocked. */ }
+</script>
 <meta name="description" content="11AM Hikam — a bilingual Arabic and English academic philosophy dossier with 34 chapters, revision tools and offline reading.">
 <meta name="theme-color" content="#132239">
 <meta name="application-name" content="11AM — Takhassus Hikam Dossier">
@@ -126,6 +133,17 @@
       <h3>Reading position</h3>
       <button type="button" id="tocToolsResume" class="toc-resume-action" hidden>↶ Continue reading</button>
       <p>Your reading place stays on this device. You can continue from the header as well.</p>
+    </section>
+    <section class="toc-tools-revision" aria-labelledby="tocRevisionVisibilityHeading">
+      <h3 id="tocRevisionVisibilityHeading">Reading display</h3>
+      <label class="toc-revision-toggle" for="tocShowRevisionBlocks">
+        <input type="checkbox" id="tocShowRevisionBlocks" checked>
+        <span>Show chapter Revision Blocks</span>
+      </label>
+      <p>One switch for all chapters: Chapter Summary, One-Page Revision Sheet,
+         Key Definitions, Key Table, Memory Aids and Examination Questions.</p>
+      <p id="tocRevisionVisibilityStatus" class="toc-revision-status" role="status" aria-live="polite"></p>
+      <p>This choice is saved on this device. Printing has a separate revision-pages option below.</p>
     </section>
   <details class="toc-print-disclosure" id="tocPrintDisclosure">
     <summary>Print / Export PDF</summary>
