@@ -1904,6 +1904,89 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
 @media(max-width:520px) { .edition-update-notice { bottom:max(9px,env(safe-area-inset-bottom)); padding:12px; width:calc(100vw - 18px); gap:8px; } }
 @media print { .edition-update-notice { display:none !important; } }
 
+/* Accessible contents, section-jump and print controls. Screen-only chrome.
+   Keeps the established navy/parchment/gold dossier styling. */
+@media screen {
+  .toc-backdrop {
+    position:fixed; inset:0; z-index:204;
+    background:rgba(10,16,29,.62);
+    opacity:0; transition:opacity .2s ease;
+  }
+  .toc-backdrop[hidden] {display:none !important;}
+  .toc-backdrop.open {opacity:1;}
+  body.toc-drawer-open {overflow:hidden;}
+  .toc-sidebar {width:clamp(340px,38vw,440px);max-width:94vw;}
+  .toc-sidebar-head {padding:15px 18px 13px;gap:12px;}
+  .toc-sidebar-head > div {min-width:0;}
+  .toc-reading-status {margin:4px 0 0;font-size:11px;line-height:1.4;
+    color:rgba(247,241,227,.66);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #tocSidebarClose {min-width:40px;min-height:40px;font-size:18px;flex:none;}
+  .toc-print-disclosure {flex:none;border-bottom:1px solid rgba(255,255,255,.16);
+    max-height:56dvh;overflow-y:auto;min-height:44px;}
+  .toc-print-disclosure > summary {cursor:pointer;user-select:none;padding:14px 19px;
+    color:var(--gold-pale);font:600 12px var(--font-sans);letter-spacing:.045em;}
+  .toc-print-disclosure > summary:hover {background:rgba(255,255,255,.08);}
+  .toc-print-disclosure .toc-print-panel {border-bottom:0;}
+  .toc-print-option {display:flex !important;align-items:center;gap:10px;
+    text-transform:none!important;letter-spacing:normal!important;
+    font-size:12px!important;color:var(--parchment)!important;cursor:pointer;margin:10px 0!important;}
+  .toc-print-option input {accent-color:var(--gold);width:16px;height:16px;flex:none;}
+  .toc-print-preview {color:var(--parchment);font-size:11px;line-height:1.5;
+    background:rgba(255,255,255,.055);border-radius:6px;padding:7px 9px;margin:8px 0;}
+  .toc-print-error:empty {display:none;}
+  .toc-print-btn:disabled {opacity:.45;cursor:not-allowed;transform:none;}
+  .toc-search-tools {flex:none;padding:12px 16px 10px;
+    border-bottom:1px solid rgba(255,255,255,.13);}
+  .toc-search-tools label {display:block;font-size:11px;color:var(--gold-pale);
+    margin-bottom:6px;font-weight:600;}
+  .toc-search-tools input[type=search] {width:100%;padding:10px 11px;
+    font-family:var(--font-sans);font-size:13px;color:var(--parchment);
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.35);
+    border-radius:var(--radius-sm);}
+  .toc-search-tools input::placeholder {color:rgba(247,241,227,.6);}
+  .toc-search-tools p {font-size:11px;color:rgba(247,241,227,.7);margin:5px 0 8px;}
+  .toc-expand-actions {display:flex;gap:8px;}
+  .toc-expand-actions button {flex:1;min-height:34px;cursor:pointer;
+    border:1px solid rgba(247,241,227,.38);border-radius:6px;
+    background:transparent;color:var(--parchment);font:600 11px var(--font-sans);}
+  .toc-expand-actions button:hover {background:rgba(255,255,255,.1);}
+  .toc-tree {min-height:80px;padding-bottom:14px;}
+  .toc-chapter-row {display:flex;align-items:flex-start;gap:3px;}
+  .toc-chapter-link {min-width:0;flex:1;}
+  .toc-chapter-sections-toggle {min-width:32px;min-height:33px;margin-right:3px;
+    background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:6px;
+    color:var(--gold-pale);cursor:pointer;font:600 15px var(--font-body);}
+  .toc-chapter-sections-toggle:hover {background:rgba(255,255,255,.12);}
+  .toc-chapter-sections-toggle[aria-expanded="true"] {background:rgba(168,124,31,.2);}
+  .toc-section-list {border-left:1px solid rgba(168,124,31,.46);
+    padding:3px 6px 7px;margin-left:52px;margin-bottom:7px;}
+  .toc-section-link {display:block;color:rgba(247,241,227,.78);text-decoration:none;
+    padding:6px 7px;border-radius:5px;font:400 11px/1.45 var(--font-sans);}
+  .toc-section-link:hover {background:rgba(255,255,255,.1);color:white;}
+  .toc-section-link[lang=ar] {font-family:var(--font-arabic);font-size:14px;text-align:right;}
+  .toc-chapter[hidden], .toc-node[hidden], .toc-section-link[hidden],
+  .toc-section-list[hidden] {display:none!important;}
+  #tocFab:focus-visible, #tocSidebar button:focus-visible, #tocSidebar a:focus-visible,
+  #tocSidebar input:focus-visible, #tocSidebar summary:focus-visible {
+    outline:3px solid var(--gold-pale);outline-offset:2px;
+  }
+  @media (max-width:600px){
+    .toc-sidebar {width:min(100vw,420px);max-width:100vw;border-radius:0;}
+    .toc-search-tools {padding:10px 14px 8px;}
+    .toc-print-disclosure {max-height:50dvh;}
+    .toc-sidebar-head {padding:11px 14px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .toc-sidebar,.toc-backdrop,.toc-children,.toc-chevron {transition:none!important;}
+  }
+}
+@media print {
+  #tocBackdrop {display:none!important;}
+  /* A custom selection includes only the chosen chapter sections;
+     full-book printing is unchanged. */
+  body.print-chapters-only > :not(section.chapter) {display:none!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1914,24 +1997,42 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
 <!-- and every chapter's own kicker text to populate #tocTree, so  -->
 <!-- nothing here needs updating when a new chapter/topic is added.-->
 <!-- ============================================================ -->
-<button type="button" id="tocFab" aria-label="Open contents" aria-expanded="false">&#9776;</button>
-<aside id="tocSidebar" class="toc-sidebar" tabindex="-1" aria-label="Table of contents panel">
+<button type="button" id="tocFab" aria-label="Open contents and printing" aria-controls="tocSidebar" aria-expanded="false">&#9776;</button>
+<div id="tocBackdrop" class="toc-backdrop" aria-hidden="true" hidden></div>
+<aside id="tocSidebar" class="toc-sidebar" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tocSidebarHeading" inert>
   <div class="toc-sidebar-head">
-    <h2>Contents</h2>
+    <div>
+      <h2 id="tocSidebarHeading">Contents &amp; Print</h2>
+      <p id="tocReadingStatus" class="toc-reading-status">Navigate the complete dossier</p>
+    </div>
     <button type="button" id="tocSidebarClose" aria-label="Close contents">&#10005;</button>
   </div>
-  <div class="toc-print-panel">
-    <label for="tocPrintRange">Print a custom selection</label>
-    <input type="text" id="tocPrintRange" placeholder="e.g. 8-10,1,15" autocomplete="off">
-    <p class="hint">Use the <strong>#</strong> number shown next to each chapter below. Mix single chapters and ranges with commas.</p>
-    <div class="toc-print-actions">
-      <button type="button" id="tocPrintSelected" class="toc-print-btn primary">Print Selected</button>
-      <button type="button" id="tocPrintAll" class="toc-print-btn">Print All</button>
+  <details class="toc-print-disclosure" id="tocPrintDisclosure">
+    <summary>Print / Export PDF</summary>
+    <div class="toc-print-panel">
+      <label for="tocPrintRange">Chapters to print</label>
+      <input type="text" id="tocPrintRange" placeholder="e.g. 8-10,1,15" autocomplete="off" aria-describedby="tocPrintHint tocPrintPreview tocPrintError">
+      <p class="hint" id="tocPrintHint">Use the <strong>#</strong> numbers below. Ranges and individual chapters print <strong>in the order entered</strong> (for example, 8-10,1).</p>
+      <label class="toc-print-option"><input type="checkbox" id="tocPrintRevision" checked> Include chapter revision pages</label>
+      <p class="toc-print-preview" id="tocPrintPreview" role="status" aria-live="polite"></p>
+      <p class="toc-print-error" id="tocPrintError"></p>
+      <div class="toc-print-actions">
+        <button type="button" id="tocPrintSelected" class="toc-print-btn primary" disabled>Print Selected</button>
+        <button type="button" id="tocPrintAll" class="toc-print-btn">Print All</button>
+      </div>
+      <p class="hint">Selected chapters print without the book's cover and topic dividers. For complete-book printing, use Print All. In Chrome/Edge, leave Margins on "Default".</p>
     </div>
-    <p class="toc-print-error" id="tocPrintError"></p>
-    <p class="hint">Export via Chrome or Edge, with the print dialog's Margins left on "Default".</p>
+  </details>
+  <div class="toc-search-tools">
+    <label for="tocSearch">Find a chapter or section</label>
+    <input type="search" id="tocSearch" placeholder="Title, number, or topic…" autocomplete="off" aria-describedby="tocSearchResults">
+    <p id="tocSearchResults" role="status" aria-live="polite"></p>
+    <div class="toc-expand-actions">
+      <button type="button" id="tocExpandAll">Expand all</button>
+      <button type="button" id="tocCollapseAll">Collapse all</button>
+    </div>
   </div>
-  <nav class="toc-tree" id="tocTree" aria-label="Table of contents"></nav>
+  <nav class="toc-tree" id="tocTree" aria-label="Book contents and sections"></nav>
   <!-- PWA availability status lives only in the screen sidebar and does not affect the book/PDF. -->
   <section class="offline-reader-panel" aria-label="Offline reading">
     <strong>Offline reading</strong>
@@ -10297,7 +10398,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
   var EFFECTIVE_BUDGET_PX = CONTENT_BUDGET_PX - (CONTENT_TOP_PAD_MM * PX_PER_MM);
   var SAFETY_PX = 4; // small cushion against sub-pixel rounding
 
-  var state = { transformed:false, filterIds:null };
+  var state = { transformed:false, filterIds:null, includeRevision:true, printMarkers:null };
 
   // ---- Measurement -------------------------------------------------
   // Probe uses the EXACT same classes/lang/dir the final rendered content
@@ -10445,6 +10546,9 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     // moving) means printing is non-destructive: nothing to restore
     // afterward, screen view is simply untouched the entire time.
     var bodyClone = body.cloneNode(true);
+    // Section anchors belong to the live reading DOM. Avoid duplicate IDs
+    // in the generated print pages (their headings are cloned).
+    bodyClone.querySelectorAll('[id^="toc-sec-"]').forEach(function(el){el.removeAttribute('id');});
     var bodyItems = collectChildren(bodyClone);
     if (endnav){ bodyItems.push(endnav.cloneNode(true)); }
 
@@ -10454,16 +10558,17 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       contentClass: 'chapter-body', extraSafetyPx:extraSafetyPx
     });
 
-    var ekickEl = endblock.querySelector('.ekick');
-    var revisionLabel = 'Revision · ' + (ekickEl ? ekickEl.textContent.replace(/.*·/,'').trim() : '');
-    var endblockClone = endblock.cloneNode(true);
-    var ebItems = collectChildren(endblockClone);
-
-    var darkPages = paginateFlow(ebItems, {
-      dark:true, rtl:isRTL, hue:hue, lang:lang,
-      kicker: subtopicText, title: revisionLabel,
-      contentClass: 'end-block', extraSafetyPx:extraSafetyPx
-    });
+    var darkPages = [];
+    if (state.includeRevision) {
+      var ekickEl = endblock.querySelector('.ekick');
+      var revisionLabel = 'Revision · ' + (ekickEl ? ekickEl.textContent.replace(/.*·/,'').trim() : '');
+      var endblockClone = endblock.cloneNode(true);
+      darkPages = paginateFlow(collectChildren(endblockClone), {
+        dark:true, rtl:isRTL, hue:hue, lang:lang,
+        kicker: subtopicText, title: revisionLabel,
+        contentClass: 'end-block', extraSafetyPx:extraSafetyPx
+      });
+    }
 
     var frag = document.createDocumentFragment();
     for (var i=0;i<lightPages.length;i++) frag.appendChild(lightPages[i]);
@@ -10531,368 +10636,441 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     window.__jsPagDebug = results;
   }
 
+  // Reorder selected chapters only during the browser's print lifecycle.
+  // Comments mark their original locations so the reading DOM is restored
+  // exactly after printing (including canceled print dialogs). This is
+  // necessary for selections such as 8-10,1; merely filtering printed
+  // chapters would silently print them in document order instead.
+  function stageSelectedOrder(ids){
+    if (!ids || state.printMarkers) return;
+    var markers = [];
+    for (var i=0; i<ids.length; i++) {
+      var section = document.getElementById(ids[i]);
+      if (!section || section.parentNode !== document.body) continue;
+      var marker = document.createComment('Hikam print: original chapter position');
+      section.parentNode.insertBefore(marker, section);
+      document.body.appendChild(section);
+      markers.push({section:section, marker:marker});
+    }
+    state.printMarkers = markers;
+  }
+  function restoreSelectedOrder(){
+    var markers = state.printMarkers;
+    if (!markers) return;
+    for (var i=0; i<markers.length; i++) {
+      var item = markers[i];
+      if (item.marker.parentNode) item.marker.parentNode.replaceChild(item.section, item.marker);
+    }
+    state.printMarkers = null;
+  }
   window.__runPagination = paginateDocument;
-  window.addEventListener('beforeprint', function(){ paginateDocument(state.filterIds); });
+  window.addEventListener('beforeprint', function(){
+    if (state.filterIds && state.filterIds.length) {
+      stageSelectedOrder(state.filterIds);
+      document.body.classList.add('print-chapters-only');
+    } else {
+      document.body.classList.remove('print-chapters-only');
+    }
+    paginateDocument(state.filterIds);
+  });
   window.addEventListener('afterprint', function(){
+    resetPagination();
+    restoreSelectedOrder();
+    document.body.classList.remove('print-chapters-only');
     state.filterIds = null;
     var excluded = document.querySelectorAll('.print-exclude');
     for (var i=0;i<excluded.length;i++){ excluded[i].classList.remove('print-exclude'); }
   });
 
-  // Narrow, explicit interface for the sidebar module below (a separate
-  // closure) to request a filtered print without reaching into this
-  // closure's private `state` directly.
+  // Typed-order selection and optional revision pages, without exposing
+  // pagination internals or changing the book's CSS print templates.
   window.__printControl = {
-    setFilter: function(ids){ state.filterIds = ids; },
-    clearFilter: function(){ state.filterIds = null; }
+    setFilter: function(ids){ state.filterIds = ids.slice(); },
+    clearFilter: function(){ state.filterIds = null; },
+    includeRevision: function(value){ state.includeRevision = !!value; }
   };
 })();
 
 /* ============================================================
-   SIDEBAR NAVIGATION + CUSTOM-RANGE PRINT
-   Self-building: reads Topic dividers (#t1, #t2 ...) and every
-   section.chapter's own .chapter-kicker text to construct the
-   Topic -> Sub-topic -> Chapter tree. Add a new chapter/topic to
-   the document and this rebuilds itself on next load -- nothing
-   here needs to be hand-maintained the way the old .quicknav bar
-   did (that's exactly why it was removed).
+   ACCESSIBLE CONTENTS DRAWER + PDF/PRINT CONTROLS
+   Topic -> Subtopic -> Chapter -> Section, generated from the book.
+   State rules: reader-controlled collapses never change with scroll-spy;
+   search expansion is temporary; native chapter text stays untouched.
    ============================================================ */
 (function(){
   'use strict';
+  var chapters = [], topicTitles = {}, chapterLinks = {}, sidebar, searchInput;
+  var activeId = '', scrollScheduled = false;
 
-  var chapters = [];      // ordered flat list: {id, num, flat, title, titleHTML, isRTL, subKey, subLabelHTML, topicKey}
-  var topicTitles = {};   // "1" -> {en:"Introduction to Philosophy", arHTML:'<span class="ar" lang="ar">...</span>'}
-
-  // Returns the kicker's "N.N · label" segment as an HTML string (not
-  // plain text), so any embedded <span class="ar"> survives into the
-  // sidebar and keeps its Arabic font via the existing global
-  // `.ar, [lang="ar"]` rule -- nothing sidebar-specific needed for that.
-  function readSubtopicHTML(section){
-    var kickerEl = section.querySelector('.chapter-kicker');
-    var html = '';
-    if (kickerEl){
-      for (var i=0;i<kickerEl.childNodes.length;i++){
-        var node = kickerEl.childNodes[i];
-        if (node.nodeType === 1 && node.classList && node.classList.contains('dot')) break;
-        html += (node.nodeType === 1) ? node.outerHTML : node.textContent;
-      }
+  function el(tag, cls, text){
+    var node=document.createElement(tag);
+    if(cls) node.className=cls;
+    if(text!==undefined) node.textContent=text;
+    return node;
+  }
+  function folded(text){
+    return String(text||'').normalize('NFKD').replace(/[\u064B-\u065F\u0670]/g,'').toLocaleLowerCase().trim();
+  }
+  function subtopicHTML(section){
+    var kicker=section.querySelector('.chapter-kicker'), html='';
+    if(!kicker) return '';
+    for(var i=0;i<kicker.childNodes.length;i++){
+      var node=kicker.childNodes[i];
+      if(node.nodeType===1 && node.classList && node.classList.contains('dot')) break;
+      html+=(node.nodeType===1) ? node.outerHTML : node.textContent;
     }
     return html.trim();
   }
-
   function collectStructure(){
-    var dividers = document.querySelectorAll('.part-divider[id^="t"]');
-    for (var d=0; d<dividers.length; d++){
-      var m = dividers[d].id.match(/^t(\d+)$/);
-      if (!m) continue;
-      var enEl = dividers[d].querySelector('.pd-en-title');
-      var arEl = dividers[d].querySelector('h1.ar');
-      topicTitles[m[1]] = {
-        en: enEl ? enEl.textContent.trim() : ('Topic ' + m[1]),
-        arHTML: arEl ? arEl.outerHTML : ''
-      };
-    }
-
-    var sections = Array.prototype.slice.call(document.querySelectorAll('section.chapter'));
-    for (var i=0;i<sections.length;i++){
-      var sec = sections[i];
-      var num = sec.id.replace(/^ch/, '').replace(/-/g, '.');       // "2.1.3"
-      var topicKey = num.split('.')[0];                              // "2"
-      var subKey = num.split('.').slice(0,2).join('.');              // "2.1"
-      var subFullHTML = readSubtopicHTML(sec);                       // "2.1 &middot; Politics" (HTML)
-      var subLabelHTML = subFullHTML.replace(/^[\d.]+\s*·\s*/, '') || subFullHTML;
-      var titleEl = sec.querySelector('.chapter-title');
-      var isRTL = sec.classList.contains('rtl');
-      chapters.push({
-        id: sec.id,
-        num: num,
-        flat: i + 1,
-        title: titleEl ? titleEl.textContent.trim() : num,
-        isRTL: isRTL,
-        subKey: subKey,
-        subLabelHTML: subLabelHTML || subKey,
-        topicKey: topicKey
+    document.querySelectorAll('.part-divider[id^="t"]').forEach(function(divider){
+      var match=divider.id.match(/^t(\d+)$/);
+      if(!match) return;
+      var en=divider.querySelector('.pd-en-title'), ar=divider.querySelector('h1.ar');
+      // The source uses a full <h1> for the divider. Do not transplant that
+      // heading into a compact sidebar button: it creates oversized blocks.
+      var arLabel='';
+      if(ar){
+        var compact=document.createElement('span');
+        compact.className='ar';compact.lang='ar';compact.dir='rtl';
+        compact.textContent=ar.textContent.trim();
+        arLabel=compact.outerHTML;
+      }
+      topicTitles[match[1]]={en:en?en.textContent.trim():'Topic '+match[1],arHTML:arLabel};
+    });
+    document.querySelectorAll('section.chapter').forEach(function(sec,index){
+      var num=sec.id.replace(/^ch/,'').replace(/-/g,'.');
+      var bits=num.split('.'), full=subtopicHTML(sec);
+      var title=sec.querySelector('.chapter-title');
+      var sections=[];
+      sec.querySelectorAll('.chapter-body h2.sec').forEach(function(h2,i){
+        var id='toc-sec-'+sec.id+'-'+(i+1);
+        // Stable deep-link targets without changing the authored fragments.
+        if(!h2.id) h2.id=id;
+        if(!h2.hasAttribute('tabindex')) h2.tabIndex=-1;
+        sections.push({id:h2.id,title:h2.textContent.trim().replace(/\s+/g,' ')});
       });
-    }
+      chapters.push({id:sec.id, num:num, flat:index+1,
+        title:title?title.textContent.trim():num,
+        isRTL:sec.classList.contains('rtl'),
+        subKey:bits.slice(0,2).join('.'), topicKey:bits[0],
+        subLabelHTML:full.replace(/^[\d.]+\s*·\s*/,'')||full||bits.slice(0,2).join('.'),
+        sections:sections});
+    });
   }
 
-  // ---- Tree rendering ---------------------------------------------------
-  function el(tag, cls, text){
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (text !== undefined) e.textContent = text;
-    return e;
+  function setGroupExpanded(node, open, record){
+    node.classList.toggle('expanded',!!open);
+    var btn=node.querySelector(':scope > .toc-node-head');
+    var box=node.querySelector(':scope > .toc-children');
+    if(btn) btn.setAttribute('aria-expanded',String(!!open));
+    if(box){box.inert=!open;box.setAttribute('aria-hidden',String(!open));}
+    if(record!==false) node.dataset.manualExpanded=open?'true':'false';
+  }
+  function setSectionExpanded(wrap, open, record){
+    wrap.classList.toggle('sections-open',!!open);
+    var btn=wrap.querySelector('.toc-chapter-sections-toggle');
+    var box=wrap.querySelector('.toc-section-list');
+    if(btn){btn.setAttribute('aria-expanded',String(!!open));btn.setAttribute('aria-label',(open?'Hide':'Show')+' sections for '+wrap.dataset.chapterNumber);}
+    if(box) box.hidden=!open;
+    if(record!==false) wrap.dataset.manualSections=open?'true':'false';
   }
 
   function buildTree(container){
-    var topicOrder = [];
-    var topicMap = {};   // key -> { subMap:{}, subOrder:[] }
-
-    for (var i=0;i<chapters.length;i++){
-      var c = chapters[i];
-      if (!topicMap[c.topicKey]){
-        topicMap[c.topicKey] = { subMap:{}, subOrder:[] };
-        topicOrder.push(c.topicKey);
-      }
-      var t = topicMap[c.topicKey];
-      if (!t.subMap[c.subKey]){
-        t.subMap[c.subKey] = [];
-        t.subOrder.push(c.subKey);
-      }
-      t.subMap[c.subKey].push(c);
-    }
-
-    for (var ti=0; ti<topicOrder.length; ti++){
-      var tk = topicOrder[ti];
-      var topicNode = el('div', 'toc-node toc-topic');
-      var topicHead = el('button', 'toc-node-head');
-      topicHead.type = 'button';
-      topicHead.setAttribute('aria-expanded', 'false');
-      var tt = topicTitles[tk] || { en:'Topic '+tk, arHTML:'' };
-      topicHead.innerHTML = '<span class="toc-chevron">&#9656;</span><span>Topic ' + tk +
-        (tt.arHTML ? ' &middot; ' + tt.arHTML : '') + ' &middot; ' + tt.en + '</span>';
-      var topicChildren = el('div', 'toc-children');
-      var topicChildrenInner = el('div', 'toc-children-inner');
-      topicChildren.appendChild(topicChildrenInner);
-
-      var t = topicMap[tk];
-      for (var si=0; si<t.subOrder.length; si++){
-        var sk = t.subOrder[si];
-        var chs = t.subMap[sk];
-        var subNode = el('div', 'toc-node toc-subtopic');
-        var subHead = el('button', 'toc-node-head');
-        subHead.type = 'button';
-        subHead.setAttribute('aria-expanded', 'false');
-        subHead.innerHTML = '<span class="toc-chevron">&#9656;</span><span>' + sk +
-          ' &middot; ' + chs[0].subLabelHTML + '</span>';
-        var subChildren = el('div', 'toc-children');
-        var subChildrenInner = el('div', 'toc-children-inner');
-        subChildren.appendChild(subChildrenInner);
-
-        for (var ci=0; ci<chs.length; ci++){
-          var c2 = chs[ci];
-          var a = el('a', 'toc-chapter-link');
-          a.href = '#' + c2.id;
-          a.dataset.chapterId = c2.id;
-          var numSpan = el('span', 'num', '#' + c2.flat);
-          a.appendChild(numSpan);
-          a.appendChild(el('span', 'dossier-num', c2.num));
-          var titleSpan = el('span', 'title');
-          if (c2.isRTL){
-            titleSpan.classList.add('ar');
-            titleSpan.setAttribute('lang', 'ar');
-          }
-          titleSpan.textContent = c2.title;
-          a.appendChild(titleSpan);
-          subChildrenInner.appendChild(a);
-        }
-
-        subHead.addEventListener('click', makeToggleHandler(subNode, subHead));
-        subNode.appendChild(subHead);
-        subNode.appendChild(subChildren);
-        topicChildrenInner.appendChild(subNode);
-      }
-
-      topicHead.addEventListener('click', makeToggleHandler(topicNode, topicHead));
-      topicNode.appendChild(topicHead);
-      topicNode.appendChild(topicChildren);
-      container.appendChild(topicNode);
-    }
-  }
-
-  // Expand/collapse is ONLY ever triggered from here (a direct click on a
-  // node's own header). Nothing else in this file is allowed to add or
-  // remove the "expanded" class -- scroll-tracking below deliberately only
-  // ever touches "active"/"has-active", never "expanded", so a group the
-  // user closed stays closed no matter what they scroll past.
-  function makeToggleHandler(node, headBtn){
-    return function(ev){
-      ev.stopPropagation();
-      var expanded = node.classList.toggle('expanded');
-      headBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    };
-  }
-
-  // ---- Scroll-spy: highlight only, never expands/collapses anything ----
-  function wireScrollSpy(){
-    if (!('IntersectionObserver' in window)) return;
-    var sections = document.querySelectorAll('section.chapter');
-    var observer = new IntersectionObserver(function(entries){
-      var best = null, bestRatio = 0;
-      entries.forEach(function(entry){
-        if (entry.isIntersecting && entry.intersectionRatio > bestRatio){
-          bestRatio = entry.intersectionRatio; best = entry.target;
-        }
+    var topics={},order=[];
+    chapters.forEach(function(c){
+      if(!topics[c.topicKey]){topics[c.topicKey]={subs:{},order:[]};order.push(c.topicKey);}
+      var t=topics[c.topicKey];
+      if(!t.subs[c.subKey]){t.subs[c.subKey]=[];t.order.push(c.subKey);}
+      t.subs[c.subKey].push(c);
+    });
+    order.forEach(function(key){
+      var tt=topicTitles[key]||{en:'Topic '+key,arHTML:''};
+      var topic=el('div','toc-node toc-topic');
+      var head=el('button','toc-node-head');head.type='button';
+      head.innerHTML='<span class="toc-chevron" aria-hidden="true">&#9656;</span><span>Topic '+key+(tt.arHTML?' · '+tt.arHTML:'')+' · '+tt.en+'</span>';
+      var body=el('div','toc-children'), inner=el('div','toc-children-inner');
+      body.id='toc-topic-children-'+key;body.appendChild(inner);
+      head.setAttribute('aria-controls',body.id);
+      topic.appendChild(head);topic.appendChild(body);
+      topic.dataset.searchText=folded('Topic '+key+' '+tt.en+' '+tt.arHTML.replace(/<[^>]+>/g,' '));
+      setGroupExpanded(topic,false,true);
+      head.addEventListener('click',function(){setGroupExpanded(topic,!topic.classList.contains('expanded'),true);});
+      topics[key].order.forEach(function(subKey){
+        var sub=el('div','toc-node toc-subtopic'), subHead=el('button','toc-node-head');
+        subHead.type='button';
+        var cs=topics[key].subs[subKey];
+        subHead.innerHTML='<span class="toc-chevron" aria-hidden="true">&#9656;</span><span>'+subKey+' · '+cs[0].subLabelHTML+'</span>';
+        var subBody=el('div','toc-children'), subInner=el('div','toc-children-inner');
+        subBody.id='toc-subtopic-children-'+subKey.replace('.','-');subBody.appendChild(subInner);
+        subHead.setAttribute('aria-controls',subBody.id);
+        sub.appendChild(subHead);sub.appendChild(subBody);
+        sub.dataset.searchText=folded(subKey+' '+subHead.textContent);
+        setGroupExpanded(sub,false,true);
+        subHead.addEventListener('click',function(){setGroupExpanded(sub,!sub.classList.contains('expanded'),true);});
+        cs.forEach(function(c){
+          var wrap=el('div','toc-chapter');wrap.dataset.chapterNumber='#'+c.flat;
+          wrap.dataset.searchText=folded(c.title+' '+c.num+' '+c.flat);
+          var row=el('div','toc-chapter-row');
+          var a=el('a','toc-chapter-link');a.href='#'+c.id;
+          a.dataset.chapterId=c.id;
+          a.appendChild(el('span','num','#'+c.flat));
+          a.appendChild(el('span','dossier-num',c.num));
+          var title=el('span','title',c.title);
+          if(c.isRTL){title.classList.add('ar');title.setAttribute('lang','ar');title.setAttribute('dir','rtl');}
+          a.appendChild(title);row.appendChild(a);chapterLinks[c.id]=a;
+          if(c.sections.length){
+            var toggle=el('button','toc-chapter-sections-toggle','§');
+            toggle.type='button';toggle.title='Show sections for #'+c.flat;
+            var sectionList=el('div','toc-section-list');
+            sectionList.id='toc-section-list-'+c.id;
+            toggle.setAttribute('aria-controls',sectionList.id);
+            c.sections.forEach(function(section){
+              var link=el('a','toc-section-link',section.title);
+              link.href='#'+section.id;
+              link.dataset.searchText=folded(section.title);
+              if(c.isRTL){link.setAttribute('lang','ar');link.setAttribute('dir','rtl');}
+              sectionList.appendChild(link);
+            });
+            row.appendChild(toggle);wrap.appendChild(row);wrap.appendChild(sectionList);
+            setSectionExpanded(wrap,false,true);
+            toggle.addEventListener('click',function(){setSectionExpanded(wrap,!wrap.classList.contains('sections-open'),true);});
+          } else wrap.appendChild(row);
+          subInner.appendChild(wrap);
+        });
+        inner.appendChild(sub);
       });
-      if (!best) return;
-      setActive(best.id);
-    }, { threshold: [0, .1, .25, .5] });
-    for (var i=0;i<sections.length;i++){ observer.observe(sections[i]); }
+      container.appendChild(topic);
+    });
   }
 
-  function setActive(chapterId){
-    var prevActive = document.querySelectorAll('.toc-chapter-link.active');
-    for (var i=0;i<prevActive.length;i++){ prevActive[i].classList.remove('active'); }
-    var prevHas = document.querySelectorAll('.toc-node.has-active');
-    for (var j=0;j<prevHas.length;j++){ prevHas[j].classList.remove('has-active'); }
+  function wireExpandControls(){
+    var expand=document.getElementById('tocExpandAll'),collapse=document.getElementById('tocCollapseAll');
+    var search=document.getElementById('tocSearch');
+    function setAll(open){
+      if(search && search.value.trim()){search.value='';search.dispatchEvent(new Event('input'));}
+      document.querySelectorAll('#tocTree .toc-node').forEach(function(node){
+        setGroupExpanded(node,open,true);
+      });
+    }
+    if(expand)expand.addEventListener('click',function(){setAll(true);});
+    if(collapse)collapse.addEventListener('click',function(){setAll(false);});
+  }
+  function wireSearch(){
+    var count=document.getElementById('tocSearchResults');
+    if(!searchInput) return;
+    function update(){
+      var query=folded(searchInput.value), shown=0;
+      document.querySelectorAll('#tocTree > .toc-topic').forEach(function(topic){
+        var topicMatch=query && topic.dataset.searchText.includes(query), topicVisible=0;
+        topic.querySelectorAll(':scope > .toc-children > .toc-children-inner > .toc-subtopic').forEach(function(sub){
+          var subMatch=query && (topicMatch||sub.dataset.searchText.includes(query)),subVisible=0;
+          sub.querySelectorAll('.toc-chapter').forEach(function(wrap){
+            var chapterMatch=query && (subMatch||wrap.dataset.searchText.includes(query));
+            var sections=wrap.querySelectorAll('.toc-section-link'), sectionMatches=0;
+            sections.forEach(function(a){
+              var yes=!query || chapterMatch || a.dataset.searchText.includes(query);
+              a.hidden=!yes;
+              if(yes && query && !chapterMatch) sectionMatches++;
+            });
+            var visible=!query || chapterMatch || sectionMatches>0;
+            wrap.hidden=!visible;
+            if(visible){subVisible++;shown++;}
+            if(query) setSectionExpanded(wrap,sectionMatches>0,false);
+            else setSectionExpanded(wrap,wrap.dataset.manualSections==='true',false);
+          });
+          sub.hidden=!!query && subVisible===0;
+          if(subVisible) topicVisible+=subVisible;
+          if(query) setGroupExpanded(sub,subVisible>0,false);
+          else setGroupExpanded(sub,sub.dataset.manualExpanded==='true',false);
+        });
+        topic.hidden=!!query && topicVisible===0;
+        if(query) setGroupExpanded(topic,topicVisible>0,false);
+        else setGroupExpanded(topic,topic.dataset.manualExpanded==='true',false);
+      });
+      if(count) count.textContent=query ? shown+' of '+chapters.length+' dossiers match' : chapters.length+' dossiers · Search titles, numbers and sections';
+    }
+    searchInput.addEventListener('input',update);
+    update();
+  }
 
-    var link = document.querySelector('.toc-chapter-link[data-chapter-id="' + chapterId + '"]');
-    if (!link) return;
-    link.classList.add('active');
-    var node = link.closest('.toc-node');
-    while (node){
+  function setActive(id){
+    if(id===activeId) return;
+    if(chapterLinks[activeId]){
+      chapterLinks[activeId].classList.remove('active');
+      chapterLinks[activeId].removeAttribute('aria-current');
+    }
+    var old=document.querySelectorAll('#tocTree .toc-node.has-active');
+    old.forEach(function(node){node.classList.remove('has-active');});
+    activeId=id;
+    var link=chapterLinks[id];if(!link) return;
+    link.classList.add('active');link.setAttribute('aria-current','location');
+    for(var node=link.closest('.toc-node');node;node=node.parentElement?node.parentElement.closest('.toc-node'):null){
       node.classList.add('has-active');
-      node = node.parentElement ? node.parentElement.closest('.toc-node') : null;
     }
+    var chapter=chapters.find(function(c){return c.id===id;});
+    var now=document.getElementById('tocReadingStatus');
+    if(now && chapter) now.textContent='Reading #'+chapter.flat+' · '+chapter.title;
+  }
+  function wireScrollSpy(){
+    var els=chapters.map(function(c){return document.getElementById(c.id);}).filter(Boolean);
+    function update(){
+      scrollScheduled=false;
+      var centre=window.innerHeight*.42, best=null;
+      for(var i=0;i<els.length;i++){
+        var rect=els[i].getBoundingClientRect();
+        if(rect.top<=centre) best=els[i];
+        if(rect.top<=centre && rect.bottom>centre){best=els[i];break;}
+        if(rect.top>centre) break;
+      }
+      if(best) setActive(best.id);
+    }
+    function request(){if(!scrollScheduled){scrollScheduled=true;requestAnimationFrame(update);}}
+    window.addEventListener('scroll',request,{passive:true});
+    window.addEventListener('resize',request);
+    window.addEventListener('hashchange',request);
+    request();
   }
 
-  // ---- Sidebar open/close (slides in from the side; user-controlled) ---
-  // Keyboard behavior: Escape closes and returns focus to the FAB; opening
-  // moves focus into the panel; Tab/Shift+Tab are trapped inside the
-  // sidebar while it's open, same as any standard slide-out drawer.
-  //
-  // The FAB is the ONLY way to *open* the sidebar, and hides itself (rather
-  // than turning into a second "X") the instant it's open -- there is
-  // exactly one visible close affordance at a time, #tocSidebarClose,
-  // instead of two overlapping X icons.
-  function wireSidebarToggle(){
-    var fab = document.getElementById('tocFab');
-    var sidebar = document.getElementById('tocSidebar');
-    var closeBtn = document.getElementById('tocSidebarClose');
-    if (!fab || !sidebar) return;
-
-    function focusableInSidebar(){
-      return Array.prototype.slice.call(
-        sidebar.querySelectorAll('button, a[href], input:not([disabled])')
-      ).filter(function(el){ return el.offsetParent !== null; });
+  function wireSidebar(){
+    var trigger=document.getElementById('tocFab'), closeBtn=document.getElementById('tocSidebarClose');
+    var backdrop=document.getElementById('tocBackdrop');
+    if(!trigger||!sidebar) return;
+    var isOpen=false, restoreFocus=null;
+    function focusables(){
+      return Array.from(sidebar.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'))
+        .filter(function(n){return !n.closest('[hidden],[inert]') && n.getClientRects().length>0;});
     }
-
     function open(){
+      if(isOpen)return;
+      restoreFocus=document.activeElement;
+      isOpen=true;
+      sidebar.inert=false;sidebar.setAttribute('aria-hidden','false');
       sidebar.classList.add('open');
-      fab.setAttribute('aria-expanded', 'true');
-      fab.classList.add('is-hidden');
-      fab.setAttribute('tabindex', '-1');
-      (closeBtn || sidebar).focus();
-      document.addEventListener('keydown', onKeydown);
+      if(backdrop){backdrop.hidden=false;backdrop.classList.add('open');}
+      trigger.classList.add('is-hidden');trigger.setAttribute('tabindex','-1');
+      trigger.setAttribute('aria-expanded','true');
+      document.body.classList.add('toc-drawer-open');
+      (closeBtn||sidebar).focus();
+      document.addEventListener('keydown',onKeydown);
     }
-
-    function close(){
+    function close(returnFocus){
+      if(!isOpen)return;
+      isOpen=false;
       sidebar.classList.remove('open');
-      fab.setAttribute('aria-expanded', 'false');
-      fab.classList.remove('is-hidden');
-      fab.removeAttribute('tabindex');
-      document.removeEventListener('keydown', onKeydown);
-      fab.focus();
+      sidebar.inert=true;sidebar.setAttribute('aria-hidden','true');
+      if(backdrop){backdrop.classList.remove('open');backdrop.hidden=true;}
+      trigger.classList.remove('is-hidden');trigger.removeAttribute('tabindex');
+      trigger.setAttribute('aria-expanded','false');
+      document.body.classList.remove('toc-drawer-open');
+      document.removeEventListener('keydown',onKeydown);
+      if(returnFocus!==false && restoreFocus && restoreFocus.isConnected) restoreFocus.focus();
     }
-
     function onKeydown(ev){
-      if (ev.key === 'Escape'){
-        ev.preventDefault();
-        close();
-        return;
-      }
-      if (ev.key !== 'Tab') return;
-      var items = focusableInSidebar();
-      if (!items.length) return;
-      var first = items[0], last = items[items.length - 1];
-      if (ev.shiftKey && document.activeElement === first){
-        ev.preventDefault(); last.focus();
-      } else if (!ev.shiftKey && document.activeElement === last){
-        ev.preventDefault(); first.focus();
+      if(ev.key==='Escape'){ev.preventDefault();close(true);return;}
+      if(ev.key!=='Tab')return;
+      var nodes=focusables();if(!nodes.length){ev.preventDefault();sidebar.focus();return;}
+      var first=nodes[0],last=nodes[nodes.length-1];
+      if(ev.shiftKey && (document.activeElement===first || document.activeElement===sidebar)){
+        ev.preventDefault();last.focus();
+      }else if(!ev.shiftKey && (document.activeElement===last || document.activeElement===sidebar)){
+        ev.preventDefault();first.focus();
+      } else if(!sidebar.contains(document.activeElement)){
+        ev.preventDefault();first.focus();
       }
     }
-
-    fab.addEventListener('click', open);
-    if (closeBtn) closeBtn.addEventListener('click', close);
+    trigger.addEventListener('click',open);
+    if(closeBtn)closeBtn.addEventListener('click',function(){close(true);});
+    if(backdrop)backdrop.addEventListener('click',function(){close(true);});
+    var toc=document.getElementById('tocTree');
+    if(toc)toc.addEventListener('click',function(ev){
+      var link=ev.target.closest('a[href^="#"]');
+      if(!link)return;
+      var target=document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      close(false); // the anchor changes location; don't steal focus back
+      if(target){requestAnimationFrame(function(){target.focus({preventScroll:true});});}
+    });
   }
 
-  // ---- Custom-range print --------------------------------------------
-  // Accepts things like "8-10,1,15" against the flat #N numbering shown
-  // next to every chapter in the sidebar (not the 1.1.1-style dossier
-  // number, which isn't sequential across the whole book).
-  function parseRange(input, max){
-    var out = [];
-    var parts = input.split(',');
-    for (var i=0;i<parts.length;i++){
-      var p = parts[i].trim();
-      if (!p) continue;
-      var m = p.match(/^(\d+)\s*-\s*(\d+)$/);
-      if (m){
-        var lo = parseInt(m[1],10), hi = parseInt(m[2],10);
-        if (lo > hi){ var tmp=lo; lo=hi; hi=tmp; }
-        for (var n=lo; n<=hi; n++){ if (n>=1 && n<=max) out.push(n); }
-      } else if (/^\d+$/.test(p)){
-        var v = parseInt(p,10);
-        if (v>=1 && v<=max) out.push(v);
-      } else {
-        return { error: 'Could not read "' + p + '" — use numbers, dashes, and commas only.' };
-      }
-    }
-    if (!out.length) return { error: 'No valid chapter numbers found.' };
-    var seen = {}, ids = [];
-    for (var k=0;k<out.length;k++){
-      var flatNum = out[k];
-      var chap = chapters[flatNum-1];
-      if (chap && !seen[chap.id]){ seen[chap.id]=true; ids.push(chap.id); }
-    }
-    return { ids: ids };
+  // Input-order semantics match Literature Dossier's print-selection UX.
+  // Unlike the old parser, invalid and unavailable numbers block printing
+  // rather than silently disappearing from the requested chapter range.
+  function parseRange(spec){
+    var result=[],errors=[],seen={},text=(spec||'').trim();
+    if(!text)return {ids:[],nums:[],error:'Enter chapter numbers, for example 8-10,1,15.'};
+    text.split(',').forEach(function(raw){
+      var token=raw.trim(),m=token.match(/^(\d+)\s*-\s*(\d+)$/),sequence=[];
+      if(m){
+        var start=Number(m[1]),stop=Number(m[2]);
+        if(!Number.isSafeInteger(start)||!Number.isSafeInteger(stop)||Math.abs(stop-start)>chapters.length){errors.push('Range "'+token+'" is too large.');return;}
+        var step=start<=stop?1:-1;
+        for(var n=start;step>0?n<=stop:n>=stop;n+=step) sequence.push(n);
+      }else if(/^\d+$/.test(token))sequence.push(Number(token));
+      else{errors.push('"'+(token||'(empty)')+'" is not a valid chapter or range.');return;}
+      sequence.forEach(function(n){
+        if(!Number.isSafeInteger(n)||n<1||n>chapters.length){errors.push('Chapter #'+n+' is unavailable (1-'+chapters.length+').');return;}
+        if(!seen[n]){seen[n]=true;result.push(n);}
+      });
+    });
+    return {nums:result,ids:result.map(function(n){return chapters[n-1].id;}),error:errors.join(' ')};
   }
-
-  function wirePrintPanel(){
-    var input = document.getElementById('tocPrintRange');
-    var btnSelected = document.getElementById('tocPrintSelected');
-    var btnAll = document.getElementById('tocPrintAll');
-    var errEl = document.getElementById('tocPrintError');
-    if (!input || !btnSelected || !btnAll) return;
-
-    btnAll.addEventListener('click', function(){
-      if (errEl) errEl.textContent = '';
+  function wirePrint(){
+    var input=document.getElementById('tocPrintRange'), selected=document.getElementById('tocPrintSelected');
+    var all=document.getElementById('tocPrintAll'),feedback=document.getElementById('tocPrintPreview');
+    var error=document.getElementById('tocPrintError'),include=document.getElementById('tocPrintRevision');
+    if(!input||!selected||!all)return;
+    function update(){
+      var result=parseRange(input.value), hasInput=!!input.value.trim();
+      var invalid=hasInput && !!result.error;
+      input.setAttribute('aria-invalid',String(invalid));
+      if(error)error.textContent=invalid?result.error:'';
+      selected.disabled=!!result.error;
+      if(feedback)feedback.textContent=result.error ?
+        (hasInput?'Fix the chapter range before printing.':'Select chapters by number, or choose Print All.') :
+        result.nums.length+' dossiers selected in this order: '+result.nums.map(function(n){return '#'+n;}).join(', ')+'.'+
+        (include && !include.checked?' Revision pages excluded.':' Revision pages included.');
+      return result;
+    }
+    input.addEventListener('input',update);
+    input.addEventListener('keydown',function(ev){
+      if(ev.key==='Enter'){ev.preventDefault();if(!selected.disabled)selected.click();}
+    });
+    if(include)include.addEventListener('change',update);
+    selected.addEventListener('click',function(){
+      var result=update();if(result.error){input.focus();return;}
+      window.__printControl.setFilter(result.ids);
+      window.__printControl.includeRevision(!include || include.checked);
+      window.print();
+    });
+    all.addEventListener('click',function(){
+      if(error)error.textContent='';
       window.__printControl.clearFilter();
+      window.__printControl.includeRevision(!include || include.checked);
       window.print();
     });
-
-    btnSelected.addEventListener('click', function(){
-      var res = parseRange(input.value, chapters.length);
-      if (res.error){
-        if (errEl) errEl.textContent = res.error;
-        return;
-      }
-      if (errEl) errEl.textContent = '';
-      window.__printControl.setFilter(res.ids);
-      window.print();
-    });
+    update();
+    // Expose a read-only diagnostic parser for smoke tests.
+    window.__hikamSidebarParseRange=parseRange;
   }
-
-  // Writes each chapter's own flat #N (matching the number shown next to
-  // it in the sidebar and used by the print-range box) onto its own
-  // opening page, appended to the vertical "DOSSIER x.x.x" badge. Runs
-  // once at load, directly on the live DOM (not a clone), so it's already
-  // in place by the time either the screen view or a print action reads
-  // that element -- no separate print-specific handling needed.
   function injectFlatNumbers(){
-    for (var i=0;i<chapters.length;i++){
-      var sec = document.getElementById(chapters[i].id);
-      if (!sec) continue;
-      var span = sec.querySelector('.chapter-tabnum span');
-      if (span){ span.textContent = span.textContent.trim() + ' \u00B7 #' + chapters[i].flat; }
-    }
+    chapters.forEach(function(ch){
+      var span=document.querySelector('#'+ch.id+' .chapter-tabnum span');
+      if(span && !span.dataset.flatNumberAttached){
+        span.textContent=span.textContent.trim()+' · #'+ch.flat;
+        span.dataset.flatNumberAttached='true';
+      }
+    });
   }
-
   function init(){
-    collectStructure();
-    injectFlatNumbers();
-    var container = document.getElementById('tocTree');
-    if (container){ buildTree(container); }
-    wireSidebarToggle();
-    wirePrintPanel();
-    wireScrollSpy();
+    sidebar=document.getElementById('tocSidebar');
+    if(sidebar){sidebar.inert=true;sidebar.setAttribute('aria-hidden','true');}
+    collectStructure();injectFlatNumbers();
+    var tree=document.getElementById('tocTree');
+    if(tree)buildTree(tree);
+    searchInput=document.getElementById('tocSearch');
+    wireSearch();wireExpandControls();wireSidebar();wirePrint();wireScrollSpy();
   }
-
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
 })();
 
 </script>

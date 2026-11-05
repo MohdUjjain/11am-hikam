@@ -13,3 +13,7 @@
 `src/philosophy_study_notes.html` is a generated non-inlined HTML export kept next to its CSS and JavaScript; `index.html` is the public, offline self-contained reader. Do not hand-edit either generated file.
 
 The `src/source_materials/` extracts remain publicly visible to anyone browsing this public repository; the directory move is organizational only, not access control.
+
+## Contents and printing
+
+The accessible Topic → Sub-topic → Chapter → Section sidebar supports live search, explicit branch control, a chapter-only ordered print selector, and optional revision pages. See [SIDEBAR_GUIDE.md](docs/hosting/SIDEBAR_GUIDE.md). Validate with `python src/tests/verify_sidebar.py`.

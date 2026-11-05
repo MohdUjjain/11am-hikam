@@ -28,5 +28,7 @@ jobs:
         run: python src/tests/verify_publication.py
       - name: Validate book structure and chapter navigation
         run: python src/tests/validate_structure.py
+      - name: Validate accessible contents and print controls
+        run: python src/tests/verify_sidebar.py
       - name: Test offline worker's cache lifecycle
         run: node src/tests/test_offline_cache.mjs

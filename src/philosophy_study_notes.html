@@ -47,24 +47,42 @@
 <!-- and every chapter's own kicker text to populate #tocTree, so  -->
 <!-- nothing here needs updating when a new chapter/topic is added.-->
 <!-- ============================================================ -->
-<button type="button" id="tocFab" aria-label="Open contents" aria-expanded="false">&#9776;</button>
-<aside id="tocSidebar" class="toc-sidebar" tabindex="-1" aria-label="Table of contents panel">
+<button type="button" id="tocFab" aria-label="Open contents and printing" aria-controls="tocSidebar" aria-expanded="false">&#9776;</button>
+<div id="tocBackdrop" class="toc-backdrop" aria-hidden="true" hidden></div>
+<aside id="tocSidebar" class="toc-sidebar" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tocSidebarHeading" inert>
   <div class="toc-sidebar-head">
-    <h2>Contents</h2>
+    <div>
+      <h2 id="tocSidebarHeading">Contents &amp; Print</h2>
+      <p id="tocReadingStatus" class="toc-reading-status">Navigate the complete dossier</p>
+    </div>
     <button type="button" id="tocSidebarClose" aria-label="Close contents">&#10005;</button>
   </div>
-  <div class="toc-print-panel">
-    <label for="tocPrintRange">Print a custom selection</label>
-    <input type="text" id="tocPrintRange" placeholder="e.g. 8-10,1,15" autocomplete="off">
-    <p class="hint">Use the <strong>#</strong> number shown next to each chapter below. Mix single chapters and ranges with commas.</p>
-    <div class="toc-print-actions">
-      <button type="button" id="tocPrintSelected" class="toc-print-btn primary">Print Selected</button>
-      <button type="button" id="tocPrintAll" class="toc-print-btn">Print All</button>
+  <details class="toc-print-disclosure" id="tocPrintDisclosure">
+    <summary>Print / Export PDF</summary>
+    <div class="toc-print-panel">
+      <label for="tocPrintRange">Chapters to print</label>
+      <input type="text" id="tocPrintRange" placeholder="e.g. 8-10,1,15" autocomplete="off" aria-describedby="tocPrintHint tocPrintPreview tocPrintError">
+      <p class="hint" id="tocPrintHint">Use the <strong>#</strong> numbers below. Ranges and individual chapters print <strong>in the order entered</strong> (for example, 8-10,1).</p>
+      <label class="toc-print-option"><input type="checkbox" id="tocPrintRevision" checked> Include chapter revision pages</label>
+      <p class="toc-print-preview" id="tocPrintPreview" role="status" aria-live="polite"></p>
+      <p class="toc-print-error" id="tocPrintError"></p>
+      <div class="toc-print-actions">
+        <button type="button" id="tocPrintSelected" class="toc-print-btn primary" disabled>Print Selected</button>
+        <button type="button" id="tocPrintAll" class="toc-print-btn">Print All</button>
+      </div>
+      <p class="hint">Selected chapters print without the book's cover and topic dividers. For complete-book printing, use Print All. In Chrome/Edge, leave Margins on "Default".</p>
     </div>
-    <p class="toc-print-error" id="tocPrintError"></p>
-    <p class="hint">Export via Chrome or Edge, with the print dialog's Margins left on "Default".</p>
+  </details>
+  <div class="toc-search-tools">
+    <label for="tocSearch">Find a chapter or section</label>
+    <input type="search" id="tocSearch" placeholder="Title, number, or topic…" autocomplete="off" aria-describedby="tocSearchResults">
+    <p id="tocSearchResults" role="status" aria-live="polite"></p>
+    <div class="toc-expand-actions">
+      <button type="button" id="tocExpandAll">Expand all</button>
+      <button type="button" id="tocCollapseAll">Collapse all</button>
+    </div>
   </div>
-  <nav class="toc-tree" id="tocTree" aria-label="Table of contents"></nav>
+  <nav class="toc-tree" id="tocTree" aria-label="Book contents and sections"></nav>
   <!-- PWA availability status lives only in the screen sidebar and does not affect the book/PDF. -->
   <section class="offline-reader-panel" aria-label="Offline reading">
     <strong>Offline reading</strong>

@@ -270,3 +270,28 @@ historical documentation; the current assembled file has **34** ready dossiers.
 ## 2026-11-04 — Print verification after educational expansion of 3.4.3 / 3.4.4
 
 Revised main-body callouts, hierarchies and analogies were tested with the existing JS print paginator (no JS/CSS edits). An expanded Key Definitions block in English exceeded a page when treated as one atomic container; it was split into several smaller `.keydefs` containers, preserving individual definitions and the six-part revision structure. A strict page-geometry audit confirmed that all 51 generated chapter pages for the selected two dossiers have at least 37px clearance between content bottom and footer top, with no detected content overflow. The 76px scoped safety reserve remains unchanged. 
+
+## 2026-11-05 — Sidebar print selections and revision options
+
+The new print panel validates chapter numbers strictly rather than silently
+ignoring out-of-range selections, previews the exact ordered selection, supports
+reversed ranges (5-3), and allows revision pages to be included/excluded.
+`Print All` retains the traditional full book (cover, dividers, and contents).
+`Print Selected` creates a chapter-only PDF in exactly the order requested,
+omitting the generic cover/TOC/Topic dividers rather than printing unrelated
+front matter. It reuses the EXISTING `paginateChapter()` and @page templates;
+no academic content or CSS print geometry was changed.
+
+For a selected print, `beforeprint` stages the chapter DOM nodes in requested
+order using comment markers at their original locations, then runs the usual
+JS paginator. `afterprint` removes generated pages, restores source nodes to
+their exact original positions, and clears the print filter. Cloned print
+headings drop their screen-only `toc-sec-` IDs to avoid duplicate DOM IDs.
+For `includeRevision=false`, `.end-block` remains hidden in print as a
+`.js-print-source`, but no dark revision pages are generated. The print-only
+`body.print-chapters-only` class hides non-chapter root children for selection;
+normal full-book print remains unaffected.
+
+Browser validation covered a two-chapter reversed-order print and a PDF export
+with chapter 1.1.2 preceding 1.1.1, no frontmatter, and revision pages omitted;
+previous chapter order was restored after the print lifecycle.

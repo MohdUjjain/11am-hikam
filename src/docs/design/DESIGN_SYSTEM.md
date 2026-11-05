@@ -472,3 +472,32 @@ explanatory paragraphs of dossiers 3.4.3 and 3.4.4: **17 Arabic paragraphs and
 15 English paragraphs** were rephrased. All earlier dossiers, the new chapters'
 teaching tools, lists, quotations, headings and revision sections were left
 unchanged; CSS and JS were not edited.
+
+## 2026-11-05 — Accessible contents and print sidebar
+
+The screen-only contents drawer retains the book's gold/navy sidebar styling.
+`#tocBackdrop` is a dismissible backdrop. `#tocSidebar` is a labelled modal
+`role="dialog"` with focus trapping, Escape to close, focus return, and the
+`inert` attribute while closed; the trigger advertises its `aria-controls`
+and `aria-expanded`. Respect `prefers-reduced-motion` for the drawer and
+collapsible groups. Print CSS always excludes the entire sidebar and backdrop.
+
+The navigation builds Topic → Sub-topic → Chapter → §Section from actual
+chapter headings; screen-only section `id` attributes are generated at load,
+without rewriting the authored chapter fragments. The Arabic title from a
+Topic divider is reproduced as a compact `<span lang="ar" dir="rtl">`, NOT
+as the source's full `<h1>` (which broke sidebar line heights). Section labels
+inherit the Arabic font where applicable.
+
+Two levels of disclosure coexist: (1) topic/subtopic branches; (2) per-chapter
+section links. Collapsed controls expose `aria-expanded=false`, `aria-controls`
+and `inert` descendants so keyboard focus cannot enter visually hidden nodes.
+Active-chapter indication from scroll NEVER auto-expands a manually closed
+branch; searches expand only temporarily and restore the user's expansion
+choices when cleared. Search supports chapter numbers, titles, section titles,
+and Arabic diacritic-insensitive matching. Expand/Collapse All are explicit.
+
+`src/tests/verify_sidebar.py` checks source markup, UI semantics, print hooks
+and the generated reader as part of the GitHub Actions workflow. Browser testing
+should additionally exercise keyboard navigation, narrow viewports, Arabic,
+section links, search, print selection and afterprint restoration.
