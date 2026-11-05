@@ -40,5 +40,7 @@ jobs:
         run: python src/tests/verify_search_integrity.py
       - name: Verify mobile interaction and accessibility contract
         run: python src/tests/verify_mobile_interaction.py
+      - name: Verify Phase 3 brand, sidebar expansion and obsolete code removal
+        run: python src/tests/verify_visual_polish.py
       - name: Test offline worker's cache lifecycle
         run: node src/tests/test_offline_cache.mjs

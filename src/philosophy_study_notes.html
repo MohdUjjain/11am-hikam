@@ -113,12 +113,12 @@ try {
 <!-- and every chapter's own kicker text to populate #tocTree, so  -->
 <!-- nothing here needs updating when a new chapter/topic is added.-->
 <!-- ============================================================ -->
-<button type="button" id="tocFab" aria-label="Open contents and printing" aria-controls="tocSidebar" aria-expanded="false">&#9776;</button>
+<button type="button" id="tocFab" aria-label="Open contents and tools" aria-controls="tocSidebar" aria-expanded="false">&#9776;</button>
 <div id="tocBackdrop" class="toc-backdrop" aria-hidden="true" hidden></div>
 <aside id="tocSidebar" class="toc-sidebar" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tocSidebarHeading" inert>
   <div class="toc-sidebar-head">
     <div>
-      <h2 id="tocSidebarHeading">Contents &amp; Print</h2>
+      <h2 id="tocSidebarHeading">Contents &amp; Tools</h2>
       <p id="tocReadingStatus" class="toc-reading-status">Navigate the complete dossier</p>
     </div>
     <button type="button" id="tocSidebarClose" aria-label="Close contents">&#10005;</button>
@@ -132,29 +132,27 @@ try {
   <div id="tocIndexPanel" class="toc-tab-panel toc-index-panel" role="tabpanel" aria-labelledby="tocIndexTab">
     <div class="toc-index-actions">
     <div class="toc-expand-actions">
-      <button type="button" id="tocExpandAll">Expand all</button>
-      <button type="button" id="tocCollapseAll">Collapse all</button>
+      <button type="button" id="tocExpandAll" title="Expand topics, sub-topics and chapter sections">Expand all levels</button>
+      <button type="button" id="tocCollapseAll" title="Collapse topics, sub-topics and chapter sections">Collapse all levels</button>
     </div>
     </div>
     <nav class="toc-tree" id="tocTree" aria-label="Book contents and sections"></nav>
   </div>
   <div id="tocToolsPanel" class="toc-tab-panel toc-tools-panel" role="tabpanel"
        aria-labelledby="tocToolsTab" hidden inert>
-    <section class="toc-tools-resume">
-      <h3>Reading position</h3>
+    <section class="toc-tools-resume" id="tocToolsResumeSection" hidden>
+      <h3>Continue reading</h3>
       <button type="button" id="tocToolsResume" class="toc-resume-action" hidden>↶ Continue reading</button>
-      <p>Your reading place stays on this device. You can continue from the header as well.</p>
+      <p>Your reading place is saved on this device.</p>
     </section>
     <section class="toc-tools-revision" aria-labelledby="tocRevisionVisibilityHeading">
-      <h3 id="tocRevisionVisibilityHeading">Reading display</h3>
+      <h3 id="tocRevisionVisibilityHeading">Revision visibility</h3>
       <label class="toc-revision-toggle" for="tocShowRevisionBlocks">
-        <input type="checkbox" id="tocShowRevisionBlocks" checked>
+        <input type="checkbox" id="tocShowRevisionBlocks" checked aria-describedby="tocRevisionVisibilityHint tocRevisionVisibilityStatus">
         <span>Show chapter Revision Blocks</span>
       </label>
-      <p>One switch for all chapters: Chapter Summary, One-Page Revision Sheet,
-         Key Definitions, Key Table, Memory Aids and Examination Questions.</p>
+      <p id="tocRevisionVisibilityHint">Applies to all chapter summaries, revision sheets, definitions, memory aids and exam questions. Saved on this device; PDF options are separate.</p>
       <p id="tocRevisionVisibilityStatus" class="toc-revision-status" role="status" aria-live="polite"></p>
-      <p>This choice is saved on this device. Printing has a separate revision-pages option below.</p>
     </section>
   <details class="toc-print-disclosure" id="tocPrintDisclosure">
     <summary>Print / Export PDF</summary>
@@ -187,7 +185,7 @@ try {
 <!-- ============================================================ -->
 <div class="page cover">
   <div class="cover-top">
-    <span>Academic Dossier — Revision Series</span>
+    <span>11AM · Takhassus Hikam Dossier</span>
     <span>Vol. I &amp; II</span>
   </div>
 

@@ -315,7 +315,7 @@
    ============================================================ */
 (function(){
   'use strict';
-  var chapters = [], topicTitles = {}, chapterLinks = {}, sectionLinks = {}, sidebar, searchInput;
+  var chapters = [], topicTitles = {}, chapterLinks = {}, sectionLinks = {}, sidebar;
   var activeId = '', activeSectionId = '', scrollScheduled = false;
 
   function el(tag, cls, text){
@@ -323,9 +323,6 @@
     if(cls) node.className=cls;
     if(text!==undefined) node.textContent=text;
     return node;
-  }
-  function folded(text){
-    return String(text||'').normalize('NFKD').replace(/[\u064B-\u065F\u0670]/g,'').toLocaleLowerCase().trim();
   }
   function subtopicHTML(section){
     var kicker=section.querySelector('.chapter-kicker'), html='';
@@ -426,7 +423,6 @@
       body.id='toc-topic-children-'+key;body.appendChild(inner);
       head.setAttribute('aria-controls',body.id);
       topic.appendChild(head);topic.appendChild(body);
-      topic.dataset.searchText=folded('Topic '+key+' '+tt.en+' '+tt.arHTML.replace(/<[^>]+>/g,' '));
       setGroupExpanded(topic,false,true);
       head.addEventListener('click',function(){setGroupExpanded(topic,!topic.classList.contains('expanded'),true);});
       topics[key].order.forEach(function(subKey){
@@ -438,12 +434,10 @@
         subBody.id='toc-subtopic-children-'+subKey.replace('.','-');subBody.appendChild(subInner);
         subHead.setAttribute('aria-controls',subBody.id);
         sub.appendChild(subHead);sub.appendChild(subBody);
-        sub.dataset.searchText=folded(subKey+' '+subHead.textContent);
         setGroupExpanded(sub,false,true);
         subHead.addEventListener('click',function(){setGroupExpanded(sub,!sub.classList.contains('expanded'),true);});
         cs.forEach(function(c){
           var wrap=el('div','toc-chapter');wrap.dataset.chapterNumber='#'+c.flat;
-          wrap.dataset.searchText=folded(c.title+' '+c.num+' '+c.flat);
           var row=el('div','toc-chapter-row');
           var a=el('a','toc-chapter-link');a.href='#'+c.id;
           a.dataset.chapterId=c.id;
@@ -462,7 +456,6 @@
               var link=el('a','toc-section-link');
               appendSectionHeading(link,document.getElementById(section.id),c.isRTL);
               link.href='#'+section.id;
-              link.dataset.searchText=folded(section.title);
               if(c.isRTL){link.setAttribute('lang','ar');link.setAttribute('dir','rtl');}
               sectionList.appendChild(link);sectionLinks[section.id]=link;
             });
@@ -478,54 +471,23 @@
     });
   }
 
+  // "All" means the complete four-level Topic > Sub-topic > Chapter > § tree.
+  // Preserve each reader-controlled accordion choice for subsequent navigation.
   function wireExpandControls(){
-    var expand=document.getElementById('tocExpandAll'),collapse=document.getElementById('tocCollapseAll');
-    var search=document.getElementById('tocSearch');
+    var expand=document.getElementById('tocExpandAll');
+    var collapse=document.getElementById('tocCollapseAll');
     function setAll(open){
-      if(search && search.value.trim()){search.value='';search.dispatchEvent(new Event('input'));}
       document.querySelectorAll('#tocTree .toc-node').forEach(function(node){
         setGroupExpanded(node,open,true);
+      });
+      document.querySelectorAll('#tocTree .toc-chapter').forEach(function(wrap){
+        if(wrap.querySelector('.toc-chapter-sections-toggle')){
+          setSectionExpanded(wrap,open,true);
+        }
       });
     }
     if(expand)expand.addEventListener('click',function(){setAll(true);});
     if(collapse)collapse.addEventListener('click',function(){setAll(false);});
-  }
-  function wireSearch(){
-    var count=document.getElementById('tocSearchResults');
-    if(!searchInput) return;
-    function update(){
-      var query=folded(searchInput.value), shown=0;
-      document.querySelectorAll('#tocTree > .toc-topic').forEach(function(topic){
-        var topicMatch=query && topic.dataset.searchText.includes(query), topicVisible=0;
-        topic.querySelectorAll(':scope > .toc-children > .toc-children-inner > .toc-subtopic').forEach(function(sub){
-          var subMatch=query && (topicMatch||sub.dataset.searchText.includes(query)),subVisible=0;
-          sub.querySelectorAll('.toc-chapter').forEach(function(wrap){
-            var chapterMatch=query && (subMatch||wrap.dataset.searchText.includes(query));
-            var sections=wrap.querySelectorAll('.toc-section-link'), sectionMatches=0;
-            sections.forEach(function(a){
-              var yes=!query || chapterMatch || a.dataset.searchText.includes(query);
-              a.hidden=!yes;
-              if(yes && query && !chapterMatch) sectionMatches++;
-            });
-            var visible=!query || chapterMatch || sectionMatches>0;
-            wrap.hidden=!visible;
-            if(visible){subVisible++;shown++;}
-            if(query) setSectionExpanded(wrap,sectionMatches>0,false);
-            else setSectionExpanded(wrap,wrap.dataset.manualSections==='true',false);
-          });
-          sub.hidden=!!query && subVisible===0;
-          if(subVisible) topicVisible+=subVisible;
-          if(query) setGroupExpanded(sub,subVisible>0,false);
-          else setGroupExpanded(sub,sub.dataset.manualExpanded==='true',false);
-        });
-        topic.hidden=!!query && topicVisible===0;
-        if(query) setGroupExpanded(topic,topicVisible>0,false);
-        else setGroupExpanded(topic,topic.dataset.manualExpanded==='true',false);
-      });
-      if(count) count.textContent=query ? shown+' of '+chapters.length+' dossiers match' : chapters.length+' dossiers · Search titles, numbers and sections';
-    }
-    searchInput.addEventListener('input',update);
-    update();
   }
 
   function setActive(id){
@@ -594,6 +556,7 @@
     var dismiss=document.getElementById('resumeReaderDismiss');
     var resumeToolbar=document.getElementById('readerResumeShortcut');
     var resumeTools=document.getElementById('tocToolsResume');
+    var resumeSection=document.getElementById('tocToolsResumeSection');
     var printing=false, allowSave=false, lastSavedAt=0, savedPosition=null;
     var wantsResumePrompt=false;
     var editionNotice=document.getElementById('editionUpdateNotice');
@@ -619,6 +582,7 @@
     function syncContinueButtons(){
       if(resumeToolbar)resumeToolbar.hidden=!savedPosition;
       if(resumeTools)resumeTools.hidden=!savedPosition;
+      if(resumeSection)resumeSection.hidden=!savedPosition;
     }
     function setSectionActive(id){
       if(id!==activeSectionId){
