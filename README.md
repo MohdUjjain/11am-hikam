@@ -8,6 +8,8 @@ This repository follows the same **published root → modular `src/` → organiz
 
 Published GitHub Pages URL: **https://mohdujjain.github.io/11am-hikam/**. GitHub Pages serves the root `index.html` from `main`, folder `/(root)`.
 
+The reader shows a narrow **whole-book progress rail** and a separate **per-chapter circular gauge**, follows the active § section in the sidebar, and optionally offers **Resume Reading** from a position saved on this device (no account or sync).
+
 Use **Install app** on Chrome/Edge/Android, or **Add to Home Screen** on iPhone/iPad. Visit online first, confirm **Entire book saved offline** in the contents panel, then reopen without a network connection. CacheStorage can be cleared by browsers or operating systems.
 
 ## Directory guide
@@ -40,6 +42,8 @@ python src/build.py
 python src/build.py --check
 python src/tests/verify_publication.py
 python src/tests/validate_structure.py
+python src/tests/verify_sidebar.py
+python src/tests/verify_reading_progress.py
 node src/tests/test_offline_cache.mjs
 ```
 

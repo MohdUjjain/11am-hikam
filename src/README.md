@@ -17,3 +17,12 @@ The `src/source_materials/` extracts remain publicly visible to anyone browsing 
 ## Contents and printing
 
 The accessible Topic → Sub-topic → Chapter → Section sidebar supports live search, explicit branch control, a chapter-only ordered print selector, and optional revision pages. See [SIDEBAR_GUIDE.md](docs/hosting/SIDEBAR_GUIDE.md). Validate with `python src/tests/verify_sidebar.py`.
+
+## Screen-only reading location
+
+The sticky progress rail, circular chapter gauge, sidebar's active § link,
+and optional locally saved Resume Reading prompt are implemented in
+`src/main.html`, `src/philosophy_notes.css`, and the **same existing**
+`wireScrollSpy()` in `src/philosophy_notes.js`. See
+[`docs/hosting/READING_POSITION.md`](docs/hosting/READING_POSITION.md).
+Do not add a second scroll tracker or save print-transformed positions.

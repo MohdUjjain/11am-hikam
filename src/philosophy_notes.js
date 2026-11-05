@@ -312,8 +312,8 @@
    ============================================================ */
 (function(){
   'use strict';
-  var chapters = [], topicTitles = {}, chapterLinks = {}, sidebar, searchInput;
-  var activeId = '', scrollScheduled = false;
+  var chapters = [], topicTitles = {}, chapterLinks = {}, sectionLinks = {}, sidebar, searchInput;
+  var activeId = '', activeSectionId = '', scrollScheduled = false;
 
   function el(tag, cls, text){
     var node=document.createElement(tag);
@@ -442,7 +442,7 @@
               link.href='#'+section.id;
               link.dataset.searchText=folded(section.title);
               if(c.isRTL){link.setAttribute('lang','ar');link.setAttribute('dir','rtl');}
-              sectionList.appendChild(link);
+              sectionList.appendChild(link);sectionLinks[section.id]=link;
             });
             row.appendChild(toggle);wrap.appendChild(row);wrap.appendChild(sectionList);
             setSectionExpanded(wrap,false,true);
@@ -524,24 +524,246 @@
     var now=document.getElementById('tocReadingStatus');
     if(now && chapter) now.textContent='Reading #'+chapter.flat+' · '+chapter.title;
   }
+  /* One scroll tracker owns chapter/section highlighting, both progress
+     gauges, and locally saved reading position. No second competing spy. */
   function wireScrollSpy(){
+    var STORAGE_KEY='11am-hikam-reading-place-v1';
     var els=chapters.map(function(c){return document.getElementById(c.id);}).filter(Boolean);
-    function update(){
+    var sectionsByChapter={};
+    chapters.forEach(function(c){
+      sectionsByChapter[c.id]=c.sections.map(function(s){return document.getElementById(s.id);}).filter(Boolean);
+    });
+    var header=document.getElementById('readingProgressHeader');
+    var bookTrack=document.getElementById('readerBookTrack');
+    var bookRail=document.getElementById('readerBookRail');
+    var bookPct=document.getElementById('readerBookPercent');
+    var ring=document.getElementById('readerChapterRing');
+    var ringPct=document.getElementById('readerChapterPercent');
+    var number=document.getElementById('readerCurrentNumber');
+    var title=document.getElementById('readerCurrentTitle');
+    var sectionLabel=document.getElementById('readerCurrentSection');
+    var prompt=document.getElementById('resumeReaderPrompt');
+    var description=document.getElementById('resumeReaderDescription');
+    var resume=document.getElementById('resumeReaderContinue');
+    var startOver=document.getElementById('resumeReaderStart');
+    var forget=document.getElementById('resumeReaderForget');
+    var dismiss=document.getElementById('resumeReaderDismiss');
+    var printing=false, allowSave=false, lastSavedAt=0, savedPosition=null;
+    var hasReadMovement=false, suspendUntil=0, pendingUserScroll=false;
+
+    function cap(n){return Math.max(0,Math.min(1,n));}
+    function percent(n){return Math.round(cap(n)*100);}
+    function readSaved(){
+      try{
+        var value=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+        if(value && value.version===1 && typeof value.chapterId==='string' &&
+           els.some(function(el){return el.id===value.chapterId;}) &&
+           Number.isFinite(value.chapterRatio) && value.chapterRatio>=0 && value.chapterRatio<=1)
+          return value;
+      }catch(err){/* private mode, blocked storage, or obsolete/corrupt value */}
+      return null;
+    }
+    function clearSaved(){try{localStorage.removeItem(STORAGE_KEY);}catch(err){}}
+    function setSectionActive(id){
+      if(id!==activeSectionId){
+        if(sectionLinks[activeSectionId]){
+          sectionLinks[activeSectionId].classList.remove('reading-active');
+          sectionLinks[activeSectionId].removeAttribute('aria-current');
+        }
+        activeSectionId=id||'';
+        if(sectionLinks[activeSectionId]){
+          sectionLinks[activeSectionId].classList.add('reading-active');
+          sectionLinks[activeSectionId].setAttribute('aria-current','location');
+        }
+      }
+      // The chapter row remains visibly highlighted, but screen readers only
+      // encounter one aria-current location: the section or its chapter.
+      if(chapterLinks[activeId]){
+        if(activeSectionId)chapterLinks[activeId].removeAttribute('aria-current');
+        else chapterLinks[activeId].setAttribute('aria-current','location');
+      }
+    }
+    function locateSection(chapter,centre){
+      var items=sectionsByChapter[chapter.id]||[],section=null,index=-1;
+      var end=chapter.querySelector('.end-block');
+      if(end && end.getBoundingClientRect().top<=centre)return {node:null,index:-1,revision:true};
+      for(var k=0;k<items.length;k++){
+        if(items[k].getBoundingClientRect().top<=centre){section=items[k];index=k;}
+        else break;
+      }
+      return {node:section,index:index,revision:false};
+    }
+    function makePosition(chapter,section,centre){
+      var rect=chapter.getBoundingClientRect();
+      var result={version:1,chapterId:chapter.id,
+        chapterRatio:cap((centre-rect.top)/Math.max(1,rect.height))};
+      if(section.node){
+        var nodes=sectionsByChapter[chapter.id]||[];
+        var start=section.node.getBoundingClientRect().top;
+        var next=nodes[section.index+1];
+        var endBlock=chapter.querySelector('.end-block');
+        var finish=next?next.getBoundingClientRect().top:
+          (endBlock?endBlock.getBoundingClientRect().top:rect.bottom);
+        result.sectionId=section.node.id;
+        result.sectionRatio=cap((centre-start)/Math.max(1,finish-start));
+      }
+      return result;
+    }
+    function saveLocation(position,force){
+      if(!allowSave||printing||Date.now()<suspendUntil||!position)return;
+      // Do not replace a useful bookmark just because the browser reopened
+      // at the cover, or scrolled as part of print/page restoration.
+      if(!hasReadMovement && !force)return;
+      var now=Date.now();if(!force && now-lastSavedAt<650)return;
+      try{
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(position));
+        lastSavedAt=now;
+      }catch(err){/* storage can be unavailable or full */}
+    }
+    function update(fromScroll){
       scrollScheduled=false;
+      if(printing)return;
       var centre=window.innerHeight*.42, best=null;
       for(var i=0;i<els.length;i++){
         var rect=els[i].getBoundingClientRect();
-        if(rect.top<=centre) best=els[i];
+        if(rect.top<=centre)best=els[i];
         if(rect.top<=centre && rect.bottom>centre){best=els[i];break;}
-        if(rect.top>centre) break;
+        if(rect.top>centre)break;
       }
-      if(best) setActive(best.id);
+      var available=document.documentElement.scrollHeight-window.innerHeight;
+      var whole=available>0?cap(window.scrollY/available):0;
+      var overall=percent(whole);
+      if(bookRail)bookRail.style.width=(whole*100)+'%';
+      if(bookPct)bookPct.textContent=overall+'%';
+      if(bookTrack){
+        bookTrack.setAttribute('aria-valuenow',String(overall));
+        bookTrack.setAttribute('aria-valuetext',overall+'% through the complete book');
+      }
+      if(!best){
+        if(number)number.textContent='Complete dossier';
+        if(title){title.textContent='Start reading';title.removeAttribute('lang');title.dir='auto';}
+        if(sectionLabel)sectionLabel.hidden=true;
+        if(ring){ring.style.setProperty('--chapter-progress','0%');ring.setAttribute('aria-valuenow','0');ring.setAttribute('aria-valuetext','No chapter selected');}
+        if(ringPct)ringPct.textContent='—';
+        setActive('');setSectionActive('');
+        return;
+      }
+      setActive(best.id);
+      var ch=chapters.find(function(c){return c.id===best.id;});
+      var rect=best.getBoundingClientRect();
+      var chapterProgress=cap((centre-rect.top)/Math.max(1,rect.height));
+      var chapterPercent=percent(chapterProgress);
+      if(ring){
+        ring.style.setProperty('--chapter-progress',(chapterProgress*100)+'%');
+        ring.setAttribute('aria-valuenow',String(chapterPercent));
+        ring.setAttribute('aria-valuetext',chapterPercent+'% through Chapter '+ch.num);
+      }
+      if(ringPct)ringPct.textContent=chapterPercent+'%';
+      if(number)number.textContent='Chapter '+ch.num;
+      if(title){
+        title.textContent=ch.title;
+        title.dir=ch.isRTL?'rtl':'auto';
+        if(ch.isRTL)title.setAttribute('lang','ar');
+        else title.removeAttribute('lang');
+      }
+      var section=locateSection(best,centre);
+      setSectionActive(section.node?section.node.id:'');
+      if(sectionLabel){
+        sectionLabel.hidden=!section.node&&!section.revision;
+        if(!sectionLabel.hidden){
+          sectionLabel.textContent=section.revision?'Revision & recall':section.node.textContent.trim().replace(/\s+/g,' ');
+          if(section.node && ch.isRTL){sectionLabel.lang='ar';sectionLabel.dir='rtl';}
+          else{sectionLabel.removeAttribute('lang');sectionLabel.dir='auto';}
+        }
+      }
+      if(fromScroll && window.scrollY>100)hasReadMovement=true;
+      saveLocation(makePosition(best,section,centre),false);
     }
-    function request(){if(!scrollScheduled){scrollScheduled=true;requestAnimationFrame(update);}}
-    window.addEventListener('scroll',request,{passive:true});
-    window.addEventListener('resize',request);
-    window.addEventListener('hashchange',request);
-    request();
+    function request(fromScroll){
+      if(fromScroll)pendingUserScroll=true;
+      if(!scrollScheduled){
+        scrollScheduled=true;
+        requestAnimationFrame(function(){
+          var userMoved=pendingUserScroll;pendingUserScroll=false;update(userMoved);
+        });
+      }
+    }
+    function hidePrompt(){if(prompt)prompt.hidden=true;}
+    function restorePosition(bookmark){
+      var chapter=document.getElementById(bookmark.chapterId);
+      if(!chapter)return;
+      var top=chapter.getBoundingClientRect().top+window.scrollY;
+      var offset=cap(bookmark.chapterRatio)*chapter.getBoundingClientRect().height;
+      var sec=bookmark.sectionId && document.getElementById(bookmark.sectionId);
+      if(sec && chapter.contains(sec) && Number.isFinite(bookmark.sectionRatio)){
+        var nodes=sectionsByChapter[chapter.id]||[];
+        var index=nodes.indexOf(sec),next=nodes[index+1];
+        var end=chapter.querySelector('.end-block');
+        var endTop=next?next.getBoundingClientRect().top+window.scrollY:
+          (end?end.getBoundingClientRect().top+window.scrollY:top+chapter.getBoundingClientRect().height);
+        var secTop=sec.getBoundingClientRect().top+window.scrollY;
+        if(endTop>secTop)offset=(secTop-top)+cap(bookmark.sectionRatio)*(endTop-secTop);
+      }
+      suspendUntil=Date.now()+700;
+      window.scrollTo({top:Math.max(0,top+offset-window.innerHeight*.42),behavior:'instant'});
+      hasReadMovement=true;
+      allowSave=true;
+      hidePrompt();
+      request(false);
+    }
+    savedPosition=readSaved();
+    // A saved position is never overwritten by the cover on first paint.
+    allowSave=!savedPosition;
+    function showResumeIfAppropriate(){
+      if(!savedPosition){allowSave=true;return;}
+      if(location.hash || window.scrollY>100){
+        // A direct chapter link or browser-restored scroll position wins.
+        allowSave=true;hasReadMovement=false;suspendUntil=Date.now()+2000;return;
+      }
+      var savedChapter=chapters.find(function(ch){return ch.id===savedPosition.chapterId;});
+      var isNearBeginning=savedPosition.chapterId===chapters[0].id && savedPosition.chapterRatio<.04;
+      if(!prompt||!savedChapter||isNearBeginning){allowSave=true;return;}
+      if(description){
+        description.textContent='Chapter '+savedChapter.num+' · '+savedChapter.title;
+        description.lang=savedChapter.isRTL?'ar':'en';
+        description.dir=savedChapter.isRTL?'rtl':'ltr';
+      }
+      prompt.hidden=false;
+    }
+    if(resume)resume.addEventListener('click',function(){if(savedPosition)restorePosition(savedPosition);});
+    if(startOver)startOver.addEventListener('click',function(){
+      clearSaved();savedPosition=null;allowSave=true;hasReadMovement=false;
+      hidePrompt();window.scrollTo({top:0,behavior:'instant'});request(false);
+    });
+    if(forget)forget.addEventListener('click',function(){
+      clearSaved();savedPosition=null;allowSave=true;hasReadMovement=false;hidePrompt();
+    });
+    if(dismiss)dismiss.addEventListener('click',function(){
+      hidePrompt();allowSave=true;hasReadMovement=false; // keep saved record until genuine scroll
+    });
+    window.addEventListener('scroll',function(){request(true);},{passive:true});
+    window.addEventListener('resize',function(){request(false);});
+    window.addEventListener('hashchange',function(){
+      hidePrompt();allowSave=true;hasReadMovement=false;
+      suspendUntil=Date.now()+2000;request(false);
+    });
+    window.addEventListener('pagehide',function(){
+      if(printing||!hasReadMovement||!allowSave)return;
+      // Capture the last genuinely visible position even between throttles.
+      var chapter=document.getElementById(activeId);
+      if(chapter)saveLocation(makePosition(chapter,locateSection(chapter,window.innerHeight*.42),window.innerHeight*.42),true);
+    });
+    window.addEventListener('beforeprint',function(){printing=true;hidePrompt();});
+    window.addEventListener('afterprint',function(){
+      printing=false;suspendUntil=Date.now()+1000;request(false);
+    });
+    request(false);
+    if(document.readyState==='complete')requestAnimationFrame(showResumeIfAppropriate);
+    else window.addEventListener('load',function(){requestAnimationFrame(showResumeIfAppropriate);},{once:true});
+    window.__hikamReadingProgress={
+      getState:function(){return {activeChapter:activeId,activeSection:activeSectionId,
+        saved:readSaved(),printing:printing};}
+    };
   }
 
   function wireSidebar(){

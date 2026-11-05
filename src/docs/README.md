@@ -3,6 +3,7 @@
 - **[Design](design/DESIGN_SYSTEM.md)** — semantic components, bilingual typography, layout, and changelog.
 - **[Pagination](pagination/PAGINATION_SYSTEM.md)** — print templates, JS pagination architecture, and testing lessons.
 - **[Hosting/PWA](hosting/PWA_DEPLOYMENT.md)** — GitHub Pages, service worker, offline reading, and installation.
+- **[Reading progress and resume](hosting/READING_POSITION.md)** — whole-book rail, per-chapter gauge, section highlighting and local saved place.
 - **[Hosting upgrade notes](hosting/HOSTING_UPGRADE_NOTES.md)** — social previews, update notification and font caching.
 - **[Windows migration and deployment](hosting/WINDOWS_CMD_DEPLOY.md)** — replace the previous flat checkout safely.
 - **[Dossier editorial revisions](editorial/)** — the 3.4.3 and 3.4.4 editorial history.

@@ -25,3 +25,14 @@ Chrome/Edge's browser print dialog should use **Default** margins.
 Do not rename the sidebar markup IDs in `src/main.html` or remove `inert`
 handling: they are paired with `src/philosophy_notes.js` and checked by
 `src/tests/verify_sidebar.py`.
+
+## Reading-position companion
+
+A slim sticky gold rail shows progress through the **entire book**; the separate
+circular gauge shows progress through the **current chapter**. Its compact label
+uses the current chapter's Arabic or English title. Within numbered content,
+the current § link receives `aria-current="location"` even if its branch is
+collapsed (without opening that branch). A returning device may offer a local,
+optional Resume Reading choice; see [Reading position](READING_POSITION.md).
+All reader-position UI is removed for printing and does not alter the print
+engine or core chapter content.

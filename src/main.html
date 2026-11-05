@@ -41,6 +41,41 @@
 </head>
 <body>
 
+<!-- Screen-only reading position indicators. One rail spans the entire book;
+     the circular gauge tracks only the current dossier. -->
+<header id="readingProgressHeader" class="reader-progress-header" aria-label="Reading progress">
+  <div class="reader-progress-row">
+    <span class="reader-progress-bookname">11AM · HIKAM</span>
+    <span class="reader-progress-location">
+      <span id="readerCurrentNumber">Complete dossier</span>
+      <bdi id="readerCurrentTitle" dir="auto">Start reading</bdi>
+      <span id="readerCurrentSection" class="reader-progress-section" hidden></span>
+    </span>
+    <span class="reader-progress-total" id="readerBookPercent" aria-hidden="true">0%</span>
+    <span id="readerChapterRing" class="reader-progress-ring" role="progressbar"
+          aria-label="Current chapter progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <span id="readerChapterPercent" aria-hidden="true">—</span>
+    </span>
+  </div>
+  <div id="readerBookTrack" class="reader-progress-track" role="progressbar"
+       aria-label="Progress through the complete book" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div id="readerBookRail" class="reader-progress-rail"></div>
+  </div>
+</header>
+
+<section id="resumeReaderPrompt" class="resume-reader-prompt" role="region"
+         aria-labelledby="resumeReaderTitle" hidden>
+  <button id="resumeReaderDismiss" type="button" class="resume-reader-dismiss" aria-label="Dismiss resume reading suggestion">&#10005;</button>
+  <div class="resume-reader-eyebrow">Your reading place on this device</div>
+  <strong id="resumeReaderTitle">Continue where you left off?</strong>
+  <p id="resumeReaderDescription"></p>
+  <div class="resume-reader-actions">
+    <button type="button" id="resumeReaderContinue" class="resume-reader-primary">Continue reading</button>
+    <button type="button" id="resumeReaderStart">Start at beginning</button>
+    <button type="button" id="resumeReaderForget">Forget saved place</button>
+  </div>
+</section>
+
 <!-- ============================================================ -->
 <!-- SIDEBAR NAVIGATION (screen only -- see @media print rule)     -->
 <!-- Self-building: philosophy_notes.js reads the Topic dividers   -->

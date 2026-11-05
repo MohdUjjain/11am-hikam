@@ -501,3 +501,20 @@ and Arabic diacritic-insensitive matching. Expand/Collapse All are explicit.
 and the generated reader as part of the GitHub Actions workflow. Browser testing
 should additionally exercise keyboard navigation, narrow viewports, Arabic,
 section links, search, print selection and afterprint restoration.
+
+## 2026-11-05 — Screen-only reading orientation and local continuity
+
+A 3px gold rail in `#readingProgressHeader` denotes physical progress through
+the **entire** assembled book; the separate 34px circular gauge denotes the
+active chapter's progress. They are deliberately different shapes and do not
+represent exam completion. The header respects `lang=ar` / `dir=rtl` on Arabic
+chapter titles, truncates long headings on narrow screens, and lives outside
+all print-page surfaces. On-screen headings `h2.sec` get a 54px scroll margin
+to compensate for the narrow sticky bar; `@media print` removes the bar and
+the optional resume prompt completely.
+
+Current § highlighting derives from the existing chapter scroll tracker.
+Never auto-open manual TOC disclosures; keep both active chapter and section
+markers legible. The resume prompt stays in the navy/parchment/gold palette
+and never auto-navigates. Technical rules, privacy, and QA are documented in
+`src/docs/hosting/READING_POSITION.md`.
