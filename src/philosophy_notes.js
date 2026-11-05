@@ -176,6 +176,9 @@
       var ekickEl = endblock.querySelector('.ekick');
       var revisionLabel = 'Revision · ' + (ekickEl ? ekickEl.textContent.replace(/.*·/,'').trim() : '');
       var endblockClone = endblock.cloneNode(true);
+      // A temporary, screen-only search preview is not revision content.
+      // Exclude it before the measuring rig calculates printed page heights.
+      endblockClone.querySelectorAll('.reader-temporary-revision-note').forEach(function(note){note.remove();});
       darkPages = paginateFlow(collectChildren(endblockClone), {
         dark:true, rtl:isRTL, hue:hue, lang:lang,
         kicker: subtopicText, title: revisionLabel,
@@ -849,15 +852,23 @@
     });
   }
 
-  // This toggles only the ON-SCREEN reading view. The print composer
-  // independently decides which revision pages to include during printing.
+  // A saved "hide revisions" preference controls the READING VIEW only.
+  // Search may reveal a single relevant revision temporarily, without saving
+  // a different preference or exposing unrelated revision blocks.
   function wireRevisionVisibility(){
     var input=document.getElementById('tocShowRevisionBlocks');
     var status=document.getElementById('tocRevisionVisibilityStatus');
     var root=document.documentElement;
     var key='11am-hikam-show-revisions-v1';
     if(!input)return;
+    var temporaryBlock=null, temporaryNote=null;
+    function clearTemporary(){
+      if(temporaryNote){temporaryNote.remove();temporaryNote=null;}
+      if(temporaryBlock){temporaryBlock.classList.remove('reader-search-reveal');temporaryBlock=null;}
+    }
+    function notify(){window.dispatchEvent(new Event('hikam:revision-visibility'));}
     function apply(show,persist){
+      clearTemporary();
       root.classList.toggle('reader-hide-revisions',!show);
       input.checked=show;
       if(status)status.textContent=show ? 'Revision Blocks are visible in every chapter.' :
@@ -865,15 +876,41 @@
       if(persist){
         try{localStorage.setItem(key,String(show));}catch(error){/* In-memory setting still works. */}
       }
-      window.dispatchEvent(new Event('hikam:revision-visibility'));
+      notify();
     }
-    // The class may already be set by the early head script, preventing
-    // flicker when an installed offline reader starts at the saved setting.
+    // The head script applies stored visibility before the first paint.
     apply(!root.classList.contains('reader-hide-revisions'),false);
     input.addEventListener('change',function(){apply(input.checked,true);});
     window.__hikamRevisions={
       isVisible:function(){return !root.classList.contains('reader-hide-revisions');},
-      show:function(){apply(true,true);}
+      show:function(){apply(true,true);},
+      clearTemporary:function(){if(temporaryBlock){clearTemporary();notify();}},
+      revealTemporary:function(target){
+        var block=target&&target.closest('.end-block');
+        if(!block||!root.classList.contains('reader-hide-revisions'))return false;
+        if(block===temporaryBlock)return true;
+        clearTemporary();
+        temporaryBlock=block;
+        block.classList.add('reader-search-reveal');
+        var note=document.createElement('div');
+        note.className='reader-temporary-revision-note';
+        note.setAttribute('role','status');
+        var message=document.createElement('span');
+        message.textContent='Temporary search preview. Your saved Hide Revision Blocks setting is unchanged.';
+        var close=document.createElement('button');
+        close.type='button';close.textContent='Hide preview';
+        close.addEventListener('click',function(){
+          var chapter=block.closest('section.chapter');
+          clearTemporary();notify();
+          // Never strand keyboard focus inside a newly hidden element.
+          if(chapter){chapter.tabIndex=-1;chapter.focus({preventScroll:true});}
+        });
+        note.append(message,close);
+        block.insertBefore(note,block.firstChild);
+        temporaryNote=note;
+        notify();
+        return true;
+      }
     };
   }
 
@@ -989,10 +1026,9 @@
 
 
 /* ============================================================
-   FULL-BOOK SEARCH — a compact search field in the fixed reading bar.
-   Searches the CONTENT of every dossier (including definitions, comparisons,
-   callouts and Arabic prose), not just the sidebar's titles.
-   Results scroll to the exact native content block without altering sources.
+   FULL-BOOK SEARCH — meaningful source text, including diagrams and visual
+   learning tools. Search never modifies authored chapter HTML or preferences.
+   Results rank by relevance, page in batches, and keep original text for display.
    ============================================================ */
 (function(){
   'use strict';
@@ -1003,90 +1039,243 @@
     var hits=document.getElementById('readerSearchHits');
     var status=document.getElementById('readerSearchHelp');
     if(!input||!panel||!hits||!box)return;
-    var entries=null, searchTimer=null, lastResults=[];
-    function normalize(s){
-      return String(s||'').normalize('NFKD').replace(/[\u064B-\u065F\u0670\u0640]/g,'')
-        .replace(/[\u0300-\u036F]/g,'').toLocaleLowerCase().replace(/\s+/g,' ').trim();
+    var entries=null, searchTimer=null, lastResults=[],rendered=0;
+    var PAGE_SIZE=30;
+    var skipInside='.js-print-page, .chapter-endnav, script, style, template, noscript, [hidden], [aria-hidden="true"]';
+    var semanticChildren='h1,h2,h3,h4,h5,h6,p,li,td,th,dt,dd,blockquote,figcaption,caption,pre,ul,ol,table';
+    var candidates='h1,h2,h3,h4,h5,h6,p,li,td,th,dt,dd,blockquote,figcaption,caption,pre,div,span,cite,small,svg text';
+
+    // Return normalized text AND a UTF-16 offset map into the exact displayed
+    // characters. This permits correct excerpt windows and highlights even
+    // when Arabic harakat, alef variants or Latin accents are normalized.
+    function mappedText(source){
+      var value=String(source||''),out='',offsets=[];
+      for(var i=0;i<value.length;){
+        var char=String.fromCodePoint(value.codePointAt(i));
+        var start=i;i+=char.length;
+        var piece=char.normalize('NFKD').toLocaleLowerCase()
+          .replace(/[\u064B-\u065F\u0670\u0640\u0300-\u036F]/g,'')
+          .replace(/[\u0622\u0623\u0625\u0671]/g,'ا')
+          .replace(/\u0649/g,'ي').replace(/\u0629/g,'ه');
+        for(var j=0;j<piece.length;j++){
+          var unit=piece[j];
+          if(/\s/.test(unit)){
+            if(out && out[out.length-1]!==' '){out+=' ';offsets.push(start);}
+          }else{out+=unit;offsets.push(start);}
+        }
+      }
+      if(out.endsWith(' ')){out=out.slice(0,-1);offsets.pop();}
+      return {text:out,offsets:offsets};
     }
+    function normalize(source){return mappedText(source).text;}
     function hide(){panel.hidden=true;input.setAttribute('aria-expanded','false');}
     function open(){panel.hidden=false;input.setAttribute('aria-expanded','true');}
+    function meaningfulText(node){return node.textContent.replace(/\s+/g,' ').trim();}
     function makeIndex(){
       if(entries)return entries;
       entries=[];
-      var selector='h1,h2,h3,h4,p,li,td,th,dt,dd,blockquote,figcaption,caption';
       document.querySelectorAll('section.chapter[id]').forEach(function(chapter){
         var titleNode=chapter.querySelector('.chapter-title');
-        var title=titleNode?titleNode.textContent.trim().replace(/\s+/g,' '):chapter.id;
+        var title=titleNode?meaningfulText(titleNode):chapter.id;
         var chapterNumber=chapter.id.replace(/^ch/,'').replaceAll('-','.');
         var rtl=chapter.lang==='ar'||chapter.classList.contains('rtl');
-        entries.push({text:normalize(chapterNumber+' '+title),display:title,chapter:chapter,
-          title:title,number:chapterNumber,rtl:rtl,node:chapter,kind:'chapter'});
-        chapter.querySelectorAll(selector).forEach(function(node){
-          if(node.closest('.js-print-page'))return;
-          // Child paragraphs and cells already index their own text; avoid a
-          // duplicate entry for a parent list item or blockquote.
-          if(node.querySelector('p,li,td,th,blockquote,h1,h2,h3,h4'))return;
-          var value=node.textContent.trim().replace(/\s+/g,' ');
-          if(!value||value.length<3)return;
-          entries.push({text:normalize(value),display:value,chapter:chapter,
-            title:title,number:chapterNumber,rtl:rtl,node:node,kind:'content'});
+        var exact= mappedText(chapterNumber+' '+title);
+        entries.push({text:exact.text,display:chapterNumber+' · '+title,offsets:exact.offsets,
+          chapter:chapter,title:title,number:chapterNumber,rtl:rtl,node:chapter,
+          kind:'chapter',order:entries.length});
+        // Keep the smallest meaningful text element, while ALSO allowing a
+        // compact visual wrapper when a phrase spans sibling inline nodes.
+        // Do not index giant chapter containers or duplicate printed clones.
+        var sameText=new Map(),currentSection='';
+        chapter.querySelectorAll(candidates).forEach(function(node){
+          if(node.closest(skipInside))return;
+          if(node.matches('h2.sec'))currentSection=meaningfulText(node);
+          var location=node.closest('.end-block')?'Revision & recall':currentSection;
+          var tag=node.localName;
+          if((tag==='div'||tag==='span')&&node.querySelector(semanticChildren))return;
+          var value=meaningfulText(node);
+          if(value.length<3)return;
+          if((tag==='div'||tag==='span')&&value.length>850)return;
+          var mapped=mappedText(value);
+          if(mapped.text.length<3)return;
+          var collisions=sameText.get(mapped.text)||[];
+          var existing=collisions.find(function(e){return node.contains(e.node)||e.node.contains(node);});
+          if(existing){
+            if(existing.node.contains(node)){
+              existing.node=node;existing.display=value;existing.offsets=mapped.offsets;
+            }
+            return;
+          }
+          var entry={text:mapped.text,display:value,offsets:mapped.offsets,
+            chapter:chapter,title:title,number:chapterNumber,rtl:rtl,node:node,
+            kind:/^h[1-6]$/.test(tag)?'heading':'content',
+            location:location,order:entries.length};
+          entries.push(entry);collisions.push(entry);sameText.set(mapped.text,collisions);
         });
       });
       return entries;
     }
-    function context(text,query){
-      var lower=text.toLocaleLowerCase(),position=lower.indexOf(query.toLocaleLowerCase());
-      if(position<0){position=0;}
-      var start=Math.max(0,position-58),end=Math.min(text.length,position+115);
-      return (start?'…':'')+text.slice(start,end)+(end<text.length?'…':'');
+    function occurrences(text,token,limit){
+      var found=[],from=0,at=0;
+      while(found.length<(limit||60) && (at=text.indexOf(token,from))!==-1){
+        found.push(at);from=at+Math.max(1,token.length);
+      }
+      return found;
     }
-    function choose(entry){
-      hide();
-      // A search result is an explicit request to see that passage. If it is
-      // inside a hidden Revision Block, reveal revisions first so navigation
-      // never lands on a display:none target.
-      if(entry.node.closest('.end-block') && window.__hikamRevisions &&
-         !window.__hikamRevisions.isVisible())window.__hikamRevisions.show();
-      // A precise content location can be reached without inserting new ids
-      // into the authored notes or turning search results into print links.
-      entry.node.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});
-      input.blur();
-    }
-    function run(){
-      var query=normalize(input.value);
-      hits.replaceChildren();lastResults=[];
-      if(!query){hide();return;}
-      var terms=query.split(' ').filter(Boolean),found=[],total=0;
-      makeIndex().forEach(function(entry){
-        if(terms.every(function(term){return entry.text.includes(term);})){
-          total++;if(found.length<45)found.push(entry);
+    function locate(entry,terms,phrase){
+      var exact=entry.text.indexOf(phrase);
+      if(exact>=0)return {from:exact,to:exact+phrase.length,exact:true,positions:[exact]};
+      var lists=terms.map(function(t){return occurrences(entry.text,t,60);});
+      if(lists.some(function(a){return !a.length;}))return null;
+      var best=null;
+      lists[0].forEach(function(anchor){
+        var positions=[anchor];
+        for(var i=1;i<lists.length;i++){
+          var nearest=lists[i][0];
+          lists[i].forEach(function(p){if(Math.abs(p-anchor)<Math.abs(nearest-anchor))nearest=p;});
+          positions.push(nearest);
         }
+        var from=Math.min.apply(null,positions);
+        var to=Math.max.apply(null,positions.map(function(p,i){return p+terms[i].length;}));
+        if(!best||to-from<best.to-best.from)best={from:from,to:to,exact:false,positions:positions};
       });
-      lastResults=found;
-      status.textContent=total ? total+' match'+(total===1?'':'es')+' across the notes'+(total>45?' (showing first 45)':'')+'.' : 'No matches found in the 34 dossiers.';
-      found.forEach(function(entry){
+      return best;
+    }
+    function isAncestorOfMatch(entry,other){
+      return entry.kind!=='chapter'&&other.kind!=='chapter'&&
+        entry.chapter===other.chapter && entry!==other && entry.node.contains(other.node);
+    }
+    function scoredMatches(terms,phrase){
+      var found=[];
+      makeIndex().forEach(function(entry){
+        if(!terms.every(function(t){return entry.text.includes(t);}))return;
+        var window=locate(entry,terms,phrase);if(!window)return;
+        var span=window.to-window.from;
+        var rank=(window.exact?160:0)+Math.max(0,90-span)+
+          (entry.kind==='chapter'?260:entry.kind==='heading'?135:0)+
+          (window.from===0?14:0)+Math.max(0,28-Math.floor(entry.text.length/40));
+        found.push({entry:entry,window:window,rank:rank});
+      });
+      // If a specific child contains all query terms, don't also show its
+      // containing diagram/row as a second hit. Retain a wrapper only when
+      // the phrase genuinely spans multiple siblings.
+      var matches=found.filter(function(candidate){
+        return !found.some(function(other){
+          return other.entry!==candidate.entry &&
+            isAncestorOfMatch(candidate.entry,other.entry);
+        });
+      });
+      matches.sort(function(a,b){return b.rank-a.rank||a.entry.order-b.entry.order;});
+      return matches;
+    }
+    function excerpt(entry,window,terms){
+      var raw=entry.display,map=entry.offsets;
+      var fromPos=map[window.from]||0;
+      var toPos=(map[window.to-1]===undefined?raw.length:map[window.to-1]+1);
+      var start=Math.max(0,fromPos-68),end=Math.min(raw.length,Math.max(toPos+64,start+170));
+      if(end-start>260){end=Math.min(raw.length,start+260);}
+      var highlights=[];
+      terms.forEach(function(term){
+        occurrences(entry.text,term,120).forEach(function(index){
+          var a=map[index],b=(map[index+term.length-1]||a)+1;
+          if(a!==undefined&&b>start&&a<end)highlights.push({start:Math.max(a,start),end:Math.min(b,end)});
+        });
+      });
+      highlights.sort(function(a,b){return a.start-b.start;});
+      var merged=[];
+      highlights.forEach(function(s){
+        if(merged.length&&s.start<=merged[merged.length-1].end)
+          merged[merged.length-1].end=Math.max(s.end,merged[merged.length-1].end);
+        else merged.push({start:s.start,end:s.end});
+      });
+      var fragment=document.createDocumentFragment(),cursor=start;
+      if(start)fragment.appendChild(document.createTextNode('…'));
+      merged.forEach(function(s){
+        if(s.start>cursor)fragment.appendChild(document.createTextNode(raw.slice(cursor,s.start)));
+        var mark=document.createElement('mark');mark.textContent=raw.slice(s.start,s.end);
+        fragment.appendChild(mark);cursor=s.end;
+      });
+      if(cursor<end)fragment.appendChild(document.createTextNode(raw.slice(cursor,end)));
+      if(end<raw.length)fragment.appendChild(document.createTextNode('…'));
+      return fragment;
+    }
+    function choose(result){
+      hide();
+      var entry=result.entry, revisions=window.__hikamRevisions;
+      if(revisions){
+        if(entry.node.closest('.end-block'))revisions.revealTemporary(entry.node);
+        else revisions.clearTemporary();
+      }
+      var target=entry.node;
+      // Keep keyboard and screen-reader focus in sync with the visible result.
+      // IDs and authored chapter HTML are not modified.
+      var hadTabindex=target.hasAttribute('tabindex'),oldTabindex=target.getAttribute('tabindex');
+      if(!hadTabindex)target.setAttribute('tabindex','-1');
+      target.classList.add('reader-search-target');
+      target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});
+      target.focus({preventScroll:true});
+      target.addEventListener('blur',function clean(){
+        target.classList.remove('reader-search-target');
+        if(hadTabindex)target.setAttribute('tabindex',oldTabindex);
+        else target.removeAttribute('tabindex');
+      },{once:true});
+    }
+    function renderNext(){
+      var oldMore=hits.querySelector('.reader-search-more');if(oldMore)oldMore.remove();
+      var until=Math.min(lastResults.length,rendered+PAGE_SIZE);
+      for(;rendered<until;rendered++){
+        var result=lastResults[rendered],entry=result.entry;
         var button=document.createElement('button');
         button.type='button';button.className='reader-search-hit';
         var label=document.createElement('span');label.className='reader-hit-chapter';
         label.textContent='Chapter '+entry.number+' · '+entry.title;
+        label.dir='auto';if(entry.rtl)label.lang='ar';
+        if(entry.location){
+          var locationLabel=document.createElement('span');
+          locationLabel.className='reader-hit-location';
+          locationLabel.textContent=entry.location;
+          locationLabel.dir='auto';if(entry.rtl)locationLabel.lang='ar';
+          button.appendChild(locationLabel);
+        }
         var snippet=document.createElement('span');snippet.className='reader-hit-context';
-        snippet.textContent=context(entry.display,input.value.trim());
+        snippet.appendChild(excerpt(entry,result.window,currentTerms));
         snippet.dir='auto';if(entry.rtl)snippet.lang='ar';
         button.append(label,snippet);
-        button.addEventListener('click',function(){choose(entry);});
+        button.addEventListener('click',function(){choose(result);});
         hits.appendChild(button);
-      });
-      open();
+      }
+      if(rendered<lastResults.length){
+        var more=document.createElement('button');
+        more.type='button';more.className='reader-search-more';
+        more.textContent='Show '+Math.min(PAGE_SIZE,lastResults.length-rendered)+' more results ('+
+          (lastResults.length-rendered)+' remaining)';
+        more.addEventListener('click',function(){
+          var previous=rendered;renderNext();
+          var items=hits.querySelectorAll('.reader-search-hit');
+          if(items[previous])items[previous].focus();
+        });
+        hits.appendChild(more);
+      }
+      status.textContent=lastResults.length?
+        'Showing '+rendered+' of '+lastResults.length+' matching passages. Results ordered by relevance.' :
+        'No matches found in the 34 dossiers.';
     }
-    input.addEventListener('input',function(){
-      clearTimeout(searchTimer);searchTimer=setTimeout(run,100);
-    });
+    var currentTerms=[];
+    function run(){
+      var phrase=normalize(input.value);
+      hits.replaceChildren();lastResults=[];rendered=0;
+      if(!phrase){hide();return;}
+      currentTerms=phrase.split(' ').filter(Boolean);
+      lastResults=scoredMatches(currentTerms,phrase);
+      renderNext();open();
+    }
+    input.addEventListener('input',function(){clearTimeout(searchTimer);searchTimer=setTimeout(run,120);});
     input.addEventListener('focus',function(){if(input.value.trim())run();});
     input.addEventListener('keydown',function(ev){
       if(ev.key==='Escape'){ev.preventDefault();hide();input.blur();}
-      else if(ev.key==='ArrowDown' && !panel.hidden){
+      else if(ev.key==='ArrowDown'&&!panel.hidden){
         var first=hits.querySelector('button');if(first){ev.preventDefault();first.focus();}
-      }else if(ev.key==='Enter' && !panel.hidden && lastResults[0]){
+      }else if(ev.key==='Enter'&&!panel.hidden&&lastResults[0]){
         ev.preventDefault();choose(lastResults[0]);
       }
     });
@@ -1094,13 +1283,12 @@
       var items=Array.from(hits.querySelectorAll('button'));
       var current=items.indexOf(document.activeElement);
       if(ev.key==='Escape'){ev.preventDefault();hide();input.focus();}
-      if(ev.key==='ArrowDown' && current>=0){ev.preventDefault();items[Math.min(items.length-1,current+1)].focus();}
-      if(ev.key==='ArrowUp' && current>=0){ev.preventDefault();if(current===0)input.focus();else items[current-1].focus();}
+      if(ev.key==='ArrowDown'&&current>=0){ev.preventDefault();items[Math.min(items.length-1,current+1)].focus();}
+      if(ev.key==='ArrowUp'&&current>=0){ev.preventDefault();if(current===0)input.focus();else items[current-1].focus();}
     });
     document.addEventListener('pointerdown',function(ev){if(!box.contains(ev.target))hide();});
-    // Exposed for deterministic navigation / Arabic search smoke tests.
     window.__hikamFullTextSearch={run:run,getStats:function(){return {
-      entries:makeIndex().length,matched:lastResults.length,open:!panel.hidden};}};
+      entries:makeIndex().length,matched:lastResults.length,shown:rendered,open:!panel.hidden};}};
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initFullBookSearch);
   else initFullBookSearch();

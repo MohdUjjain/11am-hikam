@@ -36,5 +36,7 @@ jobs:
         run: python src/tests/verify_reader_search_tabs.py
       - name: Verify persistent on-screen revision visibility
         run: python src/tests/verify_revision_visibility.py
+      - name: Verify complete search indexing and revision preference safety
+        run: python src/tests/verify_search_integrity.py
       - name: Test offline worker's cache lifecycle
         run: node src/tests/test_offline_cache.mjs

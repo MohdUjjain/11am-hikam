@@ -2174,3 +2174,34 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
   .toc-tools-revision .toc-revision-status { color:#F6DDA3; font-weight:600; }
 }
 @media print { .toc-tools-revision { display:none !important; } }
+
+/* Search-integrity polish: legible hit emphasis, progressive results and an
+   explicitly temporary revision preview. Screen-only; print never changes. */
+@media screen {
+  .reader-hit-location {font:500 10px/1.35 var(--font-sans);
+    color:#C9D2DE;unicode-bidi:plaintext;overflow-wrap:anywhere;}
+  .reader-hit-location[lang=ar] {font-family:var(--font-arabic);font-size:13px;}
+  .reader-hit-context mark {background:#F1D68F;color:#15243A;padding:0 1px;
+    border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+  .reader-search-more {width:100%;border:1px solid rgba(231,216,177,.6);
+    border-radius:7px;background:rgba(255,255,255,.1);color:#F7F1E3;
+    padding:12px 10px;font:600 12px var(--font-sans);cursor:pointer;}
+  .reader-search-more:hover,.reader-search-more:focus-visible {
+    background:rgba(168,124,31,.28);outline:2px solid var(--gold-pale);}
+  section.chapter .reader-search-target:focus {outline:3px solid #C4943C;
+    outline-offset:5px;scroll-margin-top:80px;}
+  html.reader-hide-revisions section.chapter > .end-block.reader-search-reveal {
+    display:block!important;}
+  .reader-temporary-revision-note {display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:8px;
+    margin:0 0 20px;padding:10px 12px;border:1px solid #E4C581;
+    border-radius:8px;background:#26354A;color:#FCF7EA;
+    font:500 12px/1.5 var(--font-sans);direction:ltr;text-align:start;}
+  .reader-temporary-revision-note button {border:1px solid #E4C581;
+    border-radius:5px;background:#1B2A40;color:#FCF7EA;
+    padding:7px 10px;cursor:pointer;font:600 12px var(--font-sans);}
+  .reader-temporary-revision-note button:focus-visible{outline:2px solid #E4C581;}
+}
+@media print {
+  .reader-temporary-revision-note {display:none!important;}
+}

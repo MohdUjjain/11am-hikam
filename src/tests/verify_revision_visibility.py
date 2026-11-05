@@ -13,7 +13,7 @@ assert 'html.reader-hide-revisions section.chapter > .end-block' in css
 assert '@media screen' in css and '@media print' in css
 for term in ('wireRevisionVisibility()', 'visibleRevisionEnd(chapter)',
              "window.addEventListener('hikam:revision-visibility'",
-             'window.__hikamRevisions.show()'):
+             'revisions.revealTemporary(entry.node)'):
     assert term in js, term
 assert 'if (state.includeRevision)' in js
 assert 'var endblockClone = endblock.cloneNode(true);' in js
