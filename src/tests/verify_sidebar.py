@@ -24,8 +24,9 @@ def check():
     p=Scanner();p.feed(html)
     must=['tocFab','tocBackdrop','tocSidebar','tocSidebarHeading','tocSidebarClose',
           'tocPrintDisclosure','tocPrintRange','tocPrintPreview','tocPrintError',
-          'tocPrintRevision','tocPrintSelected','tocPrintAll','tocSearch',
-          'tocSearchResults','tocExpandAll','tocCollapseAll','tocTree']
+          'tocPrintRevision','tocPrintSelected','tocPrintAll','readerSearchInput',
+          'readerSearchResults','tocIndexTab','tocToolsTab','tocIndexPanel','tocToolsPanel',
+          'tocExpandAll','tocCollapseAll','tocTree']
     for ident in must:
         assert ident in p.ids, f'Missing sidebar control: {ident}'
         assert f'id="{ident}"' in main, f'Canonical template omits {ident}'
@@ -36,9 +37,9 @@ def check():
     assert p.ids['tocPrintRange'][1].get('aria-describedby')
     assert 'checked' in p.ids['tocPrintRevision'][1]
     assert p.ids['tocBackdrop'][1].get('aria-hidden')=='true'
-    assert p.ids['tocSearch'][0]=='input'
+    assert p.ids['readerSearchInput'][0]=='input'
     assert 'disabled' in p.ids['tocPrintSelected'][1]
-    for method in ('setGroupExpanded','setSectionExpanded','wireScrollSpy','wireSearch','wireSidebar',
+    for method in ('setGroupExpanded','setSectionExpanded','wireScrollSpy','wireTabs','initFullBookSearch','wireSidebar',
                    'wirePrint','stageSelectedOrder','restoreSelectedOrder','parseRange','wireExpandControls'):
         assert 'function '+method in js, f'UI handler missing: {method}'
     for item in ('aria-current','aria-expanded','aria-controls','aria-hidden','aria-invalid',
@@ -48,7 +49,7 @@ def check():
     assert 'body.print-chapters-only > :not(section.chapter)' in css
     assert '#tocBackdrop {display:none!important;}' in css
     assert 'prefers-reduced-motion:reduce' in css
-    print('Sidebar contract verified: focus-safe dialog, search, section anchors, expansion, ordered print and revision toggle.')
+    print('Sidebar contract verified: accessible tabs, full-book search, sections, ordered print and revision toggle.')
 
 if __name__=='__main__':
     try:check()

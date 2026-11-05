@@ -548,6 +548,8 @@
     var startOver=document.getElementById('resumeReaderStart');
     var forget=document.getElementById('resumeReaderForget');
     var dismiss=document.getElementById('resumeReaderDismiss');
+    var resumeToolbar=document.getElementById('readerResumeShortcut');
+    var resumeTools=document.getElementById('tocToolsResume');
     var printing=false, allowSave=false, lastSavedAt=0, savedPosition=null;
     var hasReadMovement=false, suspendUntil=0, pendingUserScroll=false;
 
@@ -564,6 +566,10 @@
       return null;
     }
     function clearSaved(){try{localStorage.removeItem(STORAGE_KEY);}catch(err){}}
+    function syncContinueButtons(){
+      if(resumeToolbar)resumeToolbar.hidden=!savedPosition;
+      if(resumeTools)resumeTools.hidden=!savedPosition;
+    }
     function setSectionActive(id){
       if(id!==activeSectionId){
         if(sectionLinks[activeSectionId]){
@@ -617,6 +623,7 @@
       var now=Date.now();if(!force && now-lastSavedAt<650)return;
       try{
         localStorage.setItem(STORAGE_KEY,JSON.stringify(position));
+        savedPosition=position;syncContinueButtons();
         lastSavedAt=now;
       }catch(err){/* storage can be unavailable or full */}
     }
@@ -712,6 +719,7 @@
       request(false);
     }
     savedPosition=readSaved();
+    syncContinueButtons();
     // A saved position is never overwritten by the cover on first paint.
     allowSave=!savedPosition;
     function showResumeIfAppropriate(){
@@ -731,12 +739,18 @@
       prompt.hidden=false;
     }
     if(resume)resume.addEventListener('click',function(){if(savedPosition)restorePosition(savedPosition);});
+    if(resumeToolbar)resumeToolbar.addEventListener('click',function(){if(savedPosition)restorePosition(savedPosition);});
+    if(resumeTools)resumeTools.addEventListener('click',function(){
+      if(!savedPosition)return;
+      document.getElementById('tocSidebarClose')?.click();
+      restorePosition(savedPosition);
+    });
     if(startOver)startOver.addEventListener('click',function(){
-      clearSaved();savedPosition=null;allowSave=true;hasReadMovement=false;
+      clearSaved();savedPosition=null;allowSave=true;hasReadMovement=false;syncContinueButtons();
       hidePrompt();window.scrollTo({top:0,behavior:'instant'});request(false);
     });
     if(forget)forget.addEventListener('click',function(){
-      clearSaved();savedPosition=null;allowSave=true;hasReadMovement=false;hidePrompt();
+      clearSaved();savedPosition=null;allowSave=true;hasReadMovement=false;syncContinueButtons();hidePrompt();
     });
     if(dismiss)dismiss.addEventListener('click',function(){
       hidePrompt();allowSave=true;hasReadMovement=false; // keep saved record until genuine scroll
@@ -762,7 +776,7 @@
     else window.addEventListener('load',function(){requestAnimationFrame(showResumeIfAppropriate);},{once:true});
     window.__hikamReadingProgress={
       getState:function(){return {activeChapter:activeId,activeSection:activeSectionId,
-        saved:readSaved(),printing:printing};}
+        saved:readSaved(),printing:printing,canResume:!!savedPosition};}
     };
   }
 
@@ -824,6 +838,35 @@
       close(false); // the anchor changes location; don't steal focus back
       if(target){requestAnimationFrame(function(){target.focus({preventScroll:true});});}
     });
+  }
+
+  // Tabbed drawer: one focus-managed Index view, one Tools view.
+  function wireTabs(){
+    var tabs=[document.getElementById('tocIndexTab'),document.getElementById('tocToolsTab')];
+    var panels=[document.getElementById('tocIndexPanel'),document.getElementById('tocToolsPanel')];
+    if(tabs.some(function(t){return !t;})||panels.some(function(p){return !p;}))return;
+    function activate(index,focus){
+      for(var n=0;n<tabs.length;n++){
+        var selected=n===index;
+        tabs[n].setAttribute('aria-selected',String(selected));
+        tabs[n].tabIndex=selected?0:-1;
+        panels[n].hidden=!selected;
+        panels[n].inert=!selected;
+      }
+      if(focus)tabs[index].focus();
+    }
+    tabs.forEach(function(tab,i){
+      tab.addEventListener('click',function(){activate(i,false);});
+      tab.addEventListener('keydown',function(ev){
+        var next=null;
+        if(ev.key==='ArrowRight')next=(i+1)%tabs.length;
+        if(ev.key==='ArrowLeft')next=(i+tabs.length-1)%tabs.length;
+        if(ev.key==='Home')next=0;
+        if(ev.key==='End')next=tabs.length-1;
+        if(next!==null){ev.preventDefault();activate(next,true);}
+      });
+    });
+    activate(0,false);
   }
 
   // Input-order semantics match Literature Dossier's print-selection UX.
@@ -901,9 +944,122 @@
     collectStructure();injectFlatNumbers();
     var tree=document.getElementById('tocTree');
     if(tree)buildTree(tree);
-    searchInput=document.getElementById('tocSearch');
-    wireSearch();wireExpandControls();wireSidebar();wirePrint();wireScrollSpy();
+    wireExpandControls();wireSidebar();wireTabs();wirePrint();wireScrollSpy();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
   else init();
+})();
+
+
+/* ============================================================
+   FULL-BOOK SEARCH — a compact search field in the fixed reading bar.
+   Searches the CONTENT of every dossier (including definitions, comparisons,
+   callouts and Arabic prose), not just the sidebar's titles.
+   Results scroll to the exact native content block without altering sources.
+   ============================================================ */
+(function(){
+  'use strict';
+  function initFullBookSearch(){
+    var input=document.getElementById('readerSearchInput');
+    var box=document.getElementById('readerSearchBox');
+    var panel=document.getElementById('readerSearchResults');
+    var hits=document.getElementById('readerSearchHits');
+    var status=document.getElementById('readerSearchHelp');
+    if(!input||!panel||!hits||!box)return;
+    var entries=null, searchTimer=null, lastResults=[];
+    function normalize(s){
+      return String(s||'').normalize('NFKD').replace(/[\u064B-\u065F\u0670\u0640]/g,'')
+        .replace(/[\u0300-\u036F]/g,'').toLocaleLowerCase().replace(/\s+/g,' ').trim();
+    }
+    function hide(){panel.hidden=true;input.setAttribute('aria-expanded','false');}
+    function open(){panel.hidden=false;input.setAttribute('aria-expanded','true');}
+    function makeIndex(){
+      if(entries)return entries;
+      entries=[];
+      var selector='h1,h2,h3,h4,p,li,td,th,dt,dd,blockquote,figcaption,caption';
+      document.querySelectorAll('section.chapter[id]').forEach(function(chapter){
+        var titleNode=chapter.querySelector('.chapter-title');
+        var title=titleNode?titleNode.textContent.trim().replace(/\s+/g,' '):chapter.id;
+        var chapterNumber=chapter.id.replace(/^ch/,'').replaceAll('-','.');
+        var rtl=chapter.lang==='ar'||chapter.classList.contains('rtl');
+        entries.push({text:normalize(chapterNumber+' '+title),display:title,chapter:chapter,
+          title:title,number:chapterNumber,rtl:rtl,node:chapter,kind:'chapter'});
+        chapter.querySelectorAll(selector).forEach(function(node){
+          if(node.closest('.js-print-page'))return;
+          // Child paragraphs and cells already index their own text; avoid a
+          // duplicate entry for a parent list item or blockquote.
+          if(node.querySelector('p,li,td,th,blockquote,h1,h2,h3,h4'))return;
+          var value=node.textContent.trim().replace(/\s+/g,' ');
+          if(!value||value.length<3)return;
+          entries.push({text:normalize(value),display:value,chapter:chapter,
+            title:title,number:chapterNumber,rtl:rtl,node:node,kind:'content'});
+        });
+      });
+      return entries;
+    }
+    function context(text,query){
+      var lower=text.toLocaleLowerCase(),position=lower.indexOf(query.toLocaleLowerCase());
+      if(position<0){position=0;}
+      var start=Math.max(0,position-58),end=Math.min(text.length,position+115);
+      return (start?'…':'')+text.slice(start,end)+(end<text.length?'…':'');
+    }
+    function choose(entry){
+      hide();
+      // A precise content location can be reached without inserting new ids
+      // into the authored notes or turning search results into print links.
+      entry.node.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});
+      input.blur();
+    }
+    function run(){
+      var query=normalize(input.value);
+      hits.replaceChildren();lastResults=[];
+      if(!query){hide();return;}
+      var terms=query.split(' ').filter(Boolean),found=[],total=0;
+      makeIndex().forEach(function(entry){
+        if(terms.every(function(term){return entry.text.includes(term);})){
+          total++;if(found.length<45)found.push(entry);
+        }
+      });
+      lastResults=found;
+      status.textContent=total ? total+' match'+(total===1?'':'es')+' across the notes'+(total>45?' (showing first 45)':'')+'.' : 'No matches found in the 34 dossiers.';
+      found.forEach(function(entry){
+        var button=document.createElement('button');
+        button.type='button';button.className='reader-search-hit';
+        var label=document.createElement('span');label.className='reader-hit-chapter';
+        label.textContent='Chapter '+entry.number+' · '+entry.title;
+        var snippet=document.createElement('span');snippet.className='reader-hit-context';
+        snippet.textContent=context(entry.display,input.value.trim());
+        snippet.dir='auto';if(entry.rtl)snippet.lang='ar';
+        button.append(label,snippet);
+        button.addEventListener('click',function(){choose(entry);});
+        hits.appendChild(button);
+      });
+      open();
+    }
+    input.addEventListener('input',function(){
+      clearTimeout(searchTimer);searchTimer=setTimeout(run,100);
+    });
+    input.addEventListener('focus',function(){if(input.value.trim())run();});
+    input.addEventListener('keydown',function(ev){
+      if(ev.key==='Escape'){ev.preventDefault();hide();input.blur();}
+      else if(ev.key==='ArrowDown' && !panel.hidden){
+        var first=hits.querySelector('button');if(first){ev.preventDefault();first.focus();}
+      }else if(ev.key==='Enter' && !panel.hidden && lastResults[0]){
+        ev.preventDefault();choose(lastResults[0]);
+      }
+    });
+    hits.addEventListener('keydown',function(ev){
+      var items=Array.from(hits.querySelectorAll('button'));
+      var current=items.indexOf(document.activeElement);
+      if(ev.key==='Escape'){ev.preventDefault();hide();input.focus();}
+      if(ev.key==='ArrowDown' && current>=0){ev.preventDefault();items[Math.min(items.length-1,current+1)].focus();}
+      if(ev.key==='ArrowUp' && current>=0){ev.preventDefault();if(current===0)input.focus();else items[current-1].focus();}
+    });
+    document.addEventListener('pointerdown',function(ev){if(!box.contains(ev.target))hide();});
+    // Exposed for deterministic navigation / Arabic search smoke tests.
+    window.__hikamFullTextSearch={run:run,getStats:function(){return {
+      entries:makeIndex().length,matched:lastResults.length,open:!panel.hidden};}};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initFullBookSearch);
+  else initFullBookSearch();
 })();

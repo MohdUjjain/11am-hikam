@@ -51,6 +51,19 @@
       <bdi id="readerCurrentTitle" dir="auto">Start reading</bdi>
       <span id="readerCurrentSection" class="reader-progress-section" hidden></span>
     </span>
+    <div id="readerSearchBox" class="reader-search-box" role="search" aria-label="Search the complete book">
+      <label class="reader-sr-only" for="readerSearchInput">Search all notes, Arabic and English</label>
+      <input id="readerSearchInput" type="search" placeholder="Search notes…" autocomplete="off"
+             aria-controls="readerSearchResults" aria-expanded="false"
+             aria-describedby="readerSearchHelp" spellcheck="false">
+      <span class="reader-search-icon" aria-hidden="true">⌕</span>
+      <div id="readerSearchResults" class="reader-search-results" aria-label="Search results" hidden>
+        <p id="readerSearchHelp" class="reader-search-status" role="status" aria-live="polite">Type to search chapters, paragraphs, tables and learning aids.</p>
+        <div id="readerSearchHits" class="reader-search-hits"></div>
+      </div>
+    </div>
+    <button id="readerResumeShortcut" class="reader-resume-shortcut" type="button" hidden
+            title="Continue from your saved reading place" aria-label="Continue reading from your saved place">↶</button>
     <span class="reader-progress-total" id="readerBookPercent" aria-hidden="true">0%</span>
     <span id="readerChapterRing" class="reader-progress-ring" role="progressbar"
           aria-label="Current chapter progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -92,6 +105,28 @@
     </div>
     <button type="button" id="tocSidebarClose" aria-label="Close contents">&#10005;</button>
   </div>
+  <div class="toc-tabs" role="tablist" aria-label="Contents sidebar views">
+    <button type="button" id="tocIndexTab" class="toc-tab" role="tab" aria-selected="true"
+            aria-controls="tocIndexPanel" tabindex="0">Index</button>
+    <button type="button" id="tocToolsTab" class="toc-tab" role="tab" aria-selected="false"
+            aria-controls="tocToolsPanel" tabindex="-1">Tools</button>
+  </div>
+  <div id="tocIndexPanel" class="toc-tab-panel toc-index-panel" role="tabpanel" aria-labelledby="tocIndexTab">
+    <div class="toc-index-actions">
+    <div class="toc-expand-actions">
+      <button type="button" id="tocExpandAll">Expand all</button>
+      <button type="button" id="tocCollapseAll">Collapse all</button>
+    </div>
+    </div>
+    <nav class="toc-tree" id="tocTree" aria-label="Book contents and sections"></nav>
+  </div>
+  <div id="tocToolsPanel" class="toc-tab-panel toc-tools-panel" role="tabpanel"
+       aria-labelledby="tocToolsTab" hidden inert>
+    <section class="toc-tools-resume">
+      <h3>Reading position</h3>
+      <button type="button" id="tocToolsResume" class="toc-resume-action" hidden>↶ Continue reading</button>
+      <p>Your reading place stays on this device. You can continue from the header as well.</p>
+    </section>
   <details class="toc-print-disclosure" id="tocPrintDisclosure">
     <summary>Print / Export PDF</summary>
     <div class="toc-print-panel">
@@ -108,16 +143,7 @@
       <p class="hint">Selected chapters print without the book's cover and topic dividers. For complete-book printing, use Print All. In Chrome/Edge, leave Margins on "Default".</p>
     </div>
   </details>
-  <div class="toc-search-tools">
-    <label for="tocSearch">Find a chapter or section</label>
-    <input type="search" id="tocSearch" placeholder="Title, number, or topic…" autocomplete="off" aria-describedby="tocSearchResults">
-    <p id="tocSearchResults" role="status" aria-live="polite"></p>
-    <div class="toc-expand-actions">
-      <button type="button" id="tocExpandAll">Expand all</button>
-      <button type="button" id="tocCollapseAll">Collapse all</button>
-    </div>
-  </div>
-  <nav class="toc-tree" id="tocTree" aria-label="Book contents and sections"></nav>
+
   <!-- PWA availability status lives only in the screen sidebar and does not affect the book/PDF. -->
   <section class="offline-reader-panel" aria-label="Offline reading">
     <strong>Offline reading</strong>
