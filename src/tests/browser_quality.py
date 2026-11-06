@@ -178,6 +178,32 @@ def full_text_and_keyboard(browser, url):
     assert page.evaluate('document.activeElement.closest("section.chapter") !== null')
     assert not page.locator('#readerSearchResults').is_visible()
     page.screenshot(path=str(ARTIFACTS / 'search-passage.png'))
+    # Regression: several Kant hits in distinct chapters MUST navigate to
+    # their individual passage rather than leaving the viewport stuck.
+    inp.fill('Kant')
+    page.evaluate('window.__hikamFullTextSearch.run()')
+    first_labels = page.locator('.reader-search-hit .reader-hit-chapter').all_inner_texts()
+    distinct = {}
+    for i, label in enumerate(first_labels):
+        distinct.setdefault(label.split(' · ')[0], i)
+    assert len(distinct) >= 2, distinct
+    visited = []
+    for ix in list(distinct.values())[:2]:
+        inp.fill('Kant')
+        page.evaluate('window.__hikamFullTextSearch.run()')
+        page.locator('.reader-search-hit').nth(ix).click()
+        destination=page.evaluate("""() => ({
+          hash:decodeURIComponent(location.hash.slice(1)),
+          focus:document.activeElement.id,
+          top:document.activeElement.getBoundingClientRect().top,
+          chapter:document.activeElement.closest('section.chapter')?.id,
+          y:window.scrollY
+        })""")
+        assert destination['hash']==destination['focus'],destination
+        assert destination['chapter'] and -100<destination['top']<844,destination
+        visited.append(destination)
+    assert len(set(item['hash'] for item in visited))==2,visited
+    assert len(set(item['chapter'] for item in visited))==2,visited
     no_errors(page, 'full-text search')
     ctx.close()
     print(f'PASS full-text retrieval, {total} Arabic passage results, keyboard navigation', flush=True)
@@ -202,14 +228,30 @@ def preference_and_resume(browser, url):
     inp = page.locator('#readerSearchInput')
     inp.fill('Possible Examination Questions')
     page.evaluate('window.__hikamFullTextSearch.run()')
-    hit = page.locator('.reader-search-hit').filter(has=page.locator('.reader-hit-location', has_text='Revision & recall')).first
-    assert hit.count() == 1, 'Revision result missing from full-text index'
-    hit.click()
-    assert page.locator('.end-block.reader-search-reveal').count() == 1
-    assert page.evaluate("localStorage.getItem('11am-hikam-show-revisions-v1')") == 'false'
-    page.locator('.reader-temporary-revision-note button').click()
+    assert page.locator('.reader-search-hit').filter(
+        has=page.locator('.reader-hit-location', has_text='Revision & recall')
+    ).count() == 0, 'Hidden revision content leaked into search'
     assert page.locator('.end-block.reader-search-reveal').count() == 0
-    assert not page.locator('.end-block').first.is_visible()
+    assert page.evaluate("localStorage.getItem('11am-hikam-show-revisions-v1')") == 'false'
+    # Re-enable revisions through Tools and confirm results can return.
+    page.locator('#tocFab').click()
+    page.locator('#tocToolsTab').click()
+    page.locator('#tocShowRevisionBlocks').check()
+    page.keyboard.press('Escape')
+    inp.fill('Possible Examination Questions')
+    page.evaluate('window.__hikamFullTextSearch.run()')
+    assert page.locator('.reader-search-hit').filter(
+        has=page.locator('.reader-hit-location', has_text='Revision & recall')
+    ).count() > 0, 'Enabled revision results must be searchable'
+    page.locator('#tocFab').click()
+    page.locator('#tocToolsTab').click()
+    page.locator('#tocShowRevisionBlocks').uncheck()
+    page.keyboard.press('Escape')
+    page.evaluate('window.__hikamFullTextSearch.run()')
+    assert page.locator('.reader-search-hit').filter(
+        has=page.locator('.reader-hit-location', has_text='Revision & recall')
+    ).count() == 0
+    assert page.evaluate("localStorage.getItem('11am-hikam-show-revisions-v1')") == 'false'
     # Start a new visit at the cover. Reloading the scrolled search page
     # can legitimately restore scrollY and suppress the resume prompt.
     page.close()
