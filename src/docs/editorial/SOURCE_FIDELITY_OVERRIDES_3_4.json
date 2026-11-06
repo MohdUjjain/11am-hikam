@@ -1,0 +1,580 @@
+{
+  "version": 1,
+  "basis": [
+    "src/source_materials/3.4.3_Original_Study_Extract.txt",
+    "src/source_materials/3.4.4_Original_Study_Extract.txt"
+  ],
+  "policy": "Exact, ordered replacement rules against canonical subtopic-3-4.html. Preserve user-provided source claims and source-acknowledged limitations; remove added editorial verification warnings.",
+  "edits": [
+    {
+      "dossier": "3.4.3",
+      "find": "— جورج حنّا، كما اقتبس النص المرفق",
+      "replace": "— جورج حنّا، «قصة الإنسان»",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "الأطروحة المركزية في المادة",
+      "replace": "الأطروحة المركزية",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تفصل المادة بين سؤالٍ علمي",
+      "replace": "يفصل المؤلف بين سؤالٍ علمي",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<div class=\"box tip\"><div class=\"box-label\"><span class=\"ico\">!</span>ملاحظة منهجية</div><p>يعرض هذا الفصل حجج الكتاب المرفق ومصطلحاته وأرقامه كما وردت في المادة. الادعاءات العلمية والتاريخية محل الجدل هنا منسوبة إلى المصدر، ولم تُتحقق بصورة مستقلة؛ فلا ينبغي الخلط بين عرض موقف المؤلف وبين إثبات الإجماع العلمي.</p></div>",
+      "replace": "",
+      "why": "Remove entire prefatory no-independent-verification disclaimer"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "لكن عدم معالجة سؤالٍ لا يبرهن آلياً بطلان نتائج نظرية في سؤالٍ آخر.",
+      "replace": "وبذلك يميّز المؤلف بين تفسير تنوّع الأحياء والسؤال عن منشأ الخلية الأولى.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "نطاق البحث الدارويني بحسب المادة",
+      "replace": "حدود البحث الدارويني",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تذكر المادة أن داروين لم يعالج هذه المسائل في كتابه",
+      "replace": "لم يتناول داروين نشأة الخلية الحية الأولى",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "ميّز بين ما ينسبه النص إلى <strong>داروين</strong> وبين ما يثبته بحث تجريبي.",
+      "replace": "اذكر كيف يستشهد المؤلف بأقوال <strong>داروين</strong> لتمييز التطور عن الإلحاد.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "مفتاح القراءة — «لا طفرة» ليست تعريفاً للجين",
+      "replace": "مفتاح القراءة — التدرّج عند داروين والطفرات الحديثة",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "استعمال داروين لعبارة <strong>«لا طفرة في الطبيعة»</strong> يعبر في النص عن رفض <strong>القفزات الشكلية الكبيرة</strong> في وصفه للتدرّج، بينما تشير <strong>الطفرة الوراثية</strong> في المصطلح الجيني إلى تغير في تسلسل المادة الوراثية. التشابه في لفظ «الطفرة» لا يعني أن المقصودين متطابقان؛ لذلك يجب توضيح المصطلح قبل بناء المقارنة.",
+      "replace": "يستدل المؤلف بعبارة داروين <strong>«لا طفرة في الطبيعة»</strong> على أن الانتخاب الطبيعي يجمع <strong>التغيرات الطفيفة المتعاقبة</strong> ولا يصنع تحولات فجائية كبيرة، ثم يقابل هذا التدرّج بالدور الذي تنسبه الداروينية الحديثة إلى <strong>الطفرات الوراثية</strong>.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تعريفان لا بد من ضبطهما",
+      "replace": "التمييز بين التطور في إطار النوع والتطور العابر للأنواع",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<strong>التطور الصغري (Microevolution):</strong> تغير خصائص أو ترددات صفات داخل تجمعات حية عبر الأجيال. <strong>التطور الكبري (Macroevolution):</strong> التغير التطوري واسع النطاق عبر خطوط النسب والزمن العميق. تقسيم المصدر لهما إلى «محسوم» و«مرفوض» هو جزء من موقفه الجدلي؛ لا ينبغي تحويله إلى تقرير عن إجماع علماء الأحياء.",
+      "replace": "<strong>التطور الصغري (Microevolution):</strong> تغيرات متوارثة تقع في إطار النوع الواحد، يقرّ بها المؤلف ويستشهد بأمثلة الخيل والكلاب. <strong>التطور الكبري (Macroevolution):</strong> الانتقال التطوري بين الأنواع الذي يعترض عليه المؤلف بالأدلة الزمنية والأحفورية والوراثية.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تخيّل فيلماً طويلًا لا تبقى منه إلا <strong>لقطات متناثرة</strong>. يجد الباحث في السجل الأحفوري ظهوراً كثيفاً لصورٍ في فترة جيولوجية ويسأل عن الزمن والانتقال بينها. <strong>ما لم تُصوَّر كل اللقطات، فإن فجوةَ السجلّ سؤالٌ عن الدليل المتاح</strong>، لا برهان تلقائي على أن كل ما بين اللقطات مستحيل.",
+      "replace": "تخيّل فيلماً يسرد نشوء الأنواع بصورة <strong>لقطات متدرجة</strong>، ثم يُظهر فجأة أشكالاً حيوانية كثيرة دون اللقطات التي يتوقعها التسلسل البطيء. بهذا التصوير يوضح المؤلف احتجاجه بـ<strong>الانفجار الكامبري</strong> على نموذج التدرّج الدارويني.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "ينقل النص رقمي <strong>«أربع طفرات لكل 100 ألف مشيج»</strong> و<strong>«فائدة 1%»</strong> ضمن حجةٍ منسوبة إلى عمرو شريف. افصل بين: <strong>معدل الحدوث</strong>، و<strong>صفة التغير</strong>، و<strong>فرصة توريثه</strong>، و<strong>كيفية تراكمه عبر الأجيال</strong>. لا تكفي الأرقام المقتبسة وحدها لبناء «برهان رياضي قاطع» من دون نموذج محدد وافتراضات قابلة للفحص.",
+      "replace": "يورد المؤلف عن عمرو شريف تقدير <strong>«أربع طفرات لكل 100 ألف مشيج»</strong> ونسبة <strong>«فائدة 1%»</strong>؛ ويستدل بقلّة الطفرات النافعة والحاجة إلى تغيّرات <strong>متناسقة ومتعددة</strong> للاعتراض على كفاية الطفرات العشوائية.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يعرضه المصدر بوصفه مقبولاً",
+      "replace": "يعدّه المؤلف حقيقة علمية في إطار النوع",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يناقش المصدر الاعتراضات عليه؛ وهذا عرض لموقفه، لا حكم علمي محقق",
+      "replace": "يعترض عليه المؤلف بأدلة زمنية وأحفورية ووراثية",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "حيلة ثانية — ميزان الدليل لا ميزان الأسماء",
+      "replace": "حيلة ثانية — ربط الشواهد بأسماء النقاد",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "إذا قال خمسة باحثين شيئاً وقال خمسة آخرون خلافه، فلا يمكن حسم التجربة بجمع الأصوات وحده؛ بل نسأل: <strong>ما البيانات؟ ما الحساب؟ وهل يمكن تكراره؟</strong> يُعزّز هذا التشبيه فهم القسم التالي الذي يسرد أسماء علماء معارضين، ويذكّر بأن قوة الاعتراض تتوقف على محتواه لا على عدد الموقّعين.",
+      "replace": "يربط المؤلف نقده للداروينية بين <strong>الحسابات الوراثية</strong> و<strong>الأحفوريات</strong> و<strong>شهادات باحثين غربيين</strong>. اجعل لكل اسمٍ حجةً أو كتاباً يسهل تذكّره عند المراجعة.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "لا تخلط بين «قائمة معارضين» و«حكم على نظرية»",
+      "replace": "دور قوائم النقاد في بناء الحجة",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يسرد النص بيانات معهد ديسكفري وأعداداً منسوبة إلى مناهضين للداروينية. هذه <strong>مزاعم عن المواقف والأعداد</strong> تحتاج إلى فحص مصادرها وسياقها؛ كما أنّ وجود توقيعات أو تصريحات نقدية لا يقيس بمفرده قوة الأدلة التجريبية أو الموقف السائد في مجال تخصصي.",
+      "replace": "يستعرض المؤلف <strong>بيان معهد ديسكفري</strong> وأسماء العلماء والكتب الناقدة، ويجعل انتشار الاعتراض بين تخصصات الأحياء والرياضيات والفلسفة جزءاً من حجته على وجود تيار علمي معارض.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "المسار التصوري المنسوب إلى إسماعيل مظهر — عرض المصدر، لا شجرة نسب علمية",
+      "replace": "التسلسل التطوري في قراءة إسماعيل مظهر",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "هذا <strong>تلخيصٌ خطيٌّ منقول</strong> عن المادة؛ والعلاقات التطورية الفعلية تُعرض عادةً كتفرعات لا سلّمٍ يتسلسل فيه نوعٌ حاضر من آخر.",
+      "replace": "يستعرض المؤلف بهذا التسلسل فهم إسماعيل مظهر لنظرية التطور، ثم يناقش الاستنتاج المرتبط بأصل الإنسان والقردة.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تمييز لازم — الرواية الدينية والتفسير الأحيائي",
+      "replace": "الروايات الدينية في تفسير التشابه الحيوي",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يستشهد النص بآيات المسخ ثم ينقل تفسيراً روائياً عن بقاء الممسوخين ثلاثة أيام دون نسل، وكون القردة الحالية خَلقاً آخر. هذه <strong>حجة تفسيرية دينية</strong> داخل منظومة النصوص، وليست وصفاً تجريبياً لسلسلة أنساب القردة في علم الأحياء؛ وينبغي معرفة أي نوع من الحجج يُستخدم قبل مقارنته بالحفريات.",
+      "replace": "يستشهد المؤلف بآيات <strong>المسخ</strong> وروايات بقاء الممسوخين ثلاثة أيام دون أن يتناسلوا، ويستنتج أن القرود الموجودة ليست من نسل أولئك الممسوخين. ويستخدم هذه الروايات ضمن بحثه في احتمالات تفسير التشابه بين الإنسان والقردة.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تنبيه امتحاني — لا تجعل الحفريات شيئاً غير ما هي عليه",
+      "replace": "الاعتراض على الحلقة المفقودة",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "عبارة «الحلقة المفقودة» تُستعمل في المصدر للاعتراض على السلف المشترك. عند تحليلها، ميّز بين <strong>وجود أحفورة انتقالية بعينها</strong> وبين <strong>الاستدلال بشبكة من الشواهد</strong>. عدم العثور على نموذجٍ مطابق لوصفٍ متخيّل لا يعادل بذاته نفي جميع أشكال القرابة التطورية؛ وهذا تمييز في منهج تقييم الدليل لا إعادة كتابة لموقف المؤلف.",
+      "replace": "يطرح المؤلف غياب <strong>الحلقة الأحفورية المتوسطة</strong> بين الإنسان والقردة بوصفه اعتراضاً على استنتاج الأصل المشترك. اشرح موقع هذا الاعتراض في تسلسل حججه، وصلْه بتفسيره لروايات <strong>النسناس</strong>.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تفسير ديني نصي؛ لا يقدمه الكتاب كدليل أحيائي مستقل",
+      "replace": "روايات المسخ وتفسير عدم تناسل الممسوخين",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تفسير ديني / تراثي يحتاج تمييزه عن بيانات السجل الأحفوري",
+      "replace": "احتمال تراثي يستخدمه المؤلف لتفسير الأحافير الشبيهة بالإنسان",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تمييز منهجي يجب الحفاظ عليه",
+      "replace": "خلاصة الاستدلال الديني والأحفوري",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "الدعاوى المتعلقة بالحفريات والأحياء تحتاج مراجع علمية مستقلة للحكم عليها.",
+      "replace": "يستحضر المؤلف الحفريات والسجل الجيني عند مناقشة الأصل المشترك.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "اذكر <strong>مثالين من نقد المصدر</strong> للطفرة والسجل الأحفوري، وحدد ما يحتاج منهما إلى بيانات إضافية.",
+      "replace": "اذكر <strong>مثالين من نقد المؤلف</strong> للطفرات والسجل الأحفوري، وبيّن كيف يخدمان اعتراضه على التطور العابر للأنواع.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "هذه خلاصة لموقف المادة وليست تصديقًا مستقلاً لجميع دعاواها.",
+      "replace": "",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "مع تحديد الافتراضات التي يلزم التحقق منها.",
+      "replace": "مع بيان طريقة استدلال المؤلف بهما.",
+      "why": "Remove assistant-origin epistemic/provenance commentary while preserving the original study extract's argument"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Source: Provided biochemical study extract",
+      "replace": "Source: The Biochemical Challenge to Darwinian Evolution",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "As quoted in the supplied study extract",
+      "replace": "— Charles Darwin, <em>On the Origin of Species</em>",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Central Thesis — The Source’s Argument",
+      "replace": "Central Thesis — Molecular Complexity and Design",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "<div class=\"box tip\"><div class=\"box-label\"><span class=\"ico\">!</span>Scholarly Framing</div><p>This dossier explains the position advanced by the supplied study extract. Its claims about evolutionary mechanisms, academic literature, molecular pathways and intelligent design are represented as claims of that source—not as independently verified scientific consensus.</p></div>",
+      "replace": "",
+      "why": "Remove unsolicited scientific-consensus disclaimer not in the study extract"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract challenges the sufficiency of one account of mechanism; that challenge should not be confused with a separate claim that organisms have no evolutionary relationships.",
+      "replace": "The central distinction is between the <strong>descent of organisms with modification</strong> and the <strong>mutation-and-selection mechanism</strong> challenged by the study.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The study extract calls this strongly supported",
+      "replace": "Accepted as strongly supported in the study",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source challenges the sufficiency of mutation plus selection for particular systems",
+      "replace": "The study rejects their sufficiency for irreducibly complex molecular systems",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The additional claim that no gradual <em>historical route</em> could produce them requires further reasoning and evidence. Keep these two propositions separate.",
+      "replace": "The study next argues that selection cannot directly build such a system by successive additions when the intermediate assemblies lack the required function.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Common mistake — Functional dependence is not a time machine",
+      "replace": "Direct and indirect routes in the study",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The supplied extract explicitly allows <strong>indirect routes</strong>, including co-option of components that previously had different jobs. Therefore, “remove part A and the present system stops” is not logically identical to “part A could never have been added or repurposed incrementally.” The first is a functional test; the second is a historical hypothesis.",
+      "replace": "The study argues that irreducible complexity blocks a <strong>direct</strong> sequence of selectable additions. It acknowledges a logically possible <strong>indirect</strong> route in which earlier parts performed other functions, but argues that increasingly coordinated dependencies make such routes highly improbable.",
+      "why": "Preserve the explicit indirect-pathway concession in source lines 185–189 while restoring the stated improbability argument"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "An engineer removes one support from a <strong>finished bridge</strong>, and the bridge fails. That establishes the importance of the support <em>today</em>; it does not reveal every scaffolding step or earlier use of materials during construction. The source’s mousetrap illustrates present interdependence; the <strong>bridge</strong> reminds us why evolutionary history is an additional question.",
+      "replace": "A bridge requires several cooperating supports to carry its load. Removing one essential support makes the structure fail, just as removing an indispensable part disables an irreducibly complex molecular system. The study argues that the coordinated requirements make <strong>unguided assembly</strong> increasingly difficult to explain.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The example illustrates the removal test; a separate historical argument is still needed to rule out alternative precursor functions.",
+      "replace": "The functioning trap requires all five parts, illustrating why the study challenges a direct, gradual construction of the completed mechanism.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "This is a mechanical picture of the source’s ciliary description, not an independent proof about its origin.",
+      "replace": "The analogy makes the coordinated mechanical roles of the three components easier to remember.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The distinction is useful, but <strong>different methods may contribute complementary evidence</strong> rather than competing in a winner-takes-all contest.",
+      "replace": "The study argues that sequence resemblance does not by itself explain the step-by-step origin of a functioning molecular mechanism.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The conclusion rests on the premise about alternative mechanisms—not on the word “machine” by itself.",
+      "replace": "The study links these coordinated functions and its criticism of undirected assembly pathways to the inference of <strong>intelligent design</strong>.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "A literature audit needs a defined denominator",
+      "replace": "The journal survey and its stated conclusion",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract reports approximate counts for a ten-year <em>Journal of Molecular Evolution</em> survey, including a claimed zero for detailed stepwise models. To evaluate that claim, one would need the <strong>years surveyed, inclusion criteria, paper list and definition of “detailed”</strong>. These are not supplied in the study extract. The count is therefore presented as the author’s reported argument, not as a verified result.",
+      "replace": "The study reports reviewing about <strong>1,000 papers</strong> in a ten-year <em>Journal of Molecular Evolution</em> survey: roughly <strong>100</strong> on chemical synthesis, <strong>50</strong> mathematical sequence models and <strong>800</strong> sequence comparisons. It argues that <strong>none</strong> supplied a detailed stepwise pathway for the irreducibly complex systems examined.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Journal of Molecular Evolution audit reported by the study extract",
+      "replace": "Journal of Molecular Evolution — the ten-year survey",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "0 (claim of the supplied extract; not independently verified)",
+      "replace": "0 in the survey discussed by the author",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The numerical journal audit appears in the supplied extract without an independently checked bibliography.",
+      "replace": "Explain how the survey’s numerical categories support the critique of the molecular-evolution literature.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Historical reference map in the supplied extract",
+      "replace": "Historical reference map",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "1994 / 1996 · Source milestones",
+      "replace": "1994 / 1996 · Research and publication",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract dates a literature audit to 1994",
+      "replace": "The study dates a literature audit to 1994",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source mentions <em>The Edge of Evolution</em> and <em>Darwin Devolves</em>.",
+      "replace": "Later works include <em>The Edge of Evolution</em> and <em>Darwin Devolves</em>.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Which historical dates and journal-audit numbers belong to the <strong>supplied author’s account</strong> rather than to an independently checked evidence review?",
+      "replace": "How do the 1994 literature survey and the 1996 publication of <em>Darwin’s Black Box</em> advance the study’s central argument?",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The supplied extract contrasts descent with modification",
+      "replace": "The study contrasts descent with modification",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "before alleging a literature gap in detailed stepwise origin models",
+      "replace": "before identifying the absence of detailed stepwise origin models in its literature survey",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Its claims about what evolutionary research has or has not established should be assessed against the primary literature, not treated as settled simply because they appear in the extract.",
+      "replace": "Its argument culminates in the inference that intricate molecular machinery bears the marks of purposeful design, while acknowledging indirect routes as theoretically possible.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract reports ~1,000 papers and claims zero detailed origin models; not independently verified.",
+      "replace": "A ten-year journal survey of ~1,000 papers is cited as finding no detailed stepwise model for the systems discussed.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Reconstruct the extract’s argument about molecular-evolution literature and explain what evidence would be needed to verify the claimed audit.",
+      "replace": "Reconstruct the study’s critique of molecular-evolution literature and explain how it uses the journal survey to support intelligent design.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "A paper reports 800 sequence comparisons but no stepwise pathway models. What would you need to know before inferring a field-wide absence?",
+      "replace": "A journal survey finds many sequence comparisons but no detailed pathways. Explain how the study uses this contrast in its design argument.",
+      "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "وجه المقارنة الذي تبنيه المادة",
+      "replace": "الداروينية الكلاسيكية والحديثة: مواضع الخلاف",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "الداروينية الكلاسيكية كما يعرضها النص",
+      "replace": "الداروينية الكلاسيكية",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "الداروينية الحديثة كما يعرضها النص",
+      "replace": "الداروينية الحديثة",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تحذير المصدر من توظيف الآليات البيولوجية استدلالًا عقديًا",
+      "replace": "عدم استلزام التفسير البيولوجي نفي الخالق",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يركّز المصدر على أن نظرية داروين",
+      "replace": "يؤكد المؤلف أن نظرية داروين",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "ما الأدلة التي يقدمها النص ضد تفسيره للتطور العابر للأنواع؟",
+      "replace": "ما أبرز اعتراضات المؤلف على التطور العابر للأنواع؟",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يستحضر المصدر صورة «السُّلَّم» لعرض تفضيل داروين للتدرّج؛ ثم يناقش دور التغيرات الوراثية في التصور اللاحق. <strong>تذكّر: شكل التغيّر وسبب التغيّر سؤالان متمايزان.</strong>",
+      "replace": "يجسّد السُّلَّم التدرّج البطيء الذي يؤكده داروين؛ ثم ينتقل النقاش إلى دور الطفرات الوراثية في الداروينية الحديثة. <strong>تذكّر: التدرّج البطيء في مقابل التحول الفجائي.</strong>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>شريط الفيلم — 🎞️</b>الأحفوريات لقطات من تاريخ طويل؛ الفجوات تستدعي تقصي الدليل.",
+      "replace": "<b>شريط الفيلم — 🎞️</b>الانفجار الكامبري وغياب حلقات الانتقال من أبرز الاعتراضات الأحفورية التي يستحضرها المؤلف.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>قيدُ الأرقام</b><span>معدل الطفرة ونسبة المنفعة ليسا حساباً كاملاً من غير افتراضات.</span>",
+      "replace": "<b>أرقام الطفرات</b><span>قلّة الطفرات النافعة والحاجة إلى تغيّرات متآزرة هما محور اعتراض المؤلف.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>الكتاب وDNA — 📖</b>تشبيه المصدر عن تعديل الحروف يثبت السؤال التعليمي عن تنسيق التغيرات، لا الحساب وحده.",
+      "replace": "<b>الكتاب وDNA — 📖</b>تشبيه تغيير الحروف يوضح حجة المؤلف بشأن صعوبة ظهور وظائف جديدة من تعديلات عشوائية.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>ميزان الدليل — ⚖️</b>عددُ أسماء المؤيدين والمعارضين ليس بديلاً عن قوة الدليل.",
+      "replace": "<b>شهادات النقاد — ⚖️</b>اربط كلَّ اسم من النقاد بكتابه أو بوجه اعتراضه على الداروينية.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>Micro / Macro</b><span>التمييز بين مقياسَي تغير؛ تقييم الدليل يحتاج تعريفاً دقيقاً.</span>",
+      "replace": "<b>Micro / Macro</b><span>التطور داخل النوع مقبول في الحجة؛ أما الانتقال العابر للأنواع فهو موضع النقد.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تغير في تسلسل المادة الوراثية؛ دلالتها تختلف عن «القفزة» الشكلية.",
+      "replace": "تغير في تسلسل المادة الوراثية؛ يناقش المؤلف دوره في تفسير التحولات التطورية الكبرى.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>تجارب الذبابة</b><span>يدّعي النص قصوراً تجريبياً؛ تمييز التجربة المعيّنة عن التعميم الكلي.</span>",
+      "replace": "<b>تجارب الذبابة</b><span>يستدل المؤلف بتجارب 800 جيل على عجز الطفرات العشوائية عن توليد تحسّنٍ وظيفي.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>الناقدون المذكورون</b><span>بيرلينسكي، دنتون، ويلز، ديمبسكي، كوفييه؛ تحقق من مجال كل واحد.</span>",
+      "replace": "<b>الناقدون المذكورون</b><span>بيرلينسكي، دنتون، ويلز، ديمبسكي، كوفييه؛ اربط كل ناقد بمجاله أو مؤلفه.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>الانفجار الكامبري</b><span>يشير المصدر إلى نحو 541 مليون سنة ويفتح سؤال سرعة التنوع والأحفوريات.</span>",
+      "replace": "<b>الانفجار الكامبري</b><span>ظهور الشعب الحيوانية في فترة جيولوجية قصيرة يُستعمل اعتراضاً على التدرّج البطيء.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "هذا الفصل لا يخلط بين اختصاص الباحث ودليل الدعوى: يمكن لشخصٍ أن يصدر حكماً خارج تخصّصه، ولكن اسم قائله لا يُغني عن دراسة برهانه.",
+      "replace": "يفصل المؤلف اختصاص علماء الأحياء في تفسير الآليات عن السؤال الفلسفي المتعلق بوجود الخالق.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "— Charles Darwin, quoted in the supplied extract",
+      "replace": "— Charles Darwin, <em>On the Origin of Species</em>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract accepts descent with modification while challenging",
+      "replace": "The study accepts descent with modification while challenging",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Irreducible complexity as presented in the extract",
+      "replace": "Irreducible complexity: parts and functions",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Coagulation — a simplified pathway map from the extract",
+      "replace": "Coagulation — stages of the cascade",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract begins with exposure/activation associated with Hageman factor.",
+      "replace": "The cascade begins with activation associated with Hageman factor.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Clotting sequence as discussed in the extract",
+      "replace": "Clotting cascade: sequence and regulation",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "What does the extract allege about the research literature, and how does it draw its design inference?",
+      "replace": "How does the molecular literature review support the argument for intelligent design?",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract contrasts “simple protoplasm” with intracellular detail.",
+      "replace": "The historical picture of simple protoplasm gives way to complex intracellular machinery.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source’s analogy for a coordinated molecular assembly that performs a cellular task.",
+      "replace": "A coordinated molecular assembly that performs a particular cellular task.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "In the source’s account of Levine and Davidson,",
+      "replace": "Levine and Davidson explain how",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source asks how coordinated molecular functions could arise",
+      "replace": "The origin of coordinated molecular functions becomes the central question",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "the source’s argument depends on their <em>different, coordinated jobs</em>",
+      "replace": "the argument depends on their <em>distinct, coordinated jobs</em>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "How does the source define irreducible complexity and what would count as an evolutionary explanation?",
+      "replace": "What is irreducible complexity and how does it challenge a gradual evolutionary mechanism?",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source explicitly concedes the logical possibility of indirect pathways even while arguing they are improbable.",
+      "replace": "Indirect routes remain logically possible, but the author argues that growing interdependence makes them increasingly improbable.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    }
+  ]
+}
