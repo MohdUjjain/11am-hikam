@@ -51,7 +51,8 @@
         if ((await Promise.all(essentials.map((path) => cache.match(path)))).every(Boolean)) {
           ready = true;
           savedEdition = name.slice(CACHE_PREFIX.length);
-          break;
+          // CacheStorage lists older editions first during activation;
+          // prefer the newest complete edition without trusting partial caches.
         }
       }
       if (editionId) editionId.textContent = savedEdition || 'Not saved yet';
