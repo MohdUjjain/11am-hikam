@@ -109,11 +109,27 @@ def main():
         assert page.evaluate('''async () => Boolean(await (await caches.open(
             (await caches.keys()).find(k => k.startsWith('11am-hikam-reader-'))
         )).match('./index.html'))''')
+        page.wait_for_function("""() => /^[a-f0-9]{12}$/.test(
+          document.getElementById('offlineEditionId')?.textContent || '')""", timeout=15000)
+        assert page.locator('#offlineEditionId').inner_text() == old_key.removeprefix('11am-hikam-reader-')
+        page.locator('#tocFab').click()
+        page.locator('#tocToolsTab').click()
+        page.locator('#offlineCheckUpdate').click()
+        page.wait_for_function("""() => /No newer edition detected|An update is being prepared/.test(
+          document.getElementById('offlineCheckResult')?.textContent || '')""", timeout=15000)
+        page.locator('#tocSidebarClose').click()
+        print('PASS edition identifier and explicit update check', flush=True)
         print('PASS service worker initial atomic install and CacheStorage', flush=True)
 
         # Cache-first offline navigation is checked in a *new tab*, not just
         # using the previous page's live DOM.
         ctx.set_offline(True)
+        page.locator('#tocFab').click()
+        page.locator('#tocToolsTab').click()
+        page.locator('#offlineCheckUpdate').click()
+        page.wait_for_function("""() => document.getElementById('offlineCheckResult')
+          ?.textContent.includes('You are offline')""", timeout=10000)
+        page.locator('#tocSidebarClose').click()
         offline = ctx.new_page()
         offline.goto(base, wait_until='domcontentloaded', timeout=30000)
         offline.wait_for_function('document.querySelectorAll("section.chapter").length===34')
@@ -142,6 +158,8 @@ def main():
         # not an instantaneous cache-key count; the unit worker test covers
         # activation's explicit deletion contract.
         assert updated['edition'] == 'v1', 'The visible reader must not silently swap editions'
+        page.wait_for_function("""() => document.getElementById('offlineEditionId')
+          ?.textContent === 'browser-v2-test'""", timeout=15000)
         page.locator('#editionReloadBtn').click()
         page.wait_for_load_state('domcontentloaded')
         page.wait_for_function("document.querySelector('meta[name=\"hikam-test-edition\"]')?.content === 'v2'", timeout=30000)

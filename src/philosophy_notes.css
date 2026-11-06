@@ -1831,6 +1831,11 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
    font:700 12px var(--font-sans);cursor:pointer; }
  .offline-keep-btn:hover { background:#FFF0C4; }
  .offline-keep-btn:disabled { opacity:.75;cursor:default; }
+ .offline-reader-panel .offline-keep-btn {display:block;width:100%;margin-top:8px;}
+ .offline-reader-panel .offline-edition-meta {margin:6px 0 11px;}
+ .offline-edition-meta code {font:600 12px var(--font-mono,monospace);color:var(--gold-pale);}
+ .offline-reader-panel .offline-check-result {margin:7px 0 0;}
+ .offline-reader-panel .offline-check-result:empty {display:none;}
 }
 @media print { .offline-reader-panel {display:none!important;} }
 
