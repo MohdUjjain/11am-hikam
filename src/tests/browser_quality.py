@@ -175,7 +175,8 @@ def full_text_and_keyboard(browser, url):
     inp.fill('Ruth Barcan Marcus transforming modal logic')
     page.evaluate('window.__hikamFullTextSearch.run()')
     page.locator('.reader-search-hit').first.click()
-    assert page.evaluate('document.activeElement.closest("section.chapter") !== null')
+    # Passage navigation intentionally commits on the next animation frame.
+    page.wait_for_function('document.activeElement.closest("section.chapter") !== null')
     assert not page.locator('#readerSearchResults').is_visible()
     page.screenshot(path=str(ARTIFACTS / 'search-passage.png'))
     # Regression: several Kant hits in distinct chapters MUST navigate to
