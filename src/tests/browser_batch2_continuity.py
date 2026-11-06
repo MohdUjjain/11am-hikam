@@ -26,7 +26,7 @@ def main():
    result.click()
    link=page.evaluate('location.hash')
    assert link.startswith('#hikam-hit-') or link.startswith('#toc-sec-') or link.startswith('#ch'),link
-   assert page.evaluate("location.hash.slice(1)===document.activeElement.id")
+   page.wait_for_function("() => location.hash.slice(1)===document.activeElement.id")
    page.reload(wait_until='domcontentloaded')
    page.wait_for_function("() => location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)))?.getClientRects().length>0")
    page.wait_for_function("() => document.activeElement.id===decodeURIComponent(location.hash.slice(1))")
