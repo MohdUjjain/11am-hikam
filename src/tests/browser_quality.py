@@ -414,6 +414,7 @@ def main():
         try:
             viewport_and_accessibility(browser, url)
             full_text_and_keyboard(browser, url)
+            index_landing_with_hidden_revisions(browser, url)
             preference_and_resume(browser, url)
             print_and_restore(browser, url)
         finally:
