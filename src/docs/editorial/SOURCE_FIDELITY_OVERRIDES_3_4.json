@@ -389,6 +389,192 @@
       "find": "A paper reports 800 sequence comparisons but no stepwise pathway models. What would you need to know before inferring a field-wide absence?",
       "replace": "A journal survey finds many sequence comparisons but no detailed pathways. Explain how the study uses this contrast in its design argument.",
       "why": "Restore the study extract's argument and remove editorial provenance warnings"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "وجه المقارنة الذي تبنيه المادة",
+      "replace": "الداروينية الكلاسيكية والحديثة: مواضع الخلاف",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "الداروينية الكلاسيكية كما يعرضها النص",
+      "replace": "الداروينية الكلاسيكية",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "الداروينية الحديثة كما يعرضها النص",
+      "replace": "الداروينية الحديثة",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تحذير المصدر من توظيف الآليات البيولوجية استدلالًا عقديًا",
+      "replace": "عدم استلزام التفسير البيولوجي نفي الخالق",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يركّز المصدر على أن نظرية داروين",
+      "replace": "يؤكد المؤلف أن نظرية داروين",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "ما الأدلة التي يقدمها النص ضد تفسيره للتطور العابر للأنواع؟",
+      "replace": "ما أبرز اعتراضات المؤلف على التطور العابر للأنواع؟",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "يستحضر المصدر صورة «السُّلَّم» لعرض تفضيل داروين للتدرّج؛ ثم يناقش دور التغيرات الوراثية في التصور اللاحق. <strong>تذكّر: شكل التغيّر وسبب التغيّر سؤالان متمايزان.</strong>",
+      "replace": "يجسّد السُّلَّم التدرّج البطيء الذي يؤكده داروين؛ ثم ينتقل النقاش إلى دور الطفرات الوراثية في الداروينية الحديثة. <strong>تذكّر: التدرّج البطيء في مقابل التحول الفجائي.</strong>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>شريط الفيلم — 🎞️</b>الأحفوريات لقطات من تاريخ طويل؛ الفجوات تستدعي تقصي الدليل.",
+      "replace": "<b>شريط الفيلم — 🎞️</b>الانفجار الكامبري وغياب حلقات الانتقال من أبرز الاعتراضات الأحفورية التي يستحضرها المؤلف.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>قيدُ الأرقام</b><span>معدل الطفرة ونسبة المنفعة ليسا حساباً كاملاً من غير افتراضات.</span>",
+      "replace": "<b>أرقام الطفرات</b><span>قلّة الطفرات النافعة والحاجة إلى تغيّرات متآزرة هما محور اعتراض المؤلف.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>الكتاب وDNA — 📖</b>تشبيه المصدر عن تعديل الحروف يثبت السؤال التعليمي عن تنسيق التغيرات، لا الحساب وحده.",
+      "replace": "<b>الكتاب وDNA — 📖</b>تشبيه تغيير الحروف يوضح حجة المؤلف بشأن صعوبة ظهور وظائف جديدة من تعديلات عشوائية.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>ميزان الدليل — ⚖️</b>عددُ أسماء المؤيدين والمعارضين ليس بديلاً عن قوة الدليل.",
+      "replace": "<b>شهادات النقاد — ⚖️</b>اربط كلَّ اسم من النقاد بكتابه أو بوجه اعتراضه على الداروينية.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>Micro / Macro</b><span>التمييز بين مقياسَي تغير؛ تقييم الدليل يحتاج تعريفاً دقيقاً.</span>",
+      "replace": "<b>Micro / Macro</b><span>التطور داخل النوع مقبول في الحجة؛ أما الانتقال العابر للأنواع فهو موضع النقد.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "تغير في تسلسل المادة الوراثية؛ دلالتها تختلف عن «القفزة» الشكلية.",
+      "replace": "تغير في تسلسل المادة الوراثية؛ يناقش المؤلف دوره في تفسير التحولات التطورية الكبرى.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>تجارب الذبابة</b><span>يدّعي النص قصوراً تجريبياً؛ تمييز التجربة المعيّنة عن التعميم الكلي.</span>",
+      "replace": "<b>تجارب الذبابة</b><span>يستدل المؤلف بتجارب 800 جيل على عجز الطفرات العشوائية عن توليد تحسّنٍ وظيفي.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>الناقدون المذكورون</b><span>بيرلينسكي، دنتون، ويلز، ديمبسكي، كوفييه؛ تحقق من مجال كل واحد.</span>",
+      "replace": "<b>الناقدون المذكورون</b><span>بيرلينسكي، دنتون، ويلز، ديمبسكي، كوفييه؛ اربط كل ناقد بمجاله أو مؤلفه.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "<b>الانفجار الكامبري</b><span>يشير المصدر إلى نحو 541 مليون سنة ويفتح سؤال سرعة التنوع والأحفوريات.</span>",
+      "replace": "<b>الانفجار الكامبري</b><span>ظهور الشعب الحيوانية في فترة جيولوجية قصيرة يُستعمل اعتراضاً على التدرّج البطيء.</span>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.3",
+      "find": "هذا الفصل لا يخلط بين اختصاص الباحث ودليل الدعوى: يمكن لشخصٍ أن يصدر حكماً خارج تخصّصه، ولكن اسم قائله لا يُغني عن دراسة برهانه.",
+      "replace": "يفصل المؤلف اختصاص علماء الأحياء في تفسير الآليات عن السؤال الفلسفي المتعلق بوجود الخالق.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "— Charles Darwin, quoted in the supplied extract",
+      "replace": "— Charles Darwin, <em>On the Origin of Species</em>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract accepts descent with modification while challenging",
+      "replace": "The study accepts descent with modification while challenging",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Irreducible complexity as presented in the extract",
+      "replace": "Irreducible complexity: parts and functions",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Coagulation — a simplified pathway map from the extract",
+      "replace": "Coagulation — stages of the cascade",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract begins with exposure/activation associated with Hageman factor.",
+      "replace": "The cascade begins with activation associated with Hageman factor.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "Clotting sequence as discussed in the extract",
+      "replace": "Clotting cascade: sequence and regulation",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "What does the extract allege about the research literature, and how does it draw its design inference?",
+      "replace": "How does the molecular literature review support the argument for intelligent design?",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The extract contrasts “simple protoplasm” with intracellular detail.",
+      "replace": "The historical picture of simple protoplasm gives way to complex intracellular machinery.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source’s analogy for a coordinated molecular assembly that performs a cellular task.",
+      "replace": "A coordinated molecular assembly that performs a particular cellular task.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "In the source’s account of Levine and Davidson,",
+      "replace": "Levine and Davidson explain how",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source asks how coordinated molecular functions could arise",
+      "replace": "The origin of coordinated molecular functions becomes the central question",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "the source’s argument depends on their <em>different, coordinated jobs</em>",
+      "replace": "the argument depends on their <em>distinct, coordinated jobs</em>",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "How does the source define irreducible complexity and what would count as an evolutionary explanation?",
+      "replace": "What is irreducible complexity and how does it challenge a gradual evolutionary mechanism?",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
+    },
+    {
+      "dossier": "3.4.4",
+      "find": "The source explicitly concedes the logical possibility of indirect pathways even while arguing they are improbable.",
+      "replace": "Indirect routes remain logically possible, but the author argues that growing interdependence makes them increasingly improbable.",
+      "why": "Follow-up source-fidelity audit: remove inherited input-provenance labels or extraneous skeptical framing while retaining the original study's arguments"
     }
   ]
 }
