@@ -1,0 +1,21 @@
+{
+  "key": "11am-hikam-reading-place-v1",
+  "visibilityKey": "11am-hikam-show-revisions-v1",
+  "hidden": "false",
+  "chapter": "ch3-2-4",
+  "checkpoint": {
+    "version": 1,
+    "chapterId": "ch3-2-4",
+    "chapterRatio": 0.44,
+    "sectionId": "toc-sec-ch3-2-4-1",
+    "sectionRatio": 0.25
+  },
+  "renamedAnchor": "toc-sec-ch3-2-4-1",
+  "replacementAnchor": "toc-sec-ch3-2-4-edition2",
+  "hiddenRevision": {
+    "version": 1,
+    "chapterId": "ch3-2-4",
+    "chapterRatio": 0.91,
+    "revision": true
+  }
+}
