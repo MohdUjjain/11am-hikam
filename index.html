@@ -11387,6 +11387,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       var rect=chapter.getBoundingClientRect();
       var result={version:1,chapterId:chapter.id,
         chapterRatio:cap((centre-rect.top)/Math.max(1,rect.height))};
+      if(section.revision)result.revision=true;
       if(section.node){
         var nodes=sectionsByChapter[chapter.id]||[];
         var start=section.node.getBoundingClientRect().top;
@@ -11505,6 +11506,13 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     function restorePosition(bookmark){
       var chapter=document.getElementById(bookmark.chapterId);
       if(!chapter)return;
+      // Preserve revision context through an edition/visibility change. This
+      // reveals only the saved chapter, never alters Hide Revision preference.
+      if(bookmark.revision && window.__hikamRevisions &&
+         !window.__hikamRevisions.isVisible()){
+        var revision=chapter.querySelector('.end-block');
+        if(revision)window.__hikamRevisions.revealTemporary(revision,'resume');
+      }
       var top=chapter.getBoundingClientRect().top+window.scrollY;
       var offset=cap(bookmark.chapterRatio)*chapter.getBoundingClientRect().height;
       var sec=bookmark.sectionId && document.getElementById(bookmark.sectionId);
@@ -11701,7 +11709,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       isVisible:function(){return !root.classList.contains('reader-hide-revisions');},
       show:function(){apply(true,true);},
       clearTemporary:function(){if(temporaryBlock){clearTemporary();notify();}},
-      revealTemporary:function(target){
+      revealTemporary:function(target,reason){
         var block=target&&target.closest('.end-block');
         if(!block||!root.classList.contains('reader-hide-revisions'))return false;
         if(block===temporaryBlock)return true;
@@ -11712,7 +11720,9 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
         note.className='reader-temporary-revision-note';
         note.setAttribute('role','status');
         var message=document.createElement('span');
-        message.textContent='Temporary search preview. Your saved Hide Revision Blocks setting is unchanged.';
+        message.textContent=(reason==='resume' ?
+          'Temporary reading-position preview. ' : 'Temporary search preview. ')+
+          'Your saved Hide Revision Blocks setting is unchanged.';
         var close=document.createElement('button');
         close.type='button';close.textContent='Hide preview';
         close.addEventListener('click',function(){
@@ -11938,6 +11948,24 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     function hide(){panel.hidden=true;input.setAttribute('aria-expanded','false');}
     function open(){panel.hidden=false;input.setAttribute('aria-expanded','true');}
     function meaningfulText(node){return node.textContent.replace(/\s+/g,' ').trim();}
+    // Content-based passage identities remain stable when earlier sections
+    // are inserted into a later edition. Existing authored IDs always win.
+    function passageAnchor(entry,seen){
+      if(entry.node.id)return entry.node.id;
+      var fingerprint=entry.text.slice(0,260),hash=2166136261;
+      for(var j=0;j<fingerprint.length;j++){
+        hash^=fingerprint.charCodeAt(j);
+        hash=Math.imul(hash,16777619)>>>0;
+      }
+      var base='hikam-hit-'+entry.chapter.id+'-'+hash.toString(36);
+      var ordinal=seen.get(base)||0,id=base;
+      while(document.getElementById(id) && document.getElementById(id)!==entry.node){
+        ordinal++;id=base+'-'+ordinal;
+      }
+      seen.set(base,ordinal);
+      entry.node.id=id;
+      return id;
+    }
     function makeIndex(){
       if(entries)return entries;
       entries=[];
@@ -11980,6 +12008,8 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
           entries.push(entry);collisions.push(entry);sameText.set(mapped.text,collisions);
         });
       });
+      var identifiers=new Map();
+      entries.forEach(function(entry){entry.anchorId=passageAnchor(entry,identifiers);});
       return entries;
     }
     function occurrences(text,token,limit){
@@ -12074,8 +12104,14 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
         else revisions.clearTemporary();
       }
       var target=entry.node;
+      // The exact result becomes a shareable, browser-history-aware fragment.
+      // Runtime-only IDs are derived from chapter plus source text, not index.
+      if(entry.anchorId && window.history && window.history.pushState &&
+         location.hash!=='#'+encodeURIComponent(entry.anchorId)){
+        window.history.pushState({hikamSearch:true},'','#'+encodeURIComponent(entry.anchorId));
+      }
       // Keep keyboard and screen-reader focus in sync with the visible result.
-      // IDs and authored chapter HTML are not modified.
+      // Authored chapter sources and persistent visibility settings remain untouched.
       var hadTabindex=target.hasAttribute('tabindex'),oldTabindex=target.getAttribute('tabindex');
       if(!hadTabindex)target.setAttribute('tabindex','-1');
       target.classList.add('reader-search-target');
@@ -12154,6 +12190,37 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       if(ev.key==='ArrowUp'&&current>=0){ev.preventDefault();if(current===0)input.focus();else items[current-1].focus();}
     });
     document.addEventListener('pointerdown',function(ev){if(!box.contains(ev.target))hide();});
+    // A copied passage URL can be visited without opening search first.
+    // Rebuild IDs from the same text on initial load and Back/Forward.
+    function followFragment(){
+      var hash=window.location.hash;
+      if(!/^#(?:hikam-hit-|toc-sec-|ch[0-9])/.test(hash))return;
+      var id;
+      try{id=decodeURIComponent(hash.slice(1));}catch(_){return;}
+      if(id.startsWith('hikam-hit-'))makeIndex();
+      var target=document.getElementById(id);
+      if(!target && id.startsWith('hikam-hit-')){
+        // A passage reworded/removed in a newer edition may no longer have
+        // its fingerprint, so land in the surviving source chapter instead.
+        var chapter=id.match(/^hikam-hit-(ch[0-9]+-[0-9]+-[0-9]+)-/);
+        if(chapter)target=document.getElementById(chapter[1]);
+      }
+      if(!target)return;
+      var revisions=window.__hikamRevisions;
+      if(revisions && target.closest('.end-block'))
+        revisions.revealTemporary(target,'link');
+      if(!target.hasAttribute('tabindex'))target.tabIndex=-1;
+      window.requestAnimationFrame(function(){
+        var reduce=window.matchMedia &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        target.scrollIntoView({behavior:reduce?'instant':'auto',block:'center'});
+        target.focus({preventScroll:true});
+      });
+    }
+    window.addEventListener('hashchange',followFragment);
+    window.addEventListener('popstate',followFragment);
+    if(window.location.hash && /^#(?:hikam-hit-|toc-sec-|ch[0-9])/.test(location.hash))
+      window.requestAnimationFrame(followFragment);
     window.__hikamFullTextSearch={run:run,getStats:function(){return {
       entries:makeIndex().length,matched:lastResults.length,shown:rendered,open:!panel.hidden};}};
   }
