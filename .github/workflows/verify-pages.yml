@@ -25,6 +25,8 @@ jobs:
         run: python src/build.py --check
       - name: Validate links, manifest, meta tags, and 34 dossiers
         run: python src/tests/verify_publication.py
+      - name: Verify Dossiers 33–34 against source-fidelity corrections
+        run: python src/tests/verify_editorial_fidelity.py
       - name: Validate book structure and chapter navigation
         run: python src/tests/validate_structure.py
       - name: Validate accessible contents and print controls
