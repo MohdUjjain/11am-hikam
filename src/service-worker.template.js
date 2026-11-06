@@ -5,8 +5,9 @@
 const PREFIX = '11am-hikam-reader-';
 const CACHE_NAME = PREFIX + '__REVISION__';
 const FONT_CACHE_NAME = '11am-hikam-cdn-fonts-v1';
-const APP_SHELL = [
-  './index.html', './manifest.webmanifest',
+// The offline book is atomic; promotional/metadata assets are best-effort.
+const CORE_ASSETS = ['./index.html', './manifest.webmanifest'];
+const OPTIONAL_ASSETS = [
   './icons/icon-192.png', './icons/icon-512.png',
   './og-image.jpg', './404.html', './sitemap.xml', './robots.txt'
 ];
@@ -18,10 +19,12 @@ const isAllowedFont = (url) => url.protocol === 'https:' && (
 );
 
 self.addEventListener('install', (event) => {
-  // All required same-origin files must be saved before this version activates.
-  event.waitUntil(caches.open(CACHE_NAME)
-    .then((cache) => cache.addAll(APP_SHELL))
-    .then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(CORE_ASSETS);
+    await Promise.allSettled(OPTIONAL_ASSETS.map(path => cache.addAll([path])));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
@@ -39,7 +42,7 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'OFFLINE_STATUS') {
     event.waitUntil((async () => {
       const cache = await caches.open(CACHE_NAME);
-      const statuses = await Promise.all(APP_SHELL.map(async (p) => Boolean(await cache.match(p))));
+      const statuses = await Promise.all(CORE_ASSETS.map(async (p) => Boolean(await cache.match(p))));
       event.source?.postMessage({type:'OFFLINE_STATUS', ready:statuses.every(Boolean), items:statuses.filter(Boolean).length, total:statuses.length});
     })());
   }

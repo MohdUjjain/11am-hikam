@@ -9,10 +9,8 @@
   const reloadButton = document.getElementById('editionReloadBtn');
   const dismissButton = document.getElementById('editionDismissBtn');
   const say = (text) => { if (status) status.textContent = text; };
-  const essentials = [
-    './index.html','./manifest.webmanifest','./icons/icon-192.png',
-    './icons/icon-512.png','./og-image.jpg','./404.html','./sitemap.xml','./robots.txt'
-  ];
+  // Optional preview/icon failures must not make the saved book look incomplete.
+  const essentials = ['./index.html','./manifest.webmanifest'];
   let hadController = !!navigator.serviceWorker?.controller;
   let fontWarmInProgress = false;
   let lastUpdateCheck = 0;

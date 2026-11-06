@@ -157,8 +157,10 @@ def main():
 
         # A broken release (missing required precache asset) MUST NOT evict
         # the still-working edition or activate its newer service worker.
-        (root / '404.html').unlink()
         new_edition(root, 'v3-failed')
+        # The HTML book is essential. Missing 404/preview assets are now
+        # best-effort and must not be used to simulate a fatal update.
+        (root / 'index.html').unlink()
         page.evaluate('''async () => { const r=await navigator.serviceWorker.getRegistration(); await r.update(); }''')
         page.wait_for_timeout(1500)
         after_bad = state(page)
