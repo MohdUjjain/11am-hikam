@@ -5,16 +5,22 @@
   'use strict';
   const status = document.getElementById('offlineStatus');
   const button = document.getElementById('keepOffline');
+  const editionId = document.getElementById('offlineEditionId');
+  const checkButton = document.getElementById('offlineCheckUpdate');
+  const checkResult = document.getElementById('offlineCheckResult');
+  const CACHE_PREFIX = '11am-hikam-reader-';
   const updateNotice = document.getElementById('editionUpdateNotice');
   const reloadButton = document.getElementById('editionReloadBtn');
   const dismissButton = document.getElementById('editionDismissBtn');
   const say = (text) => { if (status) status.textContent = text; };
+  const reportCheck = (message) => { if (checkResult) checkResult.textContent = message; };
   // Optional preview/icon failures must not make the saved book look incomplete.
   const essentials = ['./index.html','./manifest.webmanifest'];
   let hadController = !!navigator.serviceWorker?.controller;
   let fontWarmInProgress = false;
   let lastUpdateCheck = 0;
   let registrationRef = null;
+  let checkingManually = false;
 
   // Edition updates take priority over the resume suggestion. The reader
   // controls its own deferred resume prompt via this UI-only notification.
@@ -30,15 +36,25 @@
   if (!('serviceWorker' in navigator) || !('caches' in window)) {
     say('Full offline installation is not supported by this browser.');
     if (button) button.hidden = true;
+    if (checkButton) checkButton.hidden = true;
+    if (editionId) editionId.textContent = 'Unavailable';
     return;
   }
 
   async function statusCheck() {
     try {
       const names = await caches.keys();
-      const active = names.filter((n) => n.startsWith('11am-hikam-reader-'));
-      const cache = active.length ? await caches.open(active[active.length-1]) : null;
-      const ready = !!cache && (await Promise.all(essentials.map((path) => cache.match(path)))).every(Boolean);
+      const active = names.filter((n) => n.startsWith(CACHE_PREFIX));
+      let ready = false, savedEdition = '';
+      for (const name of active) {
+        const cache = await caches.open(name);
+        if ((await Promise.all(essentials.map((path) => cache.match(path)))).every(Boolean)) {
+          ready = true;
+          savedEdition = name.slice(CACHE_PREFIX.length);
+          break;
+        }
+      }
+      if (editionId) editionId.textContent = savedEdition || 'Not saved yet';
       const persisted = navigator.storage?.persisted ? await navigator.storage.persisted() : false;
       if (ready) {
         say(persisted ? 'Entire book saved offline; persistent storage enabled.' : 'Entire book saved offline. Device cleanup may still clear browser data.');
@@ -88,18 +104,57 @@
     fontWarmInProgress = false;
   }
 
-  async function checkForUpdate() {
-    if (!navigator.onLine || !registrationRef) return;
-    // Avoid a network check on every tab focus; check at most once per minute.
+  async function checkForUpdate(manual = false) {
+    if (manual && checkingManually) return;
+    if (!registrationRef) {
+      if (manual) reportCheck('Offline reader setup is not ready yet.');
+      return;
+    }
+    if (!navigator.onLine) {
+      if (manual) reportCheck('You are offline. Connect to check for updates.');
+      return;
+    }
+    // Only automatic checks are throttled. A deliberate check always calls update().
     const now = Date.now();
-    if (now - lastUpdateCheck < 60000) return;
+    if (!manual && now - lastUpdateCheck < 60000) return;
     lastUpdateCheck = now;
-    try { await registrationRef.update(); } catch { /* Offline reading remains available. */ }
+    let updateFound = false;
+    const onUpdateFound = () => {
+      updateFound = true;
+      if (manual) reportCheck('New edition found; preparing it for offline reading…');
+    };
+    if (manual) {
+      checkingManually = true;
+      if (checkButton) checkButton.disabled = true;
+      reportCheck('Checking for a newer edition…');
+    }
+    registrationRef.addEventListener('updatefound', onUpdateFound);
+    try {
+      await registrationRef.update();
+      if (manual) {
+        await statusCheck();
+        if (!updateNotice?.hidden) reportCheck('Updated edition ready. Reload to read it.');
+        else if (updateFound || registrationRef.installing)
+          reportCheck('An update is being prepared. You will be prompted when it is ready.');
+        else reportCheck('No newer edition detected.');
+      }
+    } catch {
+      if (manual) reportCheck('Unable to check for updates. Try again when connected.');
+    } finally {
+      registrationRef.removeEventListener('updatefound', onUpdateFound);
+      if (manual) {
+        checkingManually = false;
+        if (checkButton) checkButton.disabled = false;
+      }
+    }
   }
 
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     statusCheck();
-    if (hadController) showEditionNotice();
+    if (hadController) {
+      showEditionNotice();
+      reportCheck('Updated edition ready. Reload to read it.');
+    }
     hadController = true;
     warmFontCache();
   });
@@ -107,6 +162,7 @@
   navigator.serviceWorker.register('./service-worker.js', {scope:'./',updateViaCache:'none'})
     .then(async (registration) => {
       registrationRef = registration;
+      if (checkButton) checkButton.disabled = false;
       await navigator.serviceWorker.ready;
       await statusCheck();
       await checkForUpdate();
@@ -116,6 +172,8 @@
 
   window.addEventListener('online', () => { checkForUpdate();warmFontCache(); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) checkForUpdate(); });
+
+  if (checkButton) checkButton.addEventListener('click', () => checkForUpdate(true));
 
   if (button) button.addEventListener('click', async () => {
     button.disabled = true;
