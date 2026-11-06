@@ -112,18 +112,24 @@ def main():
         page.wait_for_function("""() => /^[a-f0-9]{12}$/.test(
           document.getElementById('offlineEditionId')?.textContent || '')""", timeout=15000)
         assert page.locator('#offlineEditionId').inner_text() == old_key.removeprefix('11am-hikam-reader-')
+        page.locator('#tocFab').click()
+        page.locator('#tocToolsTab').click()
         page.locator('#offlineCheckUpdate').click()
         page.wait_for_function("""() => /No newer edition detected|An update is being prepared/.test(
           document.getElementById('offlineCheckResult')?.textContent || '')""", timeout=15000)
+        page.locator('#tocSidebarClose').click()
         print('PASS edition identifier and explicit update check', flush=True)
         print('PASS service worker initial atomic install and CacheStorage', flush=True)
 
         # Cache-first offline navigation is checked in a *new tab*, not just
         # using the previous page's live DOM.
         ctx.set_offline(True)
+        page.locator('#tocFab').click()
+        page.locator('#tocToolsTab').click()
         page.locator('#offlineCheckUpdate').click()
         page.wait_for_function("""() => document.getElementById('offlineCheckResult')
           ?.textContent.includes('You are offline')""", timeout=10000)
+        page.locator('#tocSidebarClose').click()
         offline = ctx.new_page()
         offline.goto(base, wait_until='domcontentloaded', timeout=30000)
         offline.wait_for_function('document.querySelectorAll("section.chapter").length===34')
