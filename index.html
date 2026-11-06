@@ -11708,9 +11708,23 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     if(toc)toc.addEventListener('click',function(ev){
       var link=ev.target.closest('a[href^="#"]');
       if(!link)return;
-      var target=document.getElementById(decodeURIComponent(link.hash.slice(1)));
-      close(false); // the anchor changes location; don't steal focus back
-      if(target){requestAnimationFrame(function(){target.focus({preventScroll:true});});}
+      var id;
+      try{id=decodeURIComponent(link.hash.slice(1));}catch(error){return;}
+      var target=document.getElementById(id);
+      if(!target)return;
+      // Native hash navigation starts a second, smooth scroll after the modal
+      // unlocks the page. Its later fragment handler used to center the entire
+      // chapter, which landed midway through long chapters (or the revision
+      // area). Own this navigation from click through final focus instead.
+      ev.preventDefault();
+      close(false);
+      var hash='#'+encodeURIComponent(id);
+      if(location.hash!==hash){
+        window.history.pushState({hikamIndex:true},'',hash);
+      }
+      // This also handles a second click on the SAME index entry after the
+      // reader has scrolled away, and notifies reading progress/resume state.
+      window.dispatchEvent(new Event('hashchange'));
     });
   }
 
@@ -12268,7 +12282,7 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     // Rebuild IDs from the same text on initial load and Back/Forward.
     function followFragment(){
       var hash=window.location.hash;
-      if(!/^#(?:hikam-hit-|toc-sec-|ch[0-9])/.test(hash))return;
+      if(!/^#(?:hikam-hit-|toc-sec-|ch[0-9]|t[0-9]+$)/.test(hash))return;
       var id;
       try{id=decodeURIComponent(hash.slice(1));}catch(_){return;}
       if(id.startsWith('hikam-hit-'))makeIndex();
@@ -12291,15 +12305,27 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
       }
       if(!target.hasAttribute('tabindex'))target.tabIndex=-1;
       window.requestAnimationFrame(function(){
-        var reduce=window.matchMedia &&
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        target.scrollIntoView({behavior:reduce?'instant':'auto',block:'center'});
+        if(!target.isConnected || location.hash!==hash)return;
+        // A chapter element may be thousands of pixels high: centering its
+        // *whole box* is NOT navigation to its beginning. Align chapter,
+        // section and topic anchors just beneath the fixed reading header.
+        // Use an instant, explicit scroll to defeat old smooth animations
+        // and keep landing stable when hidden revision blocks change height.
+        if(target.matches('section.chapter, .part-divider, .chapter-body h2.sec')){
+          var header=document.getElementById('readingProgressHeader');
+          var clearance=Math.max(53,header?header.getBoundingClientRect().height+8:53);
+          var y=target.getBoundingClientRect().top+window.scrollY-clearance;
+          window.scrollTo({top:Math.max(0,y),behavior:'instant'});
+        }else{
+          // Full-text passage links still center the individual short result.
+          target.scrollIntoView({behavior:'instant',block:'center'});
+        }
         target.focus({preventScroll:true});
       });
     }
     window.addEventListener('hashchange',followFragment);
     window.addEventListener('popstate',followFragment);
-    if(window.location.hash && /^#(?:hikam-hit-|toc-sec-|ch[0-9])/.test(location.hash))
+    if(window.location.hash && /^#(?:hikam-hit-|toc-sec-|ch[0-9]|t[0-9]+$)/.test(location.hash))
       window.requestAnimationFrame(followFragment);
     window.__hikamFullTextSearch={run:run,getStats:function(){return {
       entries:makeIndex().length,matched:lastResults.length,shown:rendered,open:!panel.hidden};}};
