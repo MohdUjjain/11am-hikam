@@ -11,7 +11,7 @@ for marker in (
     'reader-search-more', "var candidates='h1,h2,h3,h4,h5,h6",
     'svg text', "replace(/\\u0649/g,'ي')", 'function excerpt(entry,window,terms)',
     "document.createElement('mark')", "location:location", 'reader-hit-location',
-    'revisions.revealTemporary(entry.node)', 'revisions.clearTemporary()',
+    'if(hiddenRevision(entry))return;', 'revisions.clearTemporary()',
     'function clearTemporary()', "block.classList.add('reader-search-reveal')",
     "window.__hikamRevisions={", 'target.focus({preventScroll:true})',
     "querySelectorAll('.reader-temporary-revision-note')"
@@ -23,4 +23,4 @@ assert 'html.reader-hide-revisions section.chapter > .end-block.reader-search-re
 assert 'reader-hit-context mark' in css
 assert "document.createElement('mark')" in reader
 assert reader.count('<div class="end-block">')==34, 'All revisions must remain authored'
-print('Search integrity validated: educational tools, Arabic normalization, paged matches, precise excerpts, temporary revision preview and print safeguards.')
+print('Search integrity validated: educational tools, Arabic normalization, paged matches, precise excerpts, hidden-revision filtering and print safeguards.')

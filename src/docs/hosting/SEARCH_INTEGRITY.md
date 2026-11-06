@@ -16,13 +16,16 @@ first 30 are displayed immediately for performance. Search navigation focuses
 the real passage without changing the authored chapter sources.
 
 **Revision safety:** The persistent `11am-hikam-show-revisions-v1` setting is
-changed only by the user's Tools checkbox. A search result inside an otherwise
-hidden `.end-block` reveals *that block only*, temporarily, with an inline
-notice and **Hide preview** button. It never updates localStorage or the
-checkbox. Another search result closes the previous preview. The separate
-print checkbox still governs PDF revision pages independently.
+changed only by the user's Tools checkbox. With **Hide Revision Blocks** selected,
+search excludes `.end-block` passages entirely, and stale result clicks cannot
+reveal them. The visible result set is refreshed when visibility changes. The
+existing independent **Resume Reading** and explicit deep-link continuation
+paths may temporarily recover an older saved revision destination without
+overwriting the preference; search itself never opens hidden blocks. The
+separate print checkbox still governs PDF revision pages independently.
 
 After changes, run `python src/build.py`, `python src/build.py --check`, and the
 existing publication/sidebar/revision tests plus `python src/tests/verify_search_integrity.py`.
 Perform a Chromium smoke test with both Arabic and English, a 100+ match term,
-and search navigation to a hidden revision block before publishing.
+and test that hidden revision blocks disappear from search before publishing.
+Repeated searches for **Kant** must move to distinct chapter passages.

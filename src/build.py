@@ -74,7 +74,9 @@ def main() -> None:
         for path, content in rendered.items():
             if check:
                 if not path.is_file() or path.read_text(encoding='utf-8') != content:
-                    sys.exit(f'Outdated or missing publication file: {path.relative_to(ROOT)}. Run python src/build.py')
+                    expected = re.search(r"const CACHE_NAME = PREFIX \+ '([a-f0-9]{12})'", rendered[ROOT / 'service-worker.js'])
+                    suffix = f" (expected reader edition {expected.group(1)})" if expected else ""
+                    sys.exit(f'Outdated or missing publication file: {path.relative_to(ROOT)}{suffix}. Run python src/build.py')
             else:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content, encoding='utf-8')

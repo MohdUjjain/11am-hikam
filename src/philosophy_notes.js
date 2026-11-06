@@ -1282,6 +1282,10 @@
       });
       return best;
     }
+    function hiddenRevision(entry){
+      return !!(entry.node.closest('.end-block') && window.__hikamRevisions &&
+        !window.__hikamRevisions.isVisible());
+    }
     function isAncestorOfMatch(entry,other){
       return entry.kind!=='chapter'&&other.kind!=='chapter'&&
         entry.chapter===other.chapter && entry!==other && entry.node.contains(other.node);
@@ -1289,6 +1293,9 @@
     function scoredMatches(terms,phrase){
       var found=[];
       makeIndex().forEach(function(entry){
+        // Honor the reader's explicit Hide Revision Blocks preference at
+        // retrieval time, not by revealing an otherwise hidden result.
+        if(hiddenRevision(entry))return;
         if(!terms.every(function(t){return entry.text.includes(t);}))return;
         var window=locate(entry,terms,phrase);if(!window)return;
         var span=window.to-window.from;
@@ -1341,12 +1348,11 @@
       return fragment;
     }
     function choose(result){
-      hide();
       var entry=result.entry, revisions=window.__hikamRevisions;
-      if(revisions){
-        if(entry.node.closest('.end-block'))revisions.revealTemporary(entry.node);
-        else revisions.clearTemporary();
-      }
+      // A result from an earlier query/visibility state cannot bypass Hide.
+      if(hiddenRevision(entry)){run();return;}
+      hide();
+      if(revisions)revisions.clearTemporary();
       var target=entry.node;
       // The exact result becomes a shareable, browser-history-aware fragment.
       // Runtime-only IDs are derived from chapter plus source text, not index.
@@ -1359,7 +1365,12 @@
       var hadTabindex=target.hasAttribute('tabindex'),oldTabindex=target.getAttribute('tabindex');
       if(!hadTabindex)target.setAttribute('tabindex','-1');
       target.classList.add('reader-search-target');
-      target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});
+      // Explicit absolute scrolling avoids competing smooth-scroll requests
+      // when choosing several hits for a common word such as "Kant".
+      // The hash is changed above without a second native-anchor jump.
+      var destination=target.getBoundingClientRect().top+window.scrollY-
+        Math.max(0,(window.innerHeight-target.getBoundingClientRect().height)*.45);
+      window.scrollTo({top:Math.max(0,destination),behavior:'instant'});
       target.focus({preventScroll:true});
       target.addEventListener('blur',function clean(){
         target.classList.remove('reader-search-target');
@@ -1371,7 +1382,9 @@
       var oldMore=hits.querySelector('.reader-search-more');if(oldMore)oldMore.remove();
       var until=Math.min(lastResults.length,rendered+PAGE_SIZE);
       for(;rendered<until;rendered++){
-        var result=lastResults[rendered],entry=result.entry;
+        // Lexical binding is essential: `var` shared the final hit across all
+        // click handlers, so a Kant result always jumped to the same passage.
+        const result=lastResults[rendered],entry=result.entry;
         var button=document.createElement('button');
         button.type='button';button.className='reader-search-hit';
         var label=document.createElement('span');label.className='reader-hit-chapter';
@@ -1417,6 +1430,10 @@
       renderNext();open();
     }
     input.addEventListener('input',function(){clearTimeout(searchTimer);searchTimer=setTimeout(run,120);});
+    // Refresh an open search when Tools changes visible revision content.
+    window.addEventListener('hikam:revision-visibility',function(){
+      if(!panel.hidden && input.value.trim())run();
+    });
     input.addEventListener('focus',function(){if(input.value.trim())run();});
     input.addEventListener('keydown',function(ev){
       if(ev.key==='Escape'){ev.preventDefault();hide();input.blur();}
@@ -1451,8 +1468,14 @@
       }
       if(!target)return;
       var revisions=window.__hikamRevisions;
-      if(revisions && target.closest('.end-block'))
+      if(id.startsWith('hikam-hit-') && target.closest('.end-block') &&
+         document.documentElement.classList.contains('reader-hide-revisions')){
+        // A shared search-hit URL must not expose material hidden in Tools.
+        target=target.closest('section.chapter') || target;
+      } else if(revisions && target.closest('.end-block')) {
+        // Explicit authored chapter/section links remain independently usable.
         revisions.revealTemporary(target,'link');
+      }
       if(!target.hasAttribute('tabindex'))target.tabIndex=-1;
       window.requestAnimationFrame(function(){
         var reduce=window.matchMedia &&
