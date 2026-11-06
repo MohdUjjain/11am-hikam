@@ -68,6 +68,8 @@ jobs:
         run: python -m playwright install chromium
       - name: Test full-book search, responsive layout, preferences, keyboard and PDF
         run: python src/tests/browser_quality.py
+      - name: Batch 2 permalink and altered-edition checkpoint browser coverage
+        run: python src/tests/browser_batch2_continuity.py
       - name: Test real offline installation, edition upgrades and failed updates
         run: python src/tests/browser_pwa_updates.py
       - name: Upload screenshots and sampled print PDFs
