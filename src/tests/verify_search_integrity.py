@@ -12,6 +12,7 @@ for marker in (
     'svg text', "replace(/\\u0649/g,'ي')", 'function excerpt(entry,window,terms)',
     "document.createElement('mark')", "location:location", 'reader-hit-location',
     'if(hiddenRevision(entry))return;', 'revisions.clearTemporary()',
+    'function cancelPending()', 'target.scrollIntoView({block:',
     'function clearTemporary()', "block.classList.add('reader-search-reveal')",
     "window.__hikamRevisions={", 'target.focus({preventScroll:true})',
     "querySelectorAll('.reader-temporary-revision-note')"
