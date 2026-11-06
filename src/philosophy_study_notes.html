@@ -175,7 +175,10 @@ try {
   <section class="offline-reader-panel" aria-label="Offline reading">
     <strong>Offline reading</strong>
     <p id="offlineStatus" role="status" aria-live="polite">Preparing the book for offline reading…</p>
+    <p class="offline-edition-meta">Saved edition: <code id="offlineEditionId">Checking…</code></p>
     <button type="button" id="keepOffline" class="offline-keep-btn">Keep on this device</button>
+    <button type="button" id="offlineCheckUpdate" class="offline-keep-btn" disabled>Check for updates</button>
+    <p id="offlineCheckResult" class="offline-check-result" role="status" aria-live="polite"></p>
   </section>
 
 </aside>
