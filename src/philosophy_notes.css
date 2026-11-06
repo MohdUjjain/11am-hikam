@@ -2242,3 +2242,23 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     border-color:rgba(241,225,174,.6);
   }
 }
+
+/* Chapter-end navigation: contextual skip shortcuts, screen only.
+   The sidebar replaces Back to Contents; printed PDF links remain intact. */
+@media screen {
+  section.chapter > .chapter-endnav .endnav-toc,
+  section.chapter > .chapter-endnav .endnav-end[href="#toc"] {
+    display:none !important;
+  }
+  /* One chapter has two redundant Contents links: hide the empty bar. */
+  section.chapter > .chapter-endnav:has(> .endnav-toc):has(> .endnav-next[href="#toc"]) {
+    display:none !important;
+  }
+  /* With no Revision Block there is nothing left to skip. */
+  html.reader-hide-revisions section.chapter > .chapter-endnav:has(> .endnav-toc) {
+    display:none !important;
+  }
+  html.reader-hide-revisions section.chapter > .chapter-endnav .endnav-next {
+    display:none !important;
+  }
+}

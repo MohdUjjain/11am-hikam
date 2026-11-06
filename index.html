@@ -2290,6 +2290,26 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
   }
 }
 
+/* Chapter-end navigation: contextual skip shortcuts, screen only.
+   The sidebar replaces Back to Contents; printed PDF links remain intact. */
+@media screen {
+  section.chapter > .chapter-endnav .endnav-toc,
+  section.chapter > .chapter-endnav .endnav-end[href="#toc"] {
+    display:none !important;
+  }
+  /* One chapter has two redundant Contents links: hide the empty bar. */
+  section.chapter > .chapter-endnav:has(> .endnav-toc):has(> .endnav-next[href="#toc"]) {
+    display:none !important;
+  }
+  /* With no Revision Block there is nothing left to skip. */
+  html.reader-hide-revisions section.chapter > .chapter-endnav:has(> .endnav-toc) {
+    display:none !important;
+  }
+  html.reader-hide-revisions section.chapter > .chapter-endnav .endnav-next {
+    display:none !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -10937,7 +10957,17 @@ hr.rule{border:none; border-top:1px solid var(--paper-line); margin:38px 0;}
     // in the generated print pages (their headings are cloned).
     bodyClone.querySelectorAll('[id^="toc-sec-"]').forEach(function(el){el.removeAttribute('id');});
     var bodyItems = collectChildren(bodyClone);
-    if (endnav){ bodyItems.push(endnav.cloneNode(true)); }
+    if (endnav){
+      var navClone = endnav.cloneNode(true);
+      // Next Dossier exists to skip revision pages. When revision pages
+      // are excluded, retain useful PDF Contents/Previous links instead.
+      if (!state.includeRevision) {
+        navClone.querySelectorAll('.endnav-next:not([href="#toc"])').forEach(function(link){
+          link.remove();
+        });
+      }
+      if (navClone.querySelector('a')) bodyItems.push(navClone);
+    }
 
     var lightPages = paginateFlow(bodyItems, {
       dark:false, rtl:isRTL, hue:hue, lang:lang,

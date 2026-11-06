@@ -197,6 +197,8 @@ def preference_and_resume(browser, url):
     page.wait_for_function('Boolean(window.__hikamRevisions)')
     assert page.evaluate('document.documentElement.classList.contains("reader-hide-revisions")')
     assert not page.locator('.end-block').first.is_visible()
+    assert not page.locator('#ch1-1-1 > .chapter-endnav').is_visible()
+    assert page.locator('#ch3-4-4 > .chapter-endnav .endnav-btn:not(.endnav-next)').is_visible()
     inp = page.locator('#readerSearchInput')
     inp.fill('Possible Examination Questions')
     page.evaluate('window.__hikamFullTextSearch.run()')
@@ -253,6 +255,9 @@ def print_and_restore(browser, url):
         count = page.locator('.js-print-page').count()
         assert count > 0, 'Print compositor produced no physical pages'
         counts[with_revision] = count
+        skips = page.locator('.js-print-page .endnav-next:not([href="#toc"])').count()
+        assert (skips > 0) == with_revision, (with_revision, skips)
+        assert page.locator('.js-print-page .endnav-toc').count() >= 1
         assert page.locator('#readerBookTrack').evaluate('(el)=>getComputedStyle(el).getPropertyValue("display")') != 'none'  # Screen view intact.
         # Playwright triggers actual print CSS and PDF generation, not a mock.
         pdf = page.pdf(print_background=True, prefer_css_page_size=True)

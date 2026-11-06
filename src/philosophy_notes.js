@@ -163,7 +163,17 @@
     // in the generated print pages (their headings are cloned).
     bodyClone.querySelectorAll('[id^="toc-sec-"]').forEach(function(el){el.removeAttribute('id');});
     var bodyItems = collectChildren(bodyClone);
-    if (endnav){ bodyItems.push(endnav.cloneNode(true)); }
+    if (endnav){
+      var navClone = endnav.cloneNode(true);
+      // Next Dossier exists to skip revision pages. When revision pages
+      // are excluded, retain useful PDF Contents/Previous links instead.
+      if (!state.includeRevision) {
+        navClone.querySelectorAll('.endnav-next:not([href="#toc"])').forEach(function(link){
+          link.remove();
+        });
+      }
+      if (navClone.querySelector('a')) bodyItems.push(navClone);
+    }
 
     var lightPages = paginateFlow(bodyItems, {
       dark:false, rtl:isRTL, hue:hue, lang:lang,

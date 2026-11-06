@@ -36,3 +36,12 @@ collapsed (without opening that branch). A returning device may offer a local,
 optional Resume Reading choice; see [Reading position](READING_POSITION.md).
 All reader-position UI is removed for printing and does not alter the print
 engine or core chapter content.
+
+## Context-sensitive chapter-end navigation
+
+HTML uses the sidebar as its Contents index, so chapter-end **Back to Contents**
+links are not shown in the reading view. **Next Dossier** is a shortcut past
+the Revision Block: hiding those blocks also hides the redundant shortcut.
+The final dossier's **Previous Dossier** link remains visible. PDF export
+independently omits next/skip links when revision pages are excluded, retaining
+PDF Contents navigation. Authored chapter links are not removed or modified.
