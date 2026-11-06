@@ -192,6 +192,10 @@ def full_text_and_keyboard(browser, url):
         inp.fill('Kant')
         page.evaluate('window.__hikamFullTextSearch.run()')
         page.locator('.reader-search-hit').nth(ix).click()
+        page.wait_for_function("""() =>
+          document.activeElement.closest('section.chapter') &&
+          decodeURIComponent(location.hash.slice(1))===document.activeElement.id
+        """)
         destination=page.evaluate("""() => ({
           hash:decodeURIComponent(location.hash.slice(1)),
           focus:document.activeElement.id,
@@ -204,6 +208,12 @@ def full_text_and_keyboard(browser, url):
         visited.append(destination)
     assert len(set(item['hash'] for item in visited))==2,visited
     assert len(set(item['chapter'] for item in visited))==2,visited
+    # A quickly clicked hit must not be overridden by a queued debounce.
+    inp.fill('Kant')
+    page.locator('.reader-search-hit').first.wait_for()
+    page.locator('.reader-search-hit').first.click()
+    page.wait_for_timeout(180)
+    assert not page.locator('#readerSearchResults').is_visible()
     no_errors(page, 'full-text search')
     ctx.close()
     print(f'PASS full-text retrieval, {total} Arabic passage results, keyboard navigation', flush=True)
