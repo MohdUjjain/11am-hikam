@@ -1382,7 +1382,9 @@
       var oldMore=hits.querySelector('.reader-search-more');if(oldMore)oldMore.remove();
       var until=Math.min(lastResults.length,rendered+PAGE_SIZE);
       for(;rendered<until;rendered++){
-        var result=lastResults[rendered],entry=result.entry;
+        // Lexical binding is essential: `var` shared the final hit across all
+        // click handlers, so a Kant result always jumped to the same passage.
+        const result=lastResults[rendered],entry=result.entry;
         var button=document.createElement('button');
         button.type='button';button.className='reader-search-hit';
         var label=document.createElement('span');label.className='reader-hit-chapter';
@@ -1466,8 +1468,14 @@
       }
       if(!target)return;
       var revisions=window.__hikamRevisions;
-      if(revisions && target.closest('.end-block'))
+      if(id.startsWith('hikam-hit-') && target.closest('.end-block') &&
+         document.documentElement.classList.contains('reader-hide-revisions')){
+        // A shared search-hit URL must not expose material hidden in Tools.
+        target=target.closest('section.chapter') || target;
+      } else if(revisions && target.closest('.end-block')) {
+        // Explicit authored chapter/section links remain independently usable.
         revisions.revealTemporary(target,'link');
+      }
       if(!target.hasAttribute('tabindex'))target.tabIndex=-1;
       window.requestAnimationFrame(function(){
         var reduce=window.matchMedia &&
