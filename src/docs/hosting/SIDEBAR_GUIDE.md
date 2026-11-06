@@ -45,3 +45,12 @@ the Revision Block: hiding those blocks also hides the redundant shortcut.
 The final dossier's **Previous Dossier** link remains visible. PDF export
 independently omits next/skip links when revision pages are excluded, retaining
 PDF Contents navigation. Authored chapter links are not removed or modified.
+
+
+## Index anchor landing with hidden revisions (November 2026)
+
+The screen Contents → Index links are distinct from the PDF-only in-flow contents. A chapter entry must land at that chapter's beginning, and a section entry at the precise section heading. Do **not** center a full `section.chapter` using `scrollIntoView({block:'center'})`: a long chapter is much taller than the viewport, so this navigates into the middle of the chapter and moves unpredictably when the revision block is hidden. The fixed 45px reading header needs at least 53px clearance.
+
+The sidebar prevents the browser's implicit smooth hash navigation, unlocks the modal, writes a shareable history fragment and dispatches the normal navigation event even when the hash is unchanged. The fragment navigator performs one instant, header-offset scroll and focuses the destination without scrolling again. Deep links and browser Back/Forward use the same landing logic; short search-result passages may still be centered. Index navigation must never temporarily reveal a hidden `.end-block` or change the persisted Hide Revision Blocks preference.
+
+Browser coverage lives in `src/tests/browser_quality.py::index_landing_with_hidden_revisions`, with desktop/mobile layouts and both revision visibility settings. It checks chapter starts, exact section heading landings, same-hash repeat clicks, browser Back, and unchanged hidden revision state.

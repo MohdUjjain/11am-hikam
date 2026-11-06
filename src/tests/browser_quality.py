@@ -220,6 +220,83 @@ def full_text_and_keyboard(browser, url):
     print(f'PASS full-text retrieval, {total} Arabic passage results, keyboard navigation', flush=True)
 
 
+
+def index_landing_with_hidden_revisions(browser, url):
+    # The reader uses smooth scrolling by default. Exercise the real drawer
+    # and real fragment navigation with motion enabled, not set_content().
+    for width in (390, 1366):
+        for show_revisions in (True, False):
+            ctx = browser.new_context(
+                viewport={'width': width, 'height': 844},
+                reduced_motion='no-preference', service_workers='block'
+            )
+            ctx.add_init_script(script=(
+                "localStorage.setItem('11am-hikam-show-revisions-v1',"
+                + ("'true'" if show_revisions else "'false'") + ")"
+            ))
+            page = load(ctx, url)
+            page.locator('#tocFab').click()
+            page.locator('#tocExpandAll').click()
+            anchor = 'ch3-2-4'
+            page.locator(f'#tocTree a[href="#{anchor}"]').click()
+            page.wait_for_function("""id => {
+              const el=document.getElementById(id);
+              return location.hash==='#'+id &&
+                Math.abs(el.getBoundingClientRect().top-53)<10 &&
+                document.activeElement===el;
+            }""", arg=anchor, timeout=10000)
+            assert not page.locator('#tocSidebar').evaluate('(el)=>el.classList.contains("open")')
+            assert page.evaluate("localStorage.getItem('11am-hikam-show-revisions-v1')") == (
+                'true' if show_revisions else 'false'
+            )
+            if not show_revisions:
+                assert not page.locator(f'#{anchor} > .end-block').is_visible()
+                assert page.locator('.end-block.reader-search-reveal').count() == 0
+
+            # Repeating a same-hash index link must still jump to that target.
+            page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
+            page.locator('#tocFab').click()
+            page.locator('#tocExpandAll').click()
+            page.locator(f'#tocTree a[href="#{anchor}"]').click()
+            page.wait_for_function("""id => {
+              const el=document.getElementById(id);
+              return Math.abs(el.getBoundingClientRect().top-53)<10;
+            }""", arg=anchor, timeout=10000)
+
+            # The section link must land at its heading, not at the chapter
+            # middle or at its hidden end-of-matter block.
+            section='toc-sec-ch3-2-4-2'
+            page.locator('#tocFab').click()
+            page.locator('#tocExpandAll').click()
+            page.locator(f'#tocTree a[href="#{section}"]').click()
+            page.wait_for_function("""id => {
+              const el=document.getElementById(id);
+              return location.hash==='#'+id &&
+                Math.abs(el.getBoundingClientRect().top-53)<10 &&
+                document.activeElement===el;
+            }""", arg=section, timeout=10000)
+            if not show_revisions:
+                assert not page.locator('#ch3-2-4 > .end-block').is_visible()
+                assert page.locator('.end-block.reader-search-reveal').count() == 0
+
+            # A later click to another chapter, then browser Back, must
+            # restore the exact section anchor without a smooth-scroll race.
+            page.locator('#tocFab').click()
+            page.locator('#tocExpandAll').click()
+            page.locator('#tocTree a[href="#ch2-1-3"]').click()
+            page.wait_for_function("""() => Math.abs(
+              document.getElementById('ch2-1-3').getBoundingClientRect().top-53
+            ) < 10""")
+            page.go_back(wait_until='domcontentloaded')
+            page.wait_for_function("""id => location.hash==='#'+id &&
+              Math.abs(document.getElementById(id).getBoundingClientRect().top-53)<10
+            """,arg=section,timeout=10000)
+            assert not page.locator('.end-block.reader-search-reveal').count()
+            no_errors(page, f'index landing width {width}, revisions {show_revisions}')
+            ctx.close()
+            print(f'PASS index landing {width}px, revisions={show_revisions}', flush=True)
+
+
 def preference_and_resume(browser, url):
     ctx = context(browser, 390)
     page = load(ctx, url)
@@ -337,6 +414,7 @@ def main():
         try:
             viewport_and_accessibility(browser, url)
             full_text_and_keyboard(browser, url)
+            index_landing_with_hidden_revisions(browser, url)
             preference_and_resume(browser, url)
             print_and_restore(browser, url)
         finally:
