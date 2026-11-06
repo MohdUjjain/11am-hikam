@@ -1160,7 +1160,7 @@
     var hits=document.getElementById('readerSearchHits');
     var status=document.getElementById('readerSearchHelp');
     if(!input||!panel||!hits||!box)return;
-    var entries=null, searchTimer=null, lastResults=[],rendered=0;
+    var entries=null, searchTimer=null, lastResults=[],rendered=0,searchGeneration=0;
     var PAGE_SIZE=30;
     var skipInside='.js-print-page, .chapter-endnav, script, style, template, noscript, [hidden], [aria-hidden="true"]';
     var semanticChildren='h1,h2,h3,h4,h5,h6,p,li,td,th,dt,dd,blockquote,figcaption,caption,pre,ul,ol,table';
@@ -1189,7 +1189,14 @@
       return {text:out,offsets:offsets};
     }
     function normalize(source){return mappedText(source).text;}
-    function hide(){panel.hidden=true;input.setAttribute('aria-expanded','false');}
+    function cancelPending(){
+      searchGeneration++;
+      if(searchTimer!==null){clearTimeout(searchTimer);searchTimer=null;}
+    }
+    function hide(){
+      cancelPending();
+      panel.hidden=true;input.setAttribute('aria-expanded','false');
+    }
     function open(){panel.hidden=false;input.setAttribute('aria-expanded','true');}
     function meaningfulText(node){return node.textContent.replace(/\s+/g,' ').trim();}
     // Content-based passage identities remain stable when earlier sections
@@ -1283,8 +1290,10 @@
       return best;
     }
     function hiddenRevision(entry){
-      return !!(entry.node.closest('.end-block') && window.__hikamRevisions &&
-        !window.__hikamRevisions.isVisible());
+      // The rendered visibility class is the authoritative search boundary,
+      // even before the optional revision controller has been initialized.
+      return !!(entry.node.closest('.end-block') &&
+        document.documentElement.classList.contains('reader-hide-revisions'));
     }
     function isAncestorOfMatch(entry,other){
       return entry.kind!=='chapter'&&other.kind!=='chapter'&&
@@ -1365,13 +1374,14 @@
       var hadTabindex=target.hasAttribute('tabindex'),oldTabindex=target.getAttribute('tabindex');
       if(!hadTabindex)target.setAttribute('tabindex','-1');
       target.classList.add('reader-search-target');
-      // Explicit absolute scrolling avoids competing smooth-scroll requests
-      // when choosing several hits for a common word such as "Kant".
-      // The hash is changed above without a second native-anchor jump.
-      var destination=target.getBoundingClientRect().top+window.scrollY-
-        Math.max(0,(window.innerHeight-target.getBoundingClientRect().height)*.45);
-      window.scrollTo({top:Math.max(0,destination),behavior:'instant'});
-      target.focus({preventScroll:true});
+      // Wait for the search overlay to leave layout, then scroll the actual
+      // clicked passage. Element scrolling handles the reader's scroll root
+      // reliably, even when several hits share a chapter or the same query.
+      window.requestAnimationFrame(function(){
+        if(!target.isConnected)return;
+        target.scrollIntoView({block:'center',behavior:'instant'});
+        target.focus({preventScroll:true});
+      });
       target.addEventListener('blur',function clean(){
         target.classList.remove('reader-search-target');
         if(hadTabindex)target.setAttribute('tabindex',oldTabindex);
@@ -1429,7 +1439,16 @@
       lastResults=scoredMatches(currentTerms,phrase);
       renderNext();open();
     }
-    input.addEventListener('input',function(){clearTimeout(searchTimer);searchTimer=setTimeout(run,120);});
+    input.addEventListener('input',function(){
+      // Old results become inert at once; a timer from the previous query
+      // must not reopen the overlay after a hit has been selected.
+      hide();hits.replaceChildren();lastResults=[];rendered=0;
+      var ticket=searchGeneration;
+      searchTimer=setTimeout(function(){
+        if(ticket!==searchGeneration)return;
+        searchTimer=null;run();
+      },120);
+    });
     // Refresh an open search when Tools changes visible revision content.
     window.addEventListener('hikam:revision-visibility',function(){
       if(!panel.hidden && input.value.trim())run();
